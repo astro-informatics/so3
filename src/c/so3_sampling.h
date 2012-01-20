@@ -8,6 +8,27 @@
 
 #include <complex.h>
 
+
+
+
+
+int so3_sampling_nalpha(int L);
+int so3_sampling_nbeta(int L);
+int so3_sampling_ngamma(int L);
+int so3_sampling_M(int L);
+int so3_sampling_N(int L);
+int so3_sampling_nf(int L);
+int so3_sampling_nflmn(int L, so3_wignersize_t wignersize);
+
+double so3_sampling_a2alpha(int a, int L);
+double so3_sampling_b2beta(int b, int L);
+double so3_sampling_g2gamma(int g, int L);
+
+
+
+
+
+
 complex double so3_sampling_weight_mw(int p);
 double so3_sampling_weight_dh(double theta_t, int L);
 void so3_sampling_gl_thetas_weights(double *thetas, double *weights, int L);

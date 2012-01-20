@@ -29,6 +29,72 @@
 //============================================================================
 
 
+
+
+/* sizes
+ 
+A = 2*L-1;
+B = L;
+G = 2*L-1;
+
+M = 2*L-1;
+N = 2*L-1;
+*/
+
+
+
+// inline
+int so3_sampling_findex(int a, int b, int g, int L) {
+  // B = L; G = 2*L-1;
+  return (a * L + b) * (2*L-1) + g;
+}
+
+
+// inline
+int so3_sampling_flmnindex(int el, int m, int n, int L, 
+                           so3_wignersize_t wignersize) {
+  // M = 2*L-1; N = 2*L-1;
+  switch (wignersize) {
+    case SO3_WIGNERSIZE_FULL:
+      return (el*(2*L-1) + m) * (2*L-1) + n;
+      break;
+    case SO3_WIGNERSIZE_HALFM:
+      return (el*L + m) * (2*L-1) + n;      
+      break;
+    case SO3_WIGNERSIZE_HALFN:
+      return (el*(2*L-1) + m) * L + n;
+      break;
+    case SO3_WIGNERSIZE_HALFMN:
+      return (el*L + m) * L + n;
+      break;
+    default:
+      SO3_ERROR_GENERIC("Invalid wigner size type") 
+  }
+
+
+
+}
+
+
+
+
+
+//TODO: also need to incorporate N symmetry for steerable functions, i.e. consider even/odd n only.
+void so3_core_inverse_direct_sov(complex double *f, complex double *flmn, 
+                                 int L, int M, int N, int verbosity) {
+  
+  
+  
+
+  
+    
+}
+
+
+
+
+
+
 /*!  
  * Compute inverse transform for MW method using separation of
  * variables, fast Fourier transforms and exploiting all symmetries
@@ -636,7 +702,7 @@ void so3_core_mwdirect_inverse(complex double *f, complex double *flm,
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_core_mwdirect_inverse_sov(complex double *f, complex double *flm, 
-				     int L, int spin, int verbosity) {
+                                   int L, int spin, int verbosity) {
 
   int t, p, m, el, ind;
   int ftm_stride, ftm_offset, f_stride;
