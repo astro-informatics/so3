@@ -1,4 +1,4 @@
-function [ f ] = inverse_direct( L, flm )
+function [ f ] = inverse_direct_v( L, flm )
 %INVERSE_DIRECT Inverse spherical harmonic transform using naive approach
 %   This computes the inverse spherical harmonic transform, simply
 %   synthesising the function by summing over all spherical harmonics.
