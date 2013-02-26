@@ -25,20 +25,11 @@ for j=1:length(thetas),
         phi = phis(k);
         sum = 0;
         lmindex = 1;
+        dl = zeros(2*L-1,2*L-1);
         for l = 0:L-1,
-            ppos = legendre(l,cos(theta));
+            dl = ssht_dl(dl, L, l, theta);
             for m = -l:l,
-                if m >= 0
-                    p = ppos(m+1);
-                else
-                    p = (-1)^m*factorial(l+m)/factorial(l-m)*ppos(-m+1);
-                end
-                sum = sum + flm(lmindex)*...
-                    sqrt(...
-                      (2*l+1)*factorial(l-m)/...
-                      ((4*pi)*factorial(l+m))...
-                    )*...
-                    p*exp(1i*m*phi);
+                sum = sum + flm(lmindex)*sqrt((2*l+1)/(4*pi))*dl(m+L, L)*exp(1i*m*phi);
                 lmindex = lmindex + 1;
             end
         end
