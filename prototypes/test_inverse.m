@@ -1,5 +1,5 @@
-function [ ] = test_inverse()
-%TEST_INVERSE Tests prototype implementations of the inverse transform.
+%   Tests prototype implementations of the inverse transform.
+%
 %   This compares all matlab prototypes of the inverse transform with the
 %   ssht implementation and throws and error if the discrepancy exceeds
 %   machine precision.
@@ -41,3 +41,10 @@ end
 if fine == 1
     disp('All implementations agree with ssht up to machine precision.');
 end
+
+clear L
+clear flm
+clear ssht
+clear fine
+clear result
+clear err
