@@ -40,8 +40,8 @@ for l = 0:L-1,
     coeffs = flm(l^2+1:(l+1)^2);
     scale = sqrt((2*l+1)/(4*pi)*factorial(l-ms)./factorial(l+ms));
     scalem = repmat((coeffs.*scale)',1,size(p,2));
-    e = exp(1i*(phis*(-ms))); % not sure why I have to flip this sign
+    e = exp(1i*(phis*(ms))); % not sure why I have to flip this sign
     % e contains all exponentials for all m and all phi
     % the 1st dimension corresponds to the phi samples, the 2nd to m
-    f=f+(e*(scalem.*p))';
+    f=f+(e*(scalem.*p)).';
 end
