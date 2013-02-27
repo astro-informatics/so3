@@ -21,26 +21,23 @@ f = zeros(length(thetas), length(phis));
 
 for j=1:length(thetas),
     theta = thetas(j);
-    dln = zeros(L,L);
-    dln(:,1) = ssht_dln(dln(:,1), dln(:,1), L, 0, 0, theta);
-    dln(:,2) = ssht_dln(dln(:,2), dln(:,1), L, 1, 0, theta);
-    for l=2:L-1,
-        dln(:,l+1) = ssht_dln(dln(:,l), dln(:,l-1), L, l, 0, theta);
-    end
-    for k=1:length(phis),
-        phi = phis(k);
-        sum = 0;
-        lmindex = 1;
-        for l = 0:L-1,            
+    dln = zeros(L,1);
+    dlnprev = zeros(L,1);
+    for l=0:L-1,
+        tmp = ssht_dln(dln, dlnprev, L, l, 0, theta);
+        dlnprev = dln;
+        dln = tmp;
+        for k=1:length(phis),
+            phi = phis(k);
+            lmindex = l^2+1;            
             for m = -l:l,
                 sign = 1;
                 if m < 0
                     sign = (-1)^m;
                 end
-                sum = sum + flm(lmindex)*sqrt((2*l+1)/(4*pi))*sign*dln(abs(m)+1, l+1)*exp(1i*m*phi);
+                f(j,k) = f(j,k) + flm(lmindex)*sqrt((2*l+1)/(4*pi))*sign*dln(abs(m)+1)*exp(1i*m*phi);
                 lmindex = lmindex + 1;
             end
         end
-        f(j,k) = sum;
     end
 end
