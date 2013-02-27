@@ -1,5 +1,5 @@
 function [ f ] = inverse_direct_dl( L, flm )
-%INVERSE_DIRECT Inverse spherical harmonic transform using naive approach
+%INVERSE_DIRECT Inverse spherical harmonic transform using ssht_dl.
 %   This computes the inverse spherical harmonic transform, simply
 %   synthesising the function by summing over all spherical harmonics.
 %
@@ -21,21 +21,16 @@ f = zeros(length(thetas), length(phis));
 
 for j=1:length(thetas),
     theta = thetas(j);
-    dl = zeros(2*L-1,2*L-1,L);
-    dl(:,:,1) = ssht_dl(dl(:,:,1), L, 0, theta);
-    for l = 1:L-1,
-        dl(:,:,l+1) = ssht_dl(dl(:,:,l), L, l, theta);
-    end
-    for k=1:length(phis),
-        phi = phis(k);
-        sum = 0;
-        lmindex = 1;
-        for l = 0:L-1,
+    dl = zeros(2*L-1,2*L-1);
+    for l = 0:L-1,
+        dl = ssht_dl(dl, L, l, theta);
+        for k=1:length(phis),
+            phi = phis(k);
+            lmindex = l^2+1;
             for m = -l:l,
-                sum = sum + flm(lmindex)*sqrt((2*l+1)/(4*pi))*dl(m+L, L, l+1)*exp(1i*m*phi);
-                lmindex = lmindex + 1;
+                f(j,k) = f(j,k) + flm(lmindex)*sqrt((2*l+1)/(4*pi))*dl(m+L, L)*exp(1i*m*phi);
+                    lmindex = lmindex + 1;
             end
         end
-        f(j,k) = sum;
     end
 end

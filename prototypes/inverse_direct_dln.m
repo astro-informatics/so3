@@ -1,5 +1,5 @@
 function [ f ] = inverse_direct_dln( L, flm )
-%INVERSE_DIRECT Inverse spherical harmonic transform using naive approach
+%INVERSE_DIRECT Inverse spherical harmonic transform using ssht_dln.
 %   This computes the inverse spherical harmonic transform, simply
 %   synthesising the function by summing over all spherical harmonics.
 %
