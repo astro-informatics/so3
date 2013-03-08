@@ -59,6 +59,13 @@ if err > 10^-14
     fine = 0;
 end
 
+result = inverse_for_fft(L, flm);
+err = max(abs(ssht(:) - result(:)))
+if err > 10^-13 % the double ifft slightly reduces the accuracy
+    disp(['Implementation inverse_for_fft disagrees with ssht with errors up to ', num2str(err)]);
+    fine = 0;
+end
+
 if fine == 1
     disp('All implementations agree with ssht up to machine precision.');
 end

@@ -1,10 +1,11 @@
-function [ f ] = inverse_for_dft( L, flm )
-%INVERSE_FOR_DFT Inverse spherical harmonic transform using only matlab and
-%a factoring of rotations approach.
+function [ f ] = inverse_for_fft( L, flm )
+%INVERSE_FOR_FFT Inverse spherical harmonic transform using matlab's ifft
+%and a factoring of rotations approach.
 %.
 %   This computes the inverse spherical harmonic transform, synthesising 
 %   the function using factoring of rotations (as outlined in equations
-%   (12) to (14) of the ssht paper).
+%   (12) to (14) of the ssht paper). It also employs matlab's ifft to 
+%   compute the DFT.
 %
 %   L   ... the band limit (maximum l is L-1)
 %   flm ... the coefficients of the spherical harmonics
@@ -20,6 +21,8 @@ end
 
 [thetas, phis] = ssht_sampling(L);
 
+thetasExt = [thetas; 2*pi - thetas(end-1:-1:1)];
+
 f = zeros(length(thetas), length(phis));
 fmm = zeros(2*L-1, 2*L-1);
 m0i = L;
@@ -34,26 +37,18 @@ for l=0:L-1,
         for mp=-l:l, % m' in the equation (14)
             fmm(m0i+m,m0i+mp) = fmm(m0i+m,m0i+mp) +...
                 sign*sqrt((2*l+1)/(4*pi))*...
-                dl(m0i+mp,m0i+m)*dl(m0i+mp,m0i)*flm(lm0i+m);
+                dl(m0i+mp,m0i+m)*dl(m0i+mp,m0i)*flm(lm0i+m)*...
+                exp(1i*(mp+L)*pi/(2*L-1));
         end
     end
 end
 
-for j=1:length(thetas)
-    theta = thetas(j);
+fm = zeros(2*L-1, length(thetasExt));
 
-    fm = zeros(2*L-1);
-    
-    for m=-(L-1):(L-1),
-        for mp=-(L-1):(L-1), % m' in the equation (13)
-            fm(m0i+m) = fm(m0i+m) + fmm(m0i+m,m0i+mp)*exp(1i*mp*theta);
-        end
-    end
-    
-    for k=1:length(phis),
-        phi = phis(k);
-        for m = -L+1:L-1,
-            f(j,k) = f(j,k) + fm(m0i+m)*exp(1i*m*phi);
-        end
-    end
+for m=-L+1:L-1,
+    fm(m0i+m,:) = ifft(fmm(m0i+m,:)).*(2*L-1).*exp(-1i.*((L-1).*(thetasExt.')+pi/(2*L-1)));
+end
+
+for j=1:length(thetas),
+    f(j,:) = ifft(fm(:,j).').*(2*L-1).*exp(-1i.*(L-1).*phis.');
 end
