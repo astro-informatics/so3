@@ -52,6 +52,13 @@ if err > 10^-11 % The algorithm used is inherently less accurate, so we have to 
     fine = 0;
 end
 
+result = inverse_for_dft(L, flm);
+err = max(abs(ssht(:) - result(:)))
+if err > 10^-14
+    disp(['Implementation inverse_for_dft disagrees with ssht with errors up to ', num2str(err)]);
+    fine = 0;
+end
+
 if fine == 1
     disp('All implementations agree with ssht up to machine precision.');
 end
