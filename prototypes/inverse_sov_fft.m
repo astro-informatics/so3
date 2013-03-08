@@ -21,11 +21,13 @@ end
 [thetas, phis] = ssht_sampling(L);
 
 f = zeros(length(thetas), length(phis));
-fm = zeros(length(thetas), 2*L-1);
 m0i = L;
 
 for j=1:length(thetas),
     theta = thetas(j);
+    
+    fm = zeros(1,2*L-1);
+
     dln = zeros(L,1);
     dlnprev = zeros(L,1);
     for l=0:L-1,
@@ -36,16 +38,13 @@ for j=1:length(thetas),
         lm0i = l^2+1+l;
         sign = (-1)^l;
         for m=-l:-1,
-            fm(j, m0i+m) = fm(j, m0i+m) + flm(lm0i+m)*sqrt((2*l+1)/(4*pi))*sign*dln(abs(m)+1);
+            fm(m0i+m) = fm(m0i+m) + flm(lm0i+m)*sqrt((2*l+1)/(4*pi))*sign*dln(abs(m)+1);
             sign = -sign;
         end
         for m=0:l,
-            fm(j, m0i+m) = fm(j, m0i+m) + flm(lm0i+m)*sqrt((2*l+1)/(4*pi))*dln(abs(m)+1);
+            fm(m0i+m) = fm(m0i+m) + flm(lm0i+m)*sqrt((2*l+1)/(4*pi))*dln(abs(m)+1);
         end
     end
-end
-
-for j=1:length(thetas),
-    theta = thetas(j);
-    f(j,:) = ifft(fm(j,:)).*(2*L-1).*exp(-1i.*(L-1).*phis.');
+    
+    f(j,:) = ifft(fm).*(2*L-1).*exp(-1i.*(L-1).*phis.');
 end
