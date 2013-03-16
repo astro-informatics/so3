@@ -18,8 +18,8 @@ end
 thetasExt = [- thetas(end-1:-1:1); thetas];
 
 flm = zeros(L^2,1);
-fm = zeros(2*L-1, 2*L-1); % first index is m, second is t from -L+1 to L-1
-fmm = zeros(2*L-1, 2*L-1);
+fm = zeros(2*L-1); % first index is m, second is t from -L+1 to L-1
+fmm = zeros(2*L-1);
 gmm = zeros(2*L-1, 2*L-1);
 
 for m=-L+1:L-1,
@@ -31,28 +31,24 @@ for m=-L+1:L-1,
             sum = sum + f(t+1,p)*exp(-1i*m*phi);
         end
         sum = sum/(2*L-1);
-        fm(L+m, L+t) = sum;
+        fm(L+t) = sum;
         % step 2
         if t < length(thetas)-1
-            fm(L+m, L-t-1) = (-1)^m*sum;
+            fm(L-t-1) = (-1)^m*sum;
         end
     end
-end
 
-% step 3
-for m=-L+1:L-1,
+    % step 3
     for mp=-L+1:L-1,
         sum = 0;
         for t=0:length(thetasExt)-1,
             theta = thetasExt(t+1);
-            sum = sum + fm(L+m, t+1)*exp(-1i*mp*theta);
+            sum = sum + fm(t+1)*exp(-1i*mp*theta);
         end
-        fmm(L+m,L+mp) = sum / (2*L-1);
+        fmm(L+mp) = sum / (2*L-1);
     end
-end
 
-% step 4
-for m=-L+1:L-1,
+    % step 4
     for mp=-L+1:L-1,
         sum = 0;
         for mpp=-L+1:L-1,
@@ -64,7 +60,7 @@ for m=-L+1:L-1,
             else
                 w = 0;
             end
-            sum = sum + fmm(L+m, L+mpp)*w;
+            sum = sum + fmm(L+mpp)*w;
         end
         gmm(L+m,L+mp) = sum * 2*pi;
     end
