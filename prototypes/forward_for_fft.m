@@ -1,9 +1,10 @@
-function [ flm ] = forward_for_dft( L, f )
-%FORWARD_FOR_DFT Forward spherical harmonic transform using only matlab and
-%a factoring of rotations approach.
+function [ flm ] = forward_for_fft( L, f )
+%FORWARD_FOR_FFT Forward spherical harmonic transform using matlab's fft
+%and a factoring of rotations approach.
 %.
 %   This computes the forward spherical harmonic transform, synthesising 
-%   the function using factoring of rotations.
+%   the function using factoring of rotations. It also employs matlab's fft
+%   to compute the DFT.
 %
 %   L   ... the band limit (maximum l is L-1)
 %   f   ... the sampled function values
@@ -18,38 +19,27 @@ end
 thetasExt = [- thetas(end-1:-1:1); thetas];
 
 flm = zeros(L^2,1);
-fm = zeros(2*L-1,1); % first index is m, second is t from -L+1 to L-1
-fmm = zeros(2*L-1,1);
+fm = zeros(2*L-1,2*L-1); % first index is m, second is t from -L+1 to L-1
+fmm = zeros(2*L-1);
 gmm = zeros(2*L-1, 2*L-1);
 
+for t=0:length(thetas)-1,
+    % step 1
+    fm(:,L+t) = fftshift(fft(f(t+1,:)))./(2*L-1);
+    % step 2
+    if t < length(thetas)-1
+        for m = -L+1:L-1,
+            fm(L+m,L-t-1) = (-1)^m.*fm(L+m,L+t);
+        end
+    end
+end
+
 for m=-L+1:L-1,
-    for t=0:length(thetas)-1,
-        % step 1
-        sum = 0;
-        for p=1:length(phis),
-            phi = phis(p);
-            sum = sum + f(t+1,p)*exp(-1i*m*phi);
-        end
-        sum = sum/(2*L-1);
-        fm(L+t) = sum;
-        % step 2
-        if t < length(thetas)-1
-            fm(L-t-1) = (-1)^m*sum;
-        end
-    end
-
     % step 3
-    for mp=-L+1:L-1,
-        sum = 0;
-        for t=0:length(thetasExt)-1,
-            theta = thetasExt(t+1);
-            sum = sum + fm(t+1)*exp(-1i*mp*theta);
-        end
-        fmm(L+mp) = sum / (2*L-1);
-    end
-    
-    disp(fmm);
-
+    correction = exp(1i*pi*(0:2*L-2)/(2*L-1));
+    fmm = fftshift(fft(ifftshift(fm(L+m,:)))./correction)./(2*L-1);
+    % very bad hack... need to figure out the source of this discrepancy:
+    fmm(1:L-1) = -fmm(1:L-1); 
     % step 4
     for mp=-L+1:L-1,
         sum = 0;

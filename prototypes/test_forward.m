@@ -13,7 +13,14 @@ fine = 1;
 result = forward_for_dft(L, f);
 err = max(abs(ssht(:) - result(:)))
 if err > 10^-14
-    disp(['Implementation inverse_direct disagrees with ssht with errors up to ', num2str(err)]);
+    disp(['Implementation forward_for_dft disagrees with ssht with errors up to ', num2str(err)]);
+    fine = 0;
+end
+
+result = forward_for_fft(L, f);
+err = max(abs(ssht(:) - result(:)))
+if err > 10^-14
+    disp(['Implementation forward_for_fft disagrees with ssht with errors up to ', num2str(err)]);
     fine = 0;
 end
 
