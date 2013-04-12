@@ -36,10 +36,8 @@ end
 
 for m=-L+1:L-1,
     % step 3
-    correction = exp(1i*pi*(0:2*L-2)/(2*L-1));
-    fmm = fftshift(fft(ifftshift(fm(L+m,:)))./correction)./(2*L-1);
-    % very bad hack... need to figure out the source of this discrepancy:
-    fmm(1:L-1) = -fmm(1:L-1); 
+    correction = exp(1i*pi*(-L+1:L-1)/(2*L-1));
+    fmm = fftshift(fft(ifftshift(fm(L+m,:))))./correction./(2*L-1);
     % step 4
     for mp=-L+1:L-1,
         sum = 0;
