@@ -37,18 +37,22 @@ for l=0:L-1,
         for mp=-l:l, % m' in the equation (14)
             fmm(m0i+m,m0i+mp) = fmm(m0i+m,m0i+mp) +...
                 sign*sqrt((2*l+1)/(4*pi))*...
-                dl(m0i+mp,m0i+m)*dl(m0i+mp,m0i)*flm(lm0i+m)*...
-                exp(1i*(mp+L)*pi/(2*L-1));
+                dl(m0i+mp,m0i+m)*dl(m0i+mp,m0i)*flm(lm0i+m) *...
+                 exp(1i*(mp)*pi/(2*L-1));
+%                 exp(1i*(mp+L)*pi/(2*L-1));
         end
     end
 end
 
-fm = zeros(2*L-1, length(thetasExt));
+% fm = zeros(2*L-1, length(thetasExt));
+% 
+% for m=-L+1:L-1,
+%     fm(m0i+m,:) = ifft(fmm(m0i+m,:)).*(2*L-1).*exp(-1i.*((L-1).*(thetasExt.')+pi/(2*L-1)));
+% end
+% 
+% for j=1:length(thetas),
+%     f(j,:) = ifft(fm(:,j).').*(2*L-1).*exp(-1i.*(L-1).*phis.');
+% end
 
-for m=-L+1:L-1,
-    fm(m0i+m,:) = ifft(fmm(m0i+m,:)).*(2*L-1).*exp(-1i.*((L-1).*(thetasExt.')+pi/(2*L-1)));
-end
-
-for j=1:length(thetas),
-    f(j,:) = ifft(fm(:,j).').*(2*L-1).*exp(-1i.*(L-1).*phis.');
-end
+f = ifft2(ifftshift(fmm.')).*(2*L-1)^2;
+f = f(1:L,:);
