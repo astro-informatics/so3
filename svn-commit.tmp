@@ -1,0 +1,4 @@
+# Removed one of the O(L^2) precomputations in inverse_for_dft
+--This line, and those below, will be ignored--
+
+M    prototypes/inverse_for_dft.m
