@@ -12,12 +12,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <mathh>
+#include <math.h>
 #include <complex.h>  // Must be before fftw3.h
 #include <fftw3.h>
 
-#include <ssht_sampling.h>
-#include <ssht_core.h>
+#include "ssht.h"
 
 #include "so3_types.h"
 #include "so3_error.h"
@@ -43,7 +42,7 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
     int i, n;
     int nsqr;
     int ind;
-    complex double fn, flm;
+    complex double *fn, *flm;
 
     // Print messages depending on verbosity level.
     if (verbosity > 0) {
@@ -54,8 +53,8 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
     }
     
     // Compute fn(a,b)
-    fn = (complex double*)calloc((2*N-1)*L(2*L-1), sizeof(complex double))
-    flm = (complex double*)malloc(L*L, sizeof(complex double))
+    fn = (complex double*)calloc((2*N-1)*L*(2*L-1), sizeof(complex double));
+    flm = (complex double*)calloc(L*L, sizeof(complex double));
     for(n = -N+1; n < N; n++)
     {
         nsqr = n*n;
@@ -64,7 +63,7 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
         for(i = 0; i < nsqr; n++)
             flm[i] = 0.0;
         
-        so3_sampling_elmn2ind(ind, abs(n), -abs(n), n);
+        so3_sampling_elmn2ind(ind, abs(n), -abs(n), n, L, N, SO3_STORE_ZERO_FIRST_PAD);
         memcpy(flm + nsqr, flmn, L*L - nsqr);
         
         

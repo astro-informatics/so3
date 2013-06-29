@@ -2,7 +2,8 @@
 // Copyright (C) 2013  Jason McEwen
 // See LICENSE.txt for license details
 
-#include <math.h>
+#include <stdlib.h>
+#include "so3_error.h"
 #include "so3_types.h"
 
 //============================================================================
@@ -153,18 +154,19 @@ double so3_sampling_mw_g2gamma(int g, int N)
 inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, so3_storage_t storage)
 {
     int offset, absn;
-
+    // Most of the formulae here are based on the fact that the sum
+    // over n*n from 1 to N-1 is (N-1)*N*(2*N-1)/6.
     switch(storage)
     {
     case SO3_STORE_ZERO_FIRST_PAD:
-        offset = ((n < 0) ? -2*n - 1: 2*n) * L*L;
+        offset = ((n < 0) ? -2*n - 1 : 2*n) * L*L;
         *ind = offset + el*el + el + m;
         return;
     case SO3_STORE_ZERO_FIRST_COMPACT:
         absn = abs(n);
         if (absn > el)
             SO3_ERROR_GENERIC("Tried to access component with n > l in compact storage.");
-        // Initialize offset to the total storage for N == n
+        // Initialize offset to the total storage that would be needed if N == n
         offset = (2*absn-1)*(3*L*L - absn*(absn-1))/3; 
         // Advance positive n by another lm-chunk
         if (n >= 0)
@@ -176,15 +178,16 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, 
         *ind = offset + el*el + el + m;
         return;
     case SO3_STORE_NEG_FIRST_COMPACT:
-        // TODO: Complete this method's implementation
         absn = abs(n);
         if (absn > el)
             SO3_ERROR_GENERIC("Tried to access component with n > l in compact storage.");
-        // Initialize offset to the total storage for N == n
-        offset = (2*absn-1)*(3*L*L - absn*(absn-1))/3; 
-        // Advance positive n by another lm-chunk
-        if (n >= 0)
-            offset += L*L - n*n; 
+        // Initialize offset as for padded storage, minus the correction necessary for n = 0
+        offset = (N-1 + n) * L*L - (2*N - 1)*(N-1)*N/6;
+        // Now correct the offset for other n due to missing padding
+        if (n <= 0)
+            offset += absn*(2*absn+1)*(absn+1)/6; 
+        else
+            offset -= absn*(2*absn+1)*(absn+1)/6; 
         *ind = offset + el*el - n*n + el + m;
         return;
     default:
@@ -211,7 +214,7 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, 
  *
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-extern inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, so3_storage_t storage)
+extern inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, int L, int N, so3_storage_t storage)
 {
     // TODO: figure out efficient implementation
 }

@@ -44,7 +44,7 @@ typedef enum {
     // order of n in storage is -2, -1, 0, 1, 2, ...
     // do not store lm for l < |n|
     SO3_STORE_NEG_FIRST_COMPACT
-} so3_storage_t
+} so3_storage_t;
 
 
 #endif

@@ -113,7 +113,16 @@ $(SO3OBJ)/%.o: %.c $(SO3HEADERS)
 	$(CC) $(OPT) $(FFLAGS) -c $< -o $@
 
 .PHONY: default
-default: lib test about
+default: lib unittest test about
+
+.PHONY: unittest
+unittest: $(SO3BIN)/unittest/so3_unittest
+$(SO3BIN)/unittest/so3_unittest: $(SO3OBJ)/unittest/so3_unittest.o $(SO3LIB)/lib$(SO3LIBNM).a
+	$(CC) $(OPT) $< -o $(SO3BIN)/unittest/so3_unittest $(LDFLAGS)
+
+.PHONY: rununittest
+rununittest: unittest
+	$(SO3BIN)/unittest/so3_unittest 64 0
 
 .PHONY: test
 test: $(SO3BIN)/so3_test about
@@ -130,7 +139,7 @@ runtest: test
 	$(SO3BIN)/so3_test 64 0
 
 .PHONY: all
-all: lib test about matlab
+all: lib unittest test about matlab
 
 
 # Library
