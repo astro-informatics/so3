@@ -13,14 +13,18 @@
 
 #include <stdio.h>
 
+// Put this macro in a block so that it can be used with single-line
+// if-statements.
 #define SO3_ERROR_GENERIC(comment) 					\
+{                                                                       \
   printf("ERROR: %s.\n", comment);					\
   printf("ERROR: %s <%s> %s %s %s %d.\n",				\
 	 "Occurred in function",					\
 	   __PRETTY_FUNCTION__,						\
 	   "of file", __FILE__,						\
 	   "on line", __LINE__);					\
-  exit(1);
+  exit(1);                                                              \
+}
 
 #define SO3_ERROR_MEM_ALLOC_CHECK(pointer)				\
   if(pointer == NULL) {							\

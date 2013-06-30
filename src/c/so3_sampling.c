@@ -3,6 +3,7 @@
 // See LICENSE.txt for license details
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "so3_error.h"
 #include "so3_types.h"
 
@@ -187,8 +188,10 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, 
         if (n <= 0)
             offset += absn*(2*absn+1)*(absn+1)/6; 
         else
-            offset -= absn*(2*absn+1)*(absn+1)/6; 
+            offset -= absn*(2*absn-1)*(absn-1)/6; 
         *ind = offset + el*el - n*n + el + m;
+        // printf("(el,m,n) = (%d,%d,%d) => ind = %d\n", el, m, n, *ind);
+        // printf("offset = %d\n", offset);
         return;
     default:
         SO3_ERROR_GENERIC("Invalid storage method.");

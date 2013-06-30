@@ -63,7 +63,7 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
         for(i = 0; i < nsqr; n++)
             flm[i] = 0.0;
         
-        so3_sampling_elmn2ind(ind, abs(n), -abs(n), n, L, N, SO3_STORE_ZERO_FIRST_PAD);
+        so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, L, N, SO3_STORE_ZERO_FIRST_PAD);
         memcpy(flm + nsqr, flmn, L*L - nsqr);
         
         
