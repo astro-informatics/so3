@@ -178,9 +178,11 @@ cleandoc:
 .PHONY: clean
 clean:	tidy
 	rm -f $(SO3OBJ)/*.o
+	rm -f $(SO3OBJ)/unittest/*.o
 	rm -f $(SO3LIB)/lib$(SO3LIBNM).a
 	rm -f $(SO3BIN)/so3_test
 	rm -f $(SO3BIN)/so3_about
+	rm -f $(SO3BIN)/unittest/so3_unittest
 	rm -f $(SO3OBJMAT)/*.o
 	rm -f $(SO3OBJMEX)/*.$(MEXEXT)
 

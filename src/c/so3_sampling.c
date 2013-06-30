@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "so3_error.h"
 #include "so3_types.h"
 
@@ -217,7 +218,77 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, 
  *
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-extern inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, int L, int N, so3_storage_t storage)
+inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, int L, int N, so3_storage_t storage)
 {
-    // TODO: figure out efficient implementation
+    int offset;
+
+    switch (storage)
+    {
+    case SO3_STORE_ZERO_FIRST_PAD:
+        *n = ind/(L*L);
+
+        if(*n % 2)
+            *n = -(*n+1)/2;
+        else
+            *n /= 2;
+
+        ind %= L*L;
+
+        *el = sqrt(ind);
+        *m = ind - (*el)*(*el) - *el;
+        return;
+    case SO3_STORE_ZERO_FIRST_COMPACT:
+        offset = 0;
+        *n = 0;
+        // Can this loop be replaced by an analytical function
+        // (or two - one for positive and one for negative *n)
+        while(ind + offset >= L*L)
+        {
+            ind -= L*L - offset;
+
+            if (*n >= 0)
+            {
+                *n = -(*n+1);
+                offset = (*n)*(*n);
+            }
+            else
+            {
+                *n = -(*n);
+            }
+        }
+
+        ind += offset;
+        
+        *el = sqrt(ind);
+        *m = ind - (*el)*(*el) - *el;
+        return;
+    case SO3_STORE_NEG_FIRST_PAD:
+        *n = ind/(L*L) - (N-1);
+
+        ind %= L*L;
+
+        *el = sqrt(ind);
+        *m = ind - (*el)*(*el) - *el;
+        return;
+    case SO3_STORE_NEG_FIRST_COMPACT:
+        *n = -N+1;
+        offset = (*n)*(*n);
+        // Can this loop be replaced by an analytical function
+        // (or two - one for positive and one for negative *n)
+        while(ind + offset >= L*L)
+        {
+            ind -= L*L - offset;
+
+            (*n)++;
+            offset = (*n)*(*n);
+        }
+
+        ind += offset;
+        
+        *el = sqrt(ind);
+        *m = ind - (*el)*(*el) - *el;
+        return;
+    default:
+        SO3_ERROR_GENERIC("Invalid storage method.");
+    } 
 }
