@@ -25,51 +25,24 @@ int main(int argc, char **argv)
     f = malloc((2*L-1)*L*(2*N-1) * sizeof *f);
     flmnout = malloc((2*N-1)*L*L * sizeof *flmnout);
 
-    flmn[0]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[1]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[2]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[3]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[4]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[5]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[6]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[7]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[8]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[9]  = 0.0;
-    flmn[10] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[11] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[12] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[13] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[14] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[15] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[16] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[17] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[18] = 0.0;
-    flmn[19] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[20] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[21] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[22] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[23] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[24] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[25] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[26] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[27] = 0.0;
-    flmn[28] = 0.0;
-    flmn[29] = 0.0;
-    flmn[30] = 0.0;
-    flmn[31] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[32] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[33] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[34] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[35] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[36] = 0.0;
-    flmn[37] = 0.0;
-    flmn[38] = 0.0;
-    flmn[39] = 0.0;
-    flmn[40] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[41] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[42] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[43] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[44] = (complex double)rand()/(complex double)RAND_MAX;
+    {
+        int n, el, m, offset;
+        for(n = -N+1; n < N; ++n)
+        {
+            if (n < 0)
+                offset = -2*n-1;
+            else
+                offset = 2*n;
+
+            for(el = 0; el < L; ++el)
+            {
+                for(m = -el; m <= el; ++m)
+                {
+                    flmn[offset*L*L + el*el + el + m]  = (el < abs(n)) ? 0.0 : (complex double)rand()/(complex double)RAND_MAX;
+                }
+            }
+        }
+    }
 
     printf("Testing padded storage with n = 0 first.\n");
 
@@ -78,51 +51,19 @@ int main(int argc, char **argv)
 
     print_max_error(flmn, flmnout, (2*N-1)*L*L);
 
-    flmn[0]  = 0.0;
-    flmn[1]  = 0.0;
-    flmn[2]  = 0.0;
-    flmn[3]  = 0.0;
-    flmn[4]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[5]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[6]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[7]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[8]  = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[9]  = 0.0;
-    flmn[10] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[11] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[12] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[13] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[14] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[15] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[16] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[17] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[18] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[19] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[20] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[21] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[22] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[23] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[24] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[25] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[26] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[27] = 0.0;
-    flmn[28] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[29] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[30] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[31] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[32] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[33] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[34] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[35] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[36] = 0.0;
-    flmn[37] = 0.0;
-    flmn[38] = 0.0;
-    flmn[39] = 0.0;
-    flmn[40] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[41] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[42] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[43] = (complex double)rand()/(complex double)RAND_MAX;
-    flmn[44] = (complex double)rand()/(complex double)RAND_MAX;
+    {
+        int n, el, m;
+        for(n = -N+1; n < N; ++n)
+        {
+            for(el = 0; el < L; ++el)
+            {
+                for(m = -el; m <= el; ++m)
+                {
+                    flmn[(n + N-1)*L*L + el*el + el + m]  = (el < abs(n)) ? 0.0 : (complex double)rand()/(complex double)RAND_MAX;
+                }
+            }
+        }
+    }
 
     printf("Testing padded storage with n = -N+1 first.\n");
 
