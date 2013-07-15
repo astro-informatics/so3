@@ -10,82 +10,165 @@
 
 #include <so3.h>
 
+void print_max_error(complex double *expected, complex double *actual, int n);
+
 int main(int argc, char **argv)
 {
     int L, N;
     complex double *flmn, *f, *flmnout;
+    int i;
+
+    srand(1618);
 
     L = N = 3;
-    flmn = (complex double*)calloc((2*N-1)*L*L, sizeof(complex double));
-    flmn[0]  = 0.585267750979777;
-    flmn[1]  = 0.223811939491137;
-    flmn[2]  = 0.751267059305653;
-    flmn[3]  = 0.255095115459269;
-    flmn[4]  = 0.505957051665142;
-    flmn[5]  = 0.699076722656686;
-    flmn[6]  = 0.890903252535798;
-    flmn[7]  = 0.959291425205444;
-    flmn[8]  = 0.547215529963803;
+    flmn = malloc((2*N-1)*L*L * sizeof *flmn);
+    f = malloc((2*L-1)*L*(2*N-1) * sizeof *f);
+    flmnout = malloc((2*N-1)*L*L * sizeof *flmnout);
+
+    flmn[0]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[1]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[2]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[3]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[4]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[5]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[6]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[7]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[8]  = (complex double)rand()/(complex double)RAND_MAX;
     flmn[9]  = 0.0;
-    flmn[10] = 0.276025076998578;
-    flmn[11] = 0.679702676853675;
-    flmn[12] = 0.655098003973841;
-    flmn[13] = 0.162611735194631;
-    flmn[14] = 0.118997681558377;
-    flmn[15] = 0.498364051982143;
-    flmn[16] = 0.959743958516081;
-    flmn[17] = 0.340385726666133;
+    flmn[10] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[11] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[12] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[13] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[14] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[15] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[16] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[17] = (complex double)rand()/(complex double)RAND_MAX;
     flmn[18] = 0.0;
-    flmn[19] = 0.138624442828679;
-    flmn[20] = 0.149294005559057;
-    flmn[21] = 0.257508254123736;
-    flmn[22] = 0.840717255983663;
-    flmn[23] = 0.254282178971531;
-    flmn[24] = 0.814284826068816;
-    flmn[25] = 0.243524968724989;
-    flmn[26] = 0.929263623187228;
+    flmn[19] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[20] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[21] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[22] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[23] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[24] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[25] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[26] = (complex double)rand()/(complex double)RAND_MAX;
     flmn[27] = 0.0;
     flmn[28] = 0.0;
     flmn[29] = 0.0;
     flmn[30] = 0.0;
-    flmn[31] = 0.489764395788231;
-    flmn[32] = 0.445586200710899;
-    flmn[33] = 0.646313010111265;
-    flmn[34] = 0.709364830858073;
-    flmn[35] = 0.754686681982361;
+    flmn[31] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[32] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[33] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[34] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[35] = (complex double)rand()/(complex double)RAND_MAX;
     flmn[36] = 0.0;
     flmn[37] = 0.0;
     flmn[38] = 0.0;
     flmn[39] = 0.0;
-    flmn[40] = 0.349983765984809;
-    flmn[41] = 0.196595250431208;
-    flmn[42] = 0.251083857976031;
-    flmn[43] = 0.616044676146639;
-    flmn[44] = 0.473288848902729;
+    flmn[40] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[41] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[42] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[43] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[44] = (complex double)rand()/(complex double)RAND_MAX;
 
-    f = (complex double*)malloc((2*L-1)*L*(2*N-1) * sizeof(complex double));
-    so3_core_mw_inverse_via_ssht(f, flmn, L, N, SO3_STORE_ZERO_FIRST_PAD, 2);
+    printf("Testing padded storage with n = 0 first.\n");
 
-    flmnout = (complex double*)malloc((2*N-1)*L*L * sizeof(complex double));
+    so3_core_mw_inverse_via_ssht(f, flmn, L, N, SO3_STORE_ZERO_FIRST_PAD, 0);
+    so3_core_mw_forward_via_ssht(flmnout, f, L, N, SO3_STORE_ZERO_FIRST_PAD, 0);
 
-    so3_core_mw_forward_via_ssht(flmnout, f, L, N, SO3_STORE_ZERO_FIRST_PAD, 2);
+    print_max_error(flmn, flmnout, (2*N-1)*L*L);
 
-    {
-        int i;
-        double error, maxError = 0;
+    flmn[0]  = 0.0;
+    flmn[1]  = 0.0;
+    flmn[2]  = 0.0;
+    flmn[3]  = 0.0;
+    flmn[4]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[5]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[6]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[7]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[8]  = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[9]  = 0.0;
+    flmn[10] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[11] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[12] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[13] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[14] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[15] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[16] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[17] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[18] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[19] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[20] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[21] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[22] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[23] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[24] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[25] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[26] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[27] = 0.0;
+    flmn[28] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[29] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[30] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[31] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[32] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[33] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[34] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[35] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[36] = 0.0;
+    flmn[37] = 0.0;
+    flmn[38] = 0.0;
+    flmn[39] = 0.0;
+    flmn[40] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[41] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[42] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[43] = (complex double)rand()/(complex double)RAND_MAX;
+    flmn[44] = (complex double)rand()/(complex double)RAND_MAX;
 
-        for (i = 0; i < (2*N-1)*L*L; ++i)
-        {
-            error = cabs(flmn[i] - flmnout[i]);
-            if (error > maxError)
-                maxError = error;
-        }
+    printf("Testing padded storage with n = -N+1 first.\n");
 
-        printf("Maximum error is %e\n", maxError);
-    }
+    so3_core_mw_inverse_via_ssht(f, flmn, L, N, SO3_STORE_NEG_FIRST_PAD, 0);
+    so3_core_mw_forward_via_ssht(flmnout, f, L, N, SO3_STORE_NEG_FIRST_PAD, 0);
 
-    //for(i = 0; i < (2*L-1)*L*(2*N-1); ++i)
-        //printf("%f + i%f\n", creal(f[i]), cimag(f[i]));
+    print_max_error(flmn, flmnout, (2*N-1)*L*L);
+
+    flmn = realloc(flmn, (2*N-1)*(3*L*L-N*(N-1))/3 * sizeof *flmn);
+    flmnout = realloc(flmnout, (2*N-1)*(3*L*L-N*(N-1))/3 * sizeof *flmnout);
+
+    for (i = 0; i < (2*N-1)*(3*L*L-N*(N-1))/3; ++i)
+        flmn[i]  = (complex double)rand()/(complex double)RAND_MAX;
+
+    printf("Testing compact storage with n = 0 first.\n");
+
+    so3_core_mw_inverse_via_ssht(f, flmn, L, N, SO3_STORE_ZERO_FIRST_COMPACT, 0);
+    so3_core_mw_forward_via_ssht(flmnout, f, L, N, SO3_STORE_ZERO_FIRST_COMPACT, 0);
+
+    print_max_error(flmn, flmnout, (2*N-1)*(3*L*L-N*(N-1))/3);
+
+    printf("Testing compact storage with n = -N+1 first.\n");
+
+    so3_core_mw_inverse_via_ssht(f, flmn, L, N, SO3_STORE_NEG_FIRST_COMPACT, 0);
+    so3_core_mw_forward_via_ssht(flmnout, f, L, N, SO3_STORE_NEG_FIRST_COMPACT, 0);
+
+    print_max_error(flmn, flmnout, (2*N-1)*(3*L*L-N*(N-1))/3);
+
+    free(flmn);
+    free(f);
+    free(flmnout);
 
     return 0;
+}
+
+void print_max_error(complex double *expected, complex double *actual, int n)
+{
+    int i;
+    double error, maxError = 0;
+
+    for (i = 0; i < n; ++i)
+    {
+        error = cabs(expected[i] - actual[i]);
+        if (error > maxError)
+            maxError = error;
+    }
+
+    printf("Maximum error is %e\n", maxError);
 }

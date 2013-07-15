@@ -67,9 +67,7 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
 
     fn_n_stride = L * (2*L-1);
 
-    flm = (complex double*)calloc(L*L, sizeof(complex double));
-    SO3_ERROR_MEM_ALLOC_CHECK(flm);
-    fn = (complex double*)malloc((2*N-1)*fn_n_stride * sizeof(complex double));
+    fn = malloc((2*N-1)*fn_n_stride * sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
 
     // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
@@ -87,11 +85,30 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
             FFTW_BACKWARD, FFTW_ESTIMATE
     );
 
+    flm = calloc(L*L, sizeof *flm);
+    SO3_ERROR_MEM_ALLOC_CHECK(flm);
+
     for(n = -N+1; n < N; ++n)
     {
         int ind, offset, i, el;
-        so3_sampling_elmn2ind(&ind, 0, 0, n, L, N, SO3_STORE_ZERO_FIRST_PAD);
-        memcpy(flm, flmn + ind, L*L * sizeof(complex double));
+
+        switch (storage)
+        {
+        case SO3_STORE_ZERO_FIRST_PAD:
+        case SO3_STORE_NEG_FIRST_PAD:
+            so3_sampling_elmn2ind(&ind, 0, 0, n, L, N, storage);
+            memcpy(flm, flmn + ind, L*L * sizeof(complex double));
+            break;
+        case SO3_STORE_ZERO_FIRST_COMPACT:
+        case SO3_STORE_NEG_FIRST_COMPACT:
+            so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, L, N, storage);
+            memcpy(flm + n*n, flmn + ind, (L*L - n*n) * sizeof(complex double));
+            for(i = 0; i < n*n; ++i)
+                flm[i] = 0.0;
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid storage method.");
+        }
         
         offset = 0;
         i = 0;
@@ -112,7 +129,8 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
             for(i = 0; i < fn_n_stride; ++i)
                 fn[offset*fn_n_stride + i] = -fn[offset*fn_n_stride + i]; 
 
-        printf("\n");
+        if (verbosity > 0)
+            printf("\n");
     }
 
     free(flm);
@@ -134,7 +152,7 @@ void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
     // Iterator
     int i, n;
     // Intermediate results
-    complex double *ftemp, *fn;
+    complex double *ftemp, *flm, *fn;
     // Stride for several arrays
     int fn_n_stride;
     // FFTW-related variables
@@ -159,11 +177,11 @@ void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
     // Make a copy of the input, because input is const
     // This could potentially be avoided by copying the input into fn and using an
     // in-place FFTW. The performance impact has to be profiled, though.
-    ftemp = (complex double*)malloc((2*N-1)*fn_n_stride * sizeof(complex double));
+    ftemp = malloc((2*N-1)*fn_n_stride * sizeof *ftemp);
     SO3_ERROR_MEM_ALLOC_CHECK(ftemp);
     memcpy(ftemp, f, (2*N-1)*fn_n_stride * sizeof(complex double));
 
-    fn = (complex double*)malloc((2*N-1)*fn_n_stride * sizeof(complex double));
+    fn = malloc((2*N-1)*fn_n_stride * sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
 
     // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
@@ -189,24 +207,46 @@ void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
     for(i = 0; i < (2*N-1)*fn_n_stride; ++i)
         fn[i] *= 2*SO3_PI/(double)(2*N-1);
 
+    if (storage == SO3_STORE_ZERO_FIRST_COMPACT || storage == SO3_STORE_NEG_FIRST_COMPACT)
+        flm = malloc(L*L * sizeof *flm);
+
     for(n = -N+1; n < N; ++n)
     {
         int ind, offset, el, sign;
-
-        so3_sampling_elmn2ind(&ind, 0, 0, n, L, N, SO3_STORE_ZERO_FIRST_PAD);
-        // The conditional applies the spatial transform, so that we store
-        // the results in n-order 0, 1, 2, -2, -1
-        offset = (n < 0 ? n + 2*N-1 : n);
-        ssht_core_mw_forward_sov_conv_sym(flmn + ind, fn + offset*fn_n_stride, L, -n, SSHT_DL_TRAPANI, verbosity);
 
         if (n % 2)
             sign = -1;
         else
             sign = 1;
 
-        offset = 0;
-        i = 0;
-        for(el = 0; el < L; ++el)
+        // The conditional applies the spatial transform, so that we store
+        // the results in n-order 0, 1, 2, -2, -1
+        offset = (n < 0 ? n + 2*N-1 : n);
+
+        switch (storage)
+        {
+        case SO3_STORE_ZERO_FIRST_PAD:
+        case SO3_STORE_NEG_FIRST_PAD:
+            so3_sampling_elmn2ind(&ind, 0, 0, n, L, N, storage);
+            ssht_core_mw_forward_sov_conv_sym(flmn + ind, fn + offset*fn_n_stride, L, -n, SSHT_DL_TRAPANI, verbosity);
+
+            i = offset = 0;
+            el = 0;
+            break;
+        case SO3_STORE_ZERO_FIRST_COMPACT:
+        case SO3_STORE_NEG_FIRST_COMPACT:
+            ssht_core_mw_forward_sov_conv_sym(flm, fn + offset*fn_n_stride, L, -n, SSHT_DL_TRAPANI, verbosity);
+            so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, L, N, storage);
+            memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
+
+            i = offset = 0;
+            el = abs(n);
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid storage method.");
+        }
+
+        for(; el < L; ++el)
         {
             for (; i < offset + 2*el+1; ++i)
                 flmn[ind + i] *= sign*sqrt(4.0*SO3_PI/(double)(2*el+1));
@@ -214,8 +254,12 @@ void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
             offset = i;
         }
 
-        printf("\n");
+        if (verbosity > 0)
+            printf("\n");
     }
+
+    if (storage == SO3_STORE_ZERO_FIRST_COMPACT || storage == SO3_STORE_NEG_FIRST_COMPACT)
+        free(flm);
 
     free(fn);
 
