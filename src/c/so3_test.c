@@ -13,8 +13,7 @@
 int main(int argc, char **argv)
 {
     int L, N;
-    int i;
-    complex double *flmn, *f;
+    complex double *flmn, *f, *flmnout;
 
     L = N = 3;
     flmn = (complex double*)calloc((2*N-1)*L*L, sizeof(complex double));
@@ -65,10 +64,28 @@ int main(int argc, char **argv)
     flmn[44] = 0.473288848902729;
 
     f = (complex double*)malloc((2*L-1)*L*(2*N-1) * sizeof(complex double));
-    so3_core_mw_inverse_via_ssht(f, flmn, L, N, SO3_STORE_ZERO_FIRST_PAD, 1);
+    so3_core_mw_inverse_via_ssht(f, flmn, L, N, SO3_STORE_ZERO_FIRST_PAD, 2);
 
-    for(i = 0; i < (2*L-1)*L*(2*N-1); ++i)
-        printf("%f + i%f\n", creal(f[i]), cimag(f[i]));
+    flmnout = (complex double*)malloc((2*N-1)*L*L * sizeof(complex double));
+
+    so3_core_mw_forward_via_ssht(flmnout, f, L, N, SO3_STORE_ZERO_FIRST_PAD, 2);
+
+    {
+        int i;
+        double error, maxError = 0;
+
+        for (i = 0; i < (2*N-1)*L*L; ++i)
+        {
+            error = cabs(flmn[i] - flmnout[i]);
+            if (error > maxError)
+                maxError = error;
+        }
+
+        printf("Maximum error is %e\n", maxError);
+    }
+
+    //for(i = 0; i < (2*L-1)*L*(2*N-1); ++i)
+        //printf("%f + i%f\n", creal(f[i]), cimag(f[i]));
 
     return 0;
 }
