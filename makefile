@@ -122,7 +122,7 @@ $(SO3BIN)/unittest/so3_unittest: $(SO3OBJ)/unittest/so3_unittest.o $(SO3LIB)/lib
 
 .PHONY: rununittest
 rununittest: unittest
-	$(SO3BIN)/unittest/so3_unittest 64 0
+	$(SO3BIN)/unittest/so3_unittest
 
 .PHONY: test
 test: $(SO3BIN)/so3_test about
@@ -136,7 +136,7 @@ $(SO3BIN)/so3_about: $(SO3OBJ)/so3_about.o
 
 .PHONY: runtest
 runtest: test
-	$(SO3BIN)/so3_test 64 0
+	$(SO3BIN)/so3_test
 
 .PHONY: all
 all: lib unittest test about matlab
