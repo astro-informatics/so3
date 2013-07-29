@@ -11,7 +11,7 @@ UNAME := $(shell uname)
 PROGDIR = ..
 
 ifeq ($(UNAME), Linux)
-  MLAB		= /usr/local/MATLAB/R2011b
+  MLAB		= /usr/local/MATLAB/R2012b
   MLABINC	= ${MLAB}/extern/include
   MLABLIB	= ${MLAB}/extern/lib
 
@@ -20,7 +20,7 @@ ifeq ($(UNAME), Linux)
   MEXFLAGS	= -cxx
 endif
 ifeq ($(UNAME), Darwin)
-  MLAB		= /Applications/MATLAB_R2011b.app
+  MLAB		= /Applications/MATLAB_R2012b.app
   MLABINC	= ${MLAB}/extern/include
   MLABLIB	= ${MLAB}/extern/lib
 
@@ -98,11 +98,11 @@ SO3HEADERS = so3_types.h     \
 	     so3_sampling.h  \
 	     so3_core.h
 
-SO3OBJSMAT = $(SO3OBJMAT)/so3_sampling_mex.o  \
+SO3OBJSMAT = $(SO3OBJMAT)/so3_sampling_mex.o # \
              $(SO3OBJMAT)/so3_forward_mex.o   \
              $(SO3OBJMAT)/so3_inverse_mex.o
 
-SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT)  \
+SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) ## \
              $(SO3OBJMEX)/so3_forward_mex.$(MEXEXT)   \
              $(SO3OBJMEX)/so3_inverse_mex.$(MEXEXT)
 
@@ -153,8 +153,7 @@ $(SO3LIB)/lib$(SO3LIBNM).a: $(SO3OBJS)
 # Matlab
 
 $(SO3OBJMAT)/%_mex.o: %_mex.c $(SO3LIB)/lib$(SO3LIBNM).a
-	echo "hmmmm"
-	#$(CC) $(OPT) $(FFLAGS) -c $< -o $@ -I${MLABINC} 
+	$(CC) $(OPT) $(FFLAGS) -c $< -o $@ -I${MLABINC} 
 
 $(SO3OBJMEX)/%_mex.$(MEXEXT): $(SO3OBJMAT)/%_mex.o $(SO3LIB)/lib$(SO3LIBNM).a
 	$(MEX) $< -o $@ $(LDFLAGSMEX) $(MEXFLAGS) -L$(MLABLIB)
