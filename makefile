@@ -98,11 +98,13 @@ SO3HEADERS = so3_types.h     \
 	     so3_sampling.h  \
 	     so3_core.h
 
-SO3OBJSMAT = $(SO3OBJMAT)/so3_sampling_mex.o # \
+SO3OBJSMAT = $(SO3OBJMAT)/so3_sampling_mex.o \
+	     $(SO3OBJMAT)/so3_elmn2ind_mex.o # \
              $(SO3OBJMAT)/so3_forward_mex.o   \
              $(SO3OBJMAT)/so3_inverse_mex.o
 
-SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) ## \
+SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) \
+             $(SO3OBJMEX)/so3_elmn2ind_mex.$(MEXEXT) # \
              $(SO3OBJMEX)/so3_forward_mex.$(MEXEXT)   \
              $(SO3OBJMEX)/so3_inverse_mex.$(MEXEXT)
 

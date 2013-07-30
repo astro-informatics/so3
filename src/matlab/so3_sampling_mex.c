@@ -20,7 +20,6 @@
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[])
 {
-
     int L, N, nalpha, nbeta, ngamma, n, a, b, g, iin;
     double *alphas, *betas, *gammas;
     int iout = 0;

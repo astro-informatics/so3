@@ -19,6 +19,16 @@ void test_sampling_elmn2ind()
 {
     int ind;
     // Test padded storage with n-order 0, -1, 1, -2, 2, ...
+    // That is, for L = N = 2, the flmn are layed out as follows.
+    // Each cell in the m? row corresponds to one coefficient in memory. 
+    // It contains an underscore for invalid el-m-n combinations 
+    // (which will be zeroes in memory) or the actual m-index for values
+    // that will really be stored.
+    //
+    // n  |       0       |      -1       |       1       |
+    // el | 0 |     1     | 0 |     1     | 0 |     1     |
+    // m? | 0 |-1 | 0 | 1 | _ |-1 | 0 | 1 | _ |-1 | 0 | 1 |
+    //
     // We pass in a nonsensical N to make sure implementation does
     // not depend on it.
     so3_sampling_elmn2ind(&ind, 0, 0, 0, 3, -1, SO3_STORE_ZERO_FIRST_PAD);
@@ -38,6 +48,13 @@ void test_sampling_elmn2ind()
             "Element (2,1,1) in wrong position for L = 3." );
 
     // Test compact storage with n-order 0, -1, 1, -2, 2, ...
+    // That is, for L = N = 2, the flmn are layed out as follows. 
+    // Each cell of the m-row corresponds to one coefficient in memory.
+    //
+    // n  |       0       |    -1     |     1     |
+    // el | 0 |     1     |     1     |     1     |
+    // m  | 0 |-1 | 0 | 1 |-1 | 0 | 1 |-1 | 0 | 1 |
+    //
     // We pass in a nonsensical N to make sure implementation does
     // not depend on it.
     so3_sampling_elmn2ind(&ind, 0, 0, 0, 3, -1, SO3_STORE_ZERO_FIRST_COMPACT);
@@ -65,6 +82,15 @@ void test_sampling_elmn2ind()
             "Element (2,1,2) in wrong position for L = 3." );
 
     // Test padded storage with n-order ..., -2, -1, 0, 1, 2, ...
+    // That is, for L = N = 2, the flmn are layed out as follows.
+    // Each cell in the m? row corresponds to one coefficient in memory. 
+    // It contains an underscore for invalid el-m-n combinations 
+    // (which will be zeroes in memory) or the actual m-index for values
+    // that will really be stored.
+    //
+    // n  |      -1       |       0       |       1       |
+    // el | 0 |     1     | 0 |     1     | 0 |     1     |
+    // m? | _ |-1 | 0 | 1 | 0 |-1 | 0 | 1 | _ |-1 | 0 | 1 |
     so3_sampling_elmn2ind(&ind, 0, 0, 0, 3, 3, SO3_STORE_NEG_FIRST_PAD);
     assert( ind == 18 && 
             "Element (0,0,0) in wrong position for L = N = 3." );
@@ -86,6 +112,12 @@ void test_sampling_elmn2ind()
             "Element (2,1,1) in wrong position for L = N = 3." );
 
     // Test compact storage with n-order ..., -2, -1, 0, 1, 2, ...
+    // That is, for L = N = 2, the flmn are layed out as follows. 
+    // Each cell of the m-row corresponds to one coefficient in memory.
+    //
+    // n  |    -1     |       0       |     1     |
+    // el |     1     | 0 |     1     |     1     |
+    // m  |-1 | 0 | 1 | 0 |-1 | 0 | 1 |-1 | 0 | 1 |
     so3_sampling_elmn2ind(&ind, 0, 0, 0, 3, 3, SO3_STORE_NEG_FIRST_COMPACT);
     assert( ind == 13 && 
             "Element (0,0,0) in wrong position for L = N = 3." );
@@ -119,6 +151,16 @@ void test_sampling_ind2elmn()
 {
     int el, m, n;
     // Test padded storage with n-order 0, -1, 1, -2, 2, ...
+    // That is, for L = N = 2, the flmn are layed out as follows.
+    // Each cell in the m? row corresponds to one coefficient in memory. 
+    // It contains an underscore for invalid el-m-n combinations 
+    // (which will be zeroes in memory) or the actual m-index for values
+    // that will really be stored.
+    //
+    // n  |       0       |      -1       |       1       |
+    // el | 0 |     1     | 0 |     1     | 0 |     1     |
+    // m? | 0 |-1 | 0 | 1 | _ |-1 | 0 | 1 | _ |-1 | 0 | 1 |
+    //
     // We pass in a nonsensical N to make sure implementation does
     // not depend on it.
     so3_sampling_ind2elmn(&el, &m, &n, 0, 3, -1, SO3_STORE_ZERO_FIRST_PAD);
@@ -138,6 +180,13 @@ void test_sampling_ind2elmn()
             "Index 25 yields wrong indices (el,m,n)." );
 
     // Test compact storage with n-order 0, -1, 1, -2, 2, ...
+    // That is, for L = N = 2, the flmn are layed out as follows. 
+    // Each cell of the m-row corresponds to one coefficient in memory.
+    //
+    // n  |       0       |    -1     |     1     |
+    // el | 0 |     1     |     1     |     1     |
+    // m  | 0 |-1 | 0 | 1 |-1 | 0 | 1 |-1 | 0 | 1 |
+    //
     // We pass in a nonsensical N to make sure implementation does
     // not depend on it.
     so3_sampling_ind2elmn(&el, &m, &n, 0, 3, -1, SO3_STORE_ZERO_FIRST_COMPACT);
@@ -165,6 +214,15 @@ void test_sampling_ind2elmn()
             "Index 33 yields wrong indices (el,m,n)." );
 
     // Test padded storage with n-order ..., -2, -1, 0, 1, 2, ...
+    // That is, for L = N = 2, the flmn are layed out as follows.
+    // Each cell in the m? row corresponds to one coefficient in memory. 
+    // It contains an underscore for invalid el-m-n combinations 
+    // (which will be zeroes in memory) or the actual m-index for values
+    // that will really be stored.
+    //
+    // n  |      -1       |       0       |       1       |
+    // el | 0 |     1     | 0 |     1     | 0 |     1     |
+    // m? | _ |-1 | 0 | 1 | 0 |-1 | 0 | 1 | _ |-1 | 0 | 1 |
     so3_sampling_ind2elmn(&el, &m, &n, 18, 3, 3, SO3_STORE_NEG_FIRST_PAD);
     assert( el == 0 && m == 0 && n == 0 && 
             "Index 18 yields wrong indices (el,m,n)." );
@@ -186,6 +244,12 @@ void test_sampling_ind2elmn()
             "Index 34 yields wrong indices (el,m,n)." );
 
     // Test compact storage with n-order ..., -2, -1, 0, 1, 2, ...
+    // That is, for L = N = 2, the flmn are layed out as follows. 
+    // Each cell of the m-row corresponds to one coefficient in memory.
+    //
+    // n  |    -1     |       0       |     1     |
+    // el |     1     | 0 |     1     |     1     |
+    // m  |-1 | 0 | 1 | 0 |-1 | 0 | 1 |-1 | 0 | 1 |
     so3_sampling_ind2elmn(&el, &m, &n, 13, 3, 3, SO3_STORE_NEG_FIRST_COMPACT);
     assert( el == 0 && m == 0 && n == 0 && 
             "Index 13 yields wrong indices (el,m,n)." );
