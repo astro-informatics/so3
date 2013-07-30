@@ -5,14 +5,13 @@
 
 #include <so3.h>
 #include "so3_mex.h"
-#include <string.h>
 #include "mex.h"
 
 
 /**
  * Compute sampling positions.
  *
- * Usage: 
+ * Usage:
  *   [n, nalpha, nbeta, ngamma, alphas, betas, gammas] = so3_sampling_mex(L, N)
  *
  * \author Jason McEwen
@@ -36,8 +35,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     /* Parse harmonic band-limit L. */
     iin = 0;
-    if( !mxIsDouble(prhs[iin]) || 
-        mxIsComplex(prhs[iin]) || 
+    if( !mxIsDouble(prhs[iin]) ||
+        mxIsComplex(prhs[iin]) ||
         mxGetNumberOfElements(prhs[iin])!=1 )
     {
         mexErrMsgIdAndTxt("so3_sampling_mex:InvalidInput:bandLimit",
@@ -52,8 +51,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     /* Parse orientational band-limit N. */
     iin = 1;
-    if( !mxIsDouble(prhs[iin]) || 
-        mxIsComplex(prhs[iin]) || 
+    if( !mxIsDouble(prhs[iin]) ||
+        mxIsComplex(prhs[iin]) ||
         mxGetNumberOfElements(prhs[iin])!=1 )
     {
         mexErrMsgIdAndTxt("so3_sampling_mex:InvalidInput:bandLimit",

@@ -95,16 +95,18 @@ SO3OBJS = $(SO3OBJ)/so3_sampling.o    \
 
 SO3HEADERS = so3_types.h     \
              so3_error.h     \
-	     so3_sampling.h  \
-	     so3_core.h
+             so3_sampling.h  \
+             so3_core.h
 
 SO3OBJSMAT = $(SO3OBJMAT)/so3_sampling_mex.o \
-	     $(SO3OBJMAT)/so3_elmn2ind_mex.o # \
+             $(SO3OBJMAT)/so3_elmn2ind_mex.o \
+             $(SO3OBJMAT)/so3_ind2elmn_mex.o # \
              $(SO3OBJMAT)/so3_forward_mex.o   \
              $(SO3OBJMAT)/so3_inverse_mex.o
 
 SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) \
-             $(SO3OBJMEX)/so3_elmn2ind_mex.$(MEXEXT) # \
+             $(SO3OBJMEX)/so3_elmn2ind_mex.$(MEXEXT) \
+             $(SO3OBJMEX)/so3_ind2elmn_mex.$(MEXEXT) # \
              $(SO3OBJMEX)/so3_forward_mex.$(MEXEXT)   \
              $(SO3OBJMEX)/so3_inverse_mex.$(MEXEXT)
 
@@ -129,11 +131,11 @@ rununittest: unittest
 .PHONY: test
 test: $(SO3BIN)/so3_test about
 $(SO3BIN)/so3_test: $(SO3OBJ)/so3_test.o $(SO3LIB)/lib$(SO3LIBNM).a
-	$(CC) $(OPT) $< -o $(SO3BIN)/so3_test $(LDFLAGS) 
+	$(CC) $(OPT) $< -o $(SO3BIN)/so3_test $(LDFLAGS)
 
 .PHONY: about
 about: $(SO3BIN)/so3_about
-$(SO3BIN)/so3_about: $(SO3OBJ)/so3_about.o 
+$(SO3BIN)/so3_about: $(SO3OBJ)/so3_about.o
 	$(CC) $(OPT) $< -o $(SO3BIN)/so3_about
 
 .PHONY: runtest
@@ -155,7 +157,7 @@ $(SO3LIB)/lib$(SO3LIBNM).a: $(SO3OBJS)
 # Matlab
 
 $(SO3OBJMAT)/%_mex.o: %_mex.c $(SO3LIB)/lib$(SO3LIBNM).a
-	$(CC) $(OPT) $(FFLAGS) -c $< -o $@ -I${MLABINC} 
+	$(CC) $(OPT) $(FFLAGS) -c $< -o $@ -I${MLABINC}
 
 $(SO3OBJMEX)/%_mex.$(MEXEXT): $(SO3OBJMAT)/%_mex.o $(SO3LIB)/lib$(SO3LIBNM).a
 	$(MEX) $< -o $@ $(LDFLAGSMEX) $(MEXFLAGS) -L$(MLABLIB)
@@ -164,7 +166,7 @@ $(SO3OBJMEX)/%_mex.$(MEXEXT): $(SO3OBJMAT)/%_mex.o $(SO3LIB)/lib$(SO3LIBNM).a
 matlab: $(SO3OBJSMEX)
 
 
-# Documentation 
+# Documentation
 
 .PHONY: doc
 doc:
@@ -189,7 +191,7 @@ clean:	tidy
 
 .PHONY: tidy
 tidy:
-	rm -f *~ 
+	rm -f *~
 
 .PHONY: cleanall
 cleanall: clean cleandoc

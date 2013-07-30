@@ -1,19 +1,41 @@
-function [el, m] = ssht_ind2elm(ind)
-% ssht_ind2elm - Convert vector index to harmonic indices
+function [el, em, en] = so3_ind2elmn(ind, L, N, varargin)
+% so3_ind2elmn - Convert vector index to harmonic indices
 %
-% Convert ind index to access vector of harmonic coefficients (folllowing
-% the Matlab convention, ind is index from 1) to (el,m) spherical harmonic
-% indices. 
+% Convert ind vector index into (el,em,en) spherical harmonic indices
+% (following the Matlab convention, ind is index from 1).
 %
 % Default usage is given by
 %
-%   [el, m] = ssht_ind2elmn(ind)
+%   [el, em, en] = so3_ind2elmn(ind, L, N, <options>)
 %
+% Where el, em and en are the harmonic, azimuthal and orientational index,
+% respectively and L and N are the harmonic and orientational band-limit,
+% respectively.
+%
+% Options consist of parameter name and value pairs. Valid options include:
+%
+%   'Order'   = { 'ZeroFirst'     [el-em blocks are stored in en-order
+%                                  0, -1, 1, -2, 2, ... (default)],
+%                 'NegativeFirst' [el-em blocks are stored in en-order
+%                                  ..., -2, -1, 0, 1, 2, ...] }
+%   'Storage' = { 'Padded'        [indices for el < en are zero (default)],
+%                 'Compact'       [indíces for el < en are omitted] }
+
 % Author: Jason McEwen (www.jasonmcewen.org)
 
-% SSHT package to perform spin spherical harmonic transforms
-% Copyright (C) 2011  Jason McEwen
+% SO3 package to perform Wigner transforms
+% Copyright (C) 2013  Jason McEwen
 % See LICENSE.txt for license details
 
-el = floor(sqrt(ind-1));
-m = ind - 1 - el*el - el;
+% Parse arguments
+p = inputParser;
+p.addRequired('ind', @isnumeric);
+p.addRequired('L', @isnumeric);
+p.addRequired('N', @isnumeric);
+p.addParamValue('Order', 'ZeroFirst', @ischar);
+p.addParamValue('Storage', 'Padded', @ischar);
+p.parse(ind, L, N, varargin{:});
+args = p.Results;
+
+% Compute index
+[el, em, en] = so3_ind2elmn_mex(ind, L, N, args.Order, args.Storage);
