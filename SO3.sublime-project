@@ -1,0 +1,32 @@
+{
+	"folders":
+	[
+		{
+			"path": "/home/mbue/Development/UCLCosmologyGroup/repos/so3"
+		}
+	],
+
+    "build_systems":
+    [
+        {
+            "name": "SO3",
+            "cmd": ["make", "all"],
+            "file_regex": "^([^:]*):(\\d+):(\\d+): ((?:error|note|warning): .*)$",
+            "working_dir": "$project_path",
+            "variants": [
+                {
+                    "name": "Run",
+                    "cmd": ["make", "runtest"]
+                },
+                {
+                    "name": "Run unit tests",
+                    "cmd": ["make", "rununittest"]
+                },
+                {
+                    "name": "Clean",
+                    "cmd": ["make", "clean"]
+                }
+            ]
+        }
+    ]
+}

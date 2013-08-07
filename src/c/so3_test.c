@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     double min_time;
 
     // Parse command line arguments
-    L = N = 128;
+    L = N = 32;
     seed = 1;
     if (argc > 1)
     {

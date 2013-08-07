@@ -19,7 +19,7 @@ function [el, em, en] = so3_ind2elmn(ind, L, N, varargin)
 %                 'NegativeFirst' [el-em blocks are stored in en-order
 %                                  ..., -2, -1, 0, 1, 2, ...] }
 %   'Storage' = { 'Padded'        [indices for el < en are zero (default)],
-%                 'Compact'       [indíces for el < en are omitted] }
+%                 'Compact'       [indices for el < en are omitted] }
 
 % Author: Jason McEwen (www.jasonmcewen.org)
 
