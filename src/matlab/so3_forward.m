@@ -1,11 +1,11 @@
-function [f] = so3_inverse(flmn, L, N, varargin)
-% so3_inverse - Compute inverse Wigner transform
+function [flmn] = so3_forward(f, L, N, varargin)
+% so3_forward - Compute forward Wigner transform
 %
-% Computes inverse Wigner transform.
+% Computes forward Wigner transform.
 %
 % Default usage is given by
 %
-%   f = so3_inverse(flmn, L, N, <options>)
+%   flmn = so3_forward(f, L, N, <options>)
 %
 % where L and N are the harmonic and orientational band-limit,
 % respectively, flmn is the vector of  harmonic coefficients and
@@ -29,14 +29,14 @@ function [f] = so3_inverse(flmn, L, N, varargin)
 
 % Parse arguments.
 p = inputParser;
-p.addRequired('flmn', @isnumeric);
+p.addRequired('f', @isnumeric);
 p.addRequired('L', @isnumeric);
 p.addRequired('N', @isnumeric);
 p.addParamValue('Order', 'ZeroFirst', @ischar);
 p.addParamValue('Storage', 'Padded', @ischar);
-p.parse(flmn, L, N, varargin{:});
+p.parse(f, L, N, varargin{:});
 args = p.Results;
 
-% Computing inverse transform.
-[f] = ...
-    so3_inverse_mex(flmn, L, N, args.Order, args.Storage);
+% Computing forward transform.
+[flmn] = ...
+    so3_forward_mex(f, L, N, args.Order, args.Storage);
