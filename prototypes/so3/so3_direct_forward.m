@@ -123,7 +123,8 @@ end
 dl = zeros(2*L-1,2*L-1);
 for l = 0:L-1,
     dl = ssht_dl(dl, L, l, pi/2);
-    for n = -l:l,
+    maxn = min(N-1,l);
+    for n = -maxn:maxn,
         for m = -l:l,
             sum = 0;
             for mp=-L+1:L-1,
