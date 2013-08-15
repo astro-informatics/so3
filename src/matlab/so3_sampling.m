@@ -47,11 +47,11 @@ if nargout >= 4
   varargout(1) = {n};
 end
 if nargout >= 5
-  varargout(2) = {nalphas};
+  varargout(2) = {nalpha};
 end
 if nargout >= 6
-  varargout(3) = {nbetas};
+  varargout(3) = {nbeta};
 end
 if nargout >= 7
-  varargout(4) = {ngammas};
+  varargout(4) = {ngamma};
 end

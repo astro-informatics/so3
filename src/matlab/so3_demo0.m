@@ -1,4 +1,19 @@
-%   Tests the C implementation and plots errors and computation times.
+% so3_demo0 - Run demo0
+%
+% Tests the C implementation and plots errors and computation times.
+%
+% Default usage is given by
+%
+%   so3_demo0
+%
+% Author: Jason McEwen (www.jasonmcewen.org)
+
+% SO3 package to perform Wigner transforms
+% Copyright (C) 2013  Jason McEwen
+% See LICENSE.txt for license details
+
+clear all;
+close all;
 
 maxPower = 7;
 
