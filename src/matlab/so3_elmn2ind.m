@@ -3,7 +3,7 @@ function [ind] = so3_elmn2ind(el, em, en, L, N, varargin)
 %
 % Convert (el,em,en) spherical harmonic indices to ind index to access vector
 % of harmonic coefficients (following the Matlab convention, ind is index
-% from 1). 
+% from 1).
 %
 % Default usage is given by
 %
@@ -21,11 +21,12 @@ function [ind] = so3_elmn2ind(el, em, en, L, N, varargin)
 %                                  ..., -2, -1, 0, 1, 2, ...] }
 %   'Storage' = { 'Padded'        [indices for el < en are zero (default)],
 %                 'Compact'       [indíces for el < en are omitted] }
-                 
-% Author: Jason McEwen (www.jasonmcewen.org)
+
+% Authors: Martin Buettner (m.buettner.d@gmail.com)
+%          Jason McEwen (www.jasonmcewen.org)
 
 % SO3 package to perform Wigner transforms
-% Copyright (C) 2013  Jason McEwen
+% Copyright (C) 2013 Martin Buettner and Jason McEwen
 % See LICENSE.txt for license details
 
 % Parse arguments

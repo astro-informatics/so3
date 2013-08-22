@@ -6,10 +6,11 @@
 %
 %   so3_demo0
 %
-% Author: Jason McEwen (www.jasonmcewen.org)
+% Authors: Martin Buettner (m.buettner.d@gmail.com)
+%          Jason McEwen (www.jasonmcewen.org)
 
 % SO3 package to perform Wigner transforms
-% Copyright (C) 2013  Jason McEwen
+% Copyright (C) 2013 Martin Buettner and Jason McEwen
 % See LICENSE.txt for license details
 
 clear all;
@@ -27,7 +28,7 @@ so3_N3_time_inverse = zeros(maxPower,1);
 
 for Lpower = 1:maxPower,
     L = 2^Lpower;
-    
+
     N = min(L,3);
     flmn = random('unif', 0, 1, [(2*N-1)*(3*L^2-N*(N-1))/3, 1]);
 
@@ -38,10 +39,10 @@ for Lpower = 1:maxPower,
     result = so3_forward(f, L, N, 'Storage', 'Compact');
     so3_N3_time_forward(Lpower) = toc;
     so3_N3_error(Lpower) = max(abs(flmn(:) - result(:)));
-    
+
     N = L;
     flmn = random('unif', 0, 1, [(2*N-1)*(3*L^2-N*(N-1))/3, 1]);
-    
+
     tic;
     f = so3_inverse(flmn, L, N, 'Storage', 'Compact');
     so3_NL_time_inverse(Lpower) = toc;
@@ -57,7 +58,7 @@ semilogy(x, so3_N3_error, '-g',...
          x, so3_NL_error, '-b');
 title('Errors in accuracy.');
 legend('C implementation - N = 3',...
-       'C implementation - N = L',...       
+       'C implementation - N = L',...
        'Location', 'NorthWest');
 set(gca, 'XTick', (1:maxPower));
 set(gca, 'XTickLabel', 2.^(1:maxPower));

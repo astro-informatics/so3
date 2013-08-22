@@ -1,5 +1,5 @@
 // SO3 package to perform Wigner transforms
-// Copyright (C) 2013  Jason McEwen
+// Copyright (C) 2013 Martin Buettner and Jason McEwen
 // See LICENSE.txt for license details
 
 
@@ -16,7 +16,7 @@
  * Usage:
  *   [ind] = so3_elmn2ind(el, m, n, L, N, order, storage)
  *
- * \author Jason McEwen
+ * \author Martin Buettner and Jason McEwen
  **/
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[])
@@ -116,7 +116,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:orientationalBandLimitNonInt",
                           "Orientational band-limit must be a positive integer.");
     }
-    
+
     /* Additional input checks */
     if (N > L)
         mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:NgreaterL",
@@ -173,7 +173,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         if (el < abs(n))
             mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:omittedIndex",
                               "The requested index is not available in compact storage.");
-        
+
         if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
             method = SO3_STORE_ZERO_FIRST_COMPACT;
         else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)

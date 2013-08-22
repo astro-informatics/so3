@@ -1,8 +1,8 @@
 // S03 package to perform Wigner transform on the rotation group SO(3)
-// Copyright (C) 2013  Jason McEwen
+// Copyright (C) 2013 Martin Buettner and Jason McEwen
 // See LICENSE.txt for license details
 
-/*! 
+/*!
  * \file so3_test.c
  * Applies SO3 algorithms to perform inverse and forward Wigner
  * transforms (respectively) to check that the original
@@ -14,7 +14,8 @@
  *
  * Defaults: L = 4, N = 4, seed = 1
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
 #include <stdio.h>
@@ -243,7 +244,7 @@ double get_max_error(complex double *expected, complex double *actual, int n)
     return maxError;
 }
 
-/*!  
+/*!
  * Generate random spherical harmonic coefficients of a complex
  * signal for compact storage methods.
  *
@@ -253,7 +254,8 @@ double get_max_error(complex double *expected, complex double *actual, int n)
  * \param[in] seed Integer seed required for random number generator.
  * \retval none
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_test_gen_compact_flmn_complex(complex double *flmn, int L, int N, int seed)
 {
@@ -263,7 +265,7 @@ void so3_test_gen_compact_flmn_complex(complex double *flmn, int L, int N, int s
         flmn[i]  = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
 }
 
-/*!  
+/*!
  * Generate random spherical harmonic coefficients of a complex
  * signal for storage with n = 0 components first.
  *
@@ -273,7 +275,8 @@ void so3_test_gen_compact_flmn_complex(complex double *flmn, int L, int N, int s
  * \param[in] seed Integer seed required for random number generator.
  * \retval none
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_test_gen_padded_zero_first_flmn_complex(complex double *flmn, int L, int N, int seed)
 {
@@ -291,7 +294,7 @@ void so3_test_gen_padded_zero_first_flmn_complex(complex double *flmn, int L, in
     }
 }
 
-/*!  
+/*!
  * Generate random spherical harmonic coefficients of a complex
  * signal for storage with negative n components first.
  *
@@ -301,7 +304,8 @@ void so3_test_gen_padded_zero_first_flmn_complex(complex double *flmn, int L, in
  * \param[in] seed Integer seed required for random number generator.
  * \retval none
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_test_gen_padded_neg_first_flmn_complex(complex double *flmn, int L, int N, int seed)
 {
@@ -312,7 +316,7 @@ void so3_test_gen_padded_neg_first_flmn_complex(complex double *flmn, int L, int
                 flmn[(n + N-1)*L*L + el*el + el + m]  = (el < abs(n)) ? 0.0 : (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
 }
 
-/*!  
+/*!
  * Generate uniform deviate in range [0,1) given seed. (Using double
  * precision.)
  *
@@ -322,17 +326,18 @@ void so3_test_gen_padded_neg_first_flmn_complex(complex double *flmn, int L, int
  * \param[in] idum Seed.
  * \retval ran_dp Generated uniform deviate.
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double ran2_dp(int idum)
 {
-    int IM1=2147483563,IM2=2147483399,IMM1=IM1-1, 
-        IA1=40014,IA2=40692,IQ1=53668,IQ2=52774,IR1=12211,IR2=3791, 
+    int IM1=2147483563,IM2=2147483399,IMM1=IM1-1,
+        IA1=40014,IA2=40692,IQ1=53668,IQ2=52774,IR1=12211,IR2=3791,
         NTAB=32,NDIV=1+IMM1/NTAB;
 
     double AM=1./IM1,EPS=1.2e-7,RNMX=1.-EPS;
     int j,k;
-    static int iv[32],iy,idum2 = 123456789; 
+    static int iv[32],iy,idum2 = 123456789;
     // N.B. in C static variables are initialised to 0 by default.
 
     if (idum <= 0) {

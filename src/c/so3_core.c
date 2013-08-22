@@ -1,12 +1,13 @@
 // S03 package to perform Wigner transform on the rotation group SO(3)
-// Copyright (C) 2013  Jason McEwen
+// Copyright (C) 2013 Martin Buettner and Jason McEwen
 // See LICENSE.txt for license details
 
-/*! 
+/*!
  * \file so3_core.c
  * Core algorithms to perform Wigner transform on the rotation group SO(§).
  *
- * \author Jason McEwen
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
 #include <stdio.h>
@@ -22,7 +23,7 @@
 #include "so3_error.h"
 #include "so3_sampling.h"
 
-/*!  
+/*!
  * Compute inverse transform for MW method via SSHT.
  *
  * \param[out] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
@@ -33,7 +34,8 @@
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
 	int L, int N,
@@ -62,7 +64,7 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
                     , SO3_PROMPT
                     , storage);
     }
-    
+
     // Compute fn(a,b)
 
     fn_n_stride = L * (2*L-1);
@@ -109,7 +111,7 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
         default:
             SO3_ERROR_GENERIC("Invalid storage method.");
         }
-        
+
         offset = 0;
         i = 0;
         for(el = 0; el < L; ++el)
@@ -124,10 +126,10 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
         // the results in n-order 0, 1, 2, -2, -1
         offset = (n < 0 ? n + 2*N-1 : n);
         ssht_core_mw_inverse_sov_sym(fn + offset*fn_n_stride, flm, L, -n, SSHT_DL_TRAPANI, verbosity);
-        
+
         if(n % 2)
             for(i = 0; i < fn_n_stride; ++i)
-                fn[offset*fn_n_stride + i] = -fn[offset*fn_n_stride + i]; 
+                fn[offset*fn_n_stride + i] = -fn[offset*fn_n_stride + i];
 
         if (verbosity > 0)
             printf("\n");
@@ -203,7 +205,7 @@ void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
     fftw_destroy_plan(plan);
 
     free(ftemp);
-    
+
     for(i = 0; i < (2*N-1)*fn_n_stride; ++i)
         fn[i] *= 2*SO3_PI/(double)(2*N-1);
 
@@ -265,5 +267,5 @@ void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
 
     if (verbosity > 0)
         printf("%sForward transform computed!\n", SO3_PROMPT);
-    
+
 }

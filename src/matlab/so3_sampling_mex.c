@@ -1,5 +1,5 @@
 // SO3 package to perform Wigner transforms
-// Copyright (C) 2013  Jason McEwen
+// Copyright (C) 2013 Martin Buettner and Jason McEwen
 // See LICENSE.txt for license details
 
 
@@ -14,7 +14,7 @@
  * Usage:
  *   [n, nalpha, nbeta, ngamma, alphas, betas, gammas] = so3_sampling_mex(L, N)
  *
- * \author Jason McEwen
+ * \author Martin Buettner and Jason McEwen
  */
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[])

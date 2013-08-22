@@ -2,7 +2,8 @@
 	"folders":
 	[
 		{
-			"path": "/home/mbue/Development/UCLCosmologyGroup/repos/so3"
+			"path": ".",
+            "file_exclude_patterns": ["*.mexa64"]
 		}
 	],
 

@@ -1,5 +1,5 @@
 // SO3 package to perform Wigner transforms
-// Copyright (C) 2013  Jason McEwen
+// Copyright (C) 2013 Martin Buettner and Jason McEwen
 // See LICENSE.txt for license details
 
 
@@ -16,7 +16,7 @@
  *   [f] = ...
  *     so3_inverse_mex(flmn, L, N, order, storage);
  *
- * \author Jason McEwen
+ * \author Martin Buettner and Jason McEwen
  */
 void mexFunction( int nlhs, mxArray *plhs[],
                    int nrhs, const mxArray *prhs[])

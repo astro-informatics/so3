@@ -1,5 +1,5 @@
 // S03 package to perform Wigner transform on the rotation group SO(3)
-// Copyright (C) 2013  Jason McEwen
+// Copyright (C) 2013 Martin Buettner and Jason McEwen
 // See LICENSE.txt for license details
 
 #include <stdlib.h>
@@ -14,15 +14,16 @@
 
 /*!
  * Compute total number of samples for McEwen and Wiaux sampling.
- * 
+ *
  * /note Computes number of samples on rotation group, *not* over
  * extended domain.
- * 
+ *
  * \param[in] L Harmonic band-limit.
  * \param[in] N Orientational harmonic band-limit.
  * \retval n Number of samples.
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_n(int L, int N)
 {
@@ -37,7 +38,8 @@ int so3_sampling_mw_n(int L, int N)
  * \param[in] L Harmonic band-limit.
  * \retval nalpha Number of alpha samples.
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_nalpha(int L)
 {
@@ -47,14 +49,15 @@ int so3_sampling_mw_nalpha(int L)
 
 /*!
  * Compute number of beta samples for McEwen and Wiaux sampling.
- * 
+ *
  * /note Computes number of samples in (0,pi], *not* over extended
  * domain.
  *
  * \param[in] L Harmonic band-limit.
  * \retval nbeta Number of beta samples.
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_nbeta(int L)
 {
@@ -68,7 +71,8 @@ int so3_sampling_mw_nbeta(int L)
  * \param[in] N Orientational harmonic band-limit.
  * \retval ngamma Number of gamma samples.
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_ngamma(int N)
 {
@@ -86,7 +90,8 @@ int so3_sampling_mw_ngamma(int N)
  * \param[in] L Harmonic band-limit.
  * \retval alpha Alpha angle.
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double so3_sampling_mw_a2alpha(int a, int L)
 {
@@ -104,7 +109,8 @@ double so3_sampling_mw_a2alpha(int a, int L)
  * \param[in] L Harmonic band-limit.
  * \retval beta Beta angle.
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double so3_sampling_mw_b2beta(int b, int L)
 {
@@ -122,7 +128,8 @@ double so3_sampling_mw_b2beta(int b, int L)
  * \param[in] N Orientational harmonic band-limit.
  * \retval gamma Gamma angle.
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double so3_sampling_mw_g2gamma(int g, int N)
 {
@@ -151,7 +158,8 @@ double so3_sampling_mw_g2gamma(int g, int N)
  * \param[in]  n   Orientational harmonic index [input].
  * \retval none
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, so3_storage_t storage)
 {
@@ -169,10 +177,10 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, 
         if (absn > el)
             SO3_ERROR_GENERIC("Tried to access component with n > l in compact storage.");
         // Initialize offset to the total storage that would be needed if N == n
-        offset = (2*absn-1)*(3*L*L - absn*(absn-1))/3; 
+        offset = (2*absn-1)*(3*L*L - absn*(absn-1))/3;
         // Advance positive n by another lm-chunk
         if (n >= 0)
-            offset += L*L - n*n; 
+            offset += L*L - n*n;
         *ind = offset + el*el - n*n + el + m;
         return;
     case SO3_STORE_NEG_FIRST_PAD:
@@ -187,9 +195,9 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, 
         offset = (N-1 + n) * L*L - (2*N - 1)*(N-1)*N/6;
         // Now correct the offset for other n due to missing padding
         if (n <= 0)
-            offset += absn*(2*absn+1)*(absn+1)/6; 
+            offset += absn*(2*absn+1)*(absn+1)/6;
         else
-            offset -= absn*(2*absn-1)*(absn-1)/6; 
+            offset -= absn*(2*absn-1)*(absn-1)/6;
         *ind = offset + el*el - n*n + el + m;
         // printf("(el,m,n) = (%d,%d,%d) => ind = %d\n", el, m, n, *ind);
         // printf("offset = %d\n", offset);
@@ -203,7 +211,7 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, 
  * Convert 1D index used to access flmn array to (el,m,n) harmonic
  * indices.
  *
- * \note Index ranges are as follows:  
+ * \note Index ranges are as follows:
  *  - el ranges from [0 .. L-1].
  *  - m ranges from [-el .. el].
  *  - n ranges from [-el' .. el'], where el' = min{el, N}
@@ -216,7 +224,8 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, 
  * \param[out] n   Orientational harmonic index [input].
  * \retval none
  *
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, int L, int N, so3_storage_t storage)
 {
@@ -258,7 +267,7 @@ inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, int L, int N
         }
 
         ind += offset;
-        
+
         *el = sqrt(ind);
         *m = ind - (*el)*(*el) - *el;
         return;
@@ -284,11 +293,11 @@ inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, int L, int N
         }
 
         ind += offset;
-        
+
         *el = sqrt(ind);
         *m = ind - (*el)*(*el) - *el;
         return;
     default:
         SO3_ERROR_GENERIC("Invalid storage method.");
-    } 
+    }
 }

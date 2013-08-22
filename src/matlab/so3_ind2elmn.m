@@ -21,10 +21,11 @@ function [el, em, en] = so3_ind2elmn(ind, L, N, varargin)
 %   'Storage' = { 'Padded'        [indices for el < en are zero (default)],
 %                 'Compact'       [indices for el < en are omitted] }
 
-% Author: Jason McEwen (www.jasonmcewen.org)
+% Authors: Martin Buettner (m.buettner.d@gmail.com)
+%          Jason McEwen (www.jasonmcewen.org)
 
 % SO3 package to perform Wigner transforms
-% Copyright (C) 2013  Jason McEwen
+% Copyright (C) 2013 Martin Buettner and Jason McEwen
 % See LICENSE.txt for license details
 
 % Parse arguments

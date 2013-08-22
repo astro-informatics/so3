@@ -1,5 +1,5 @@
 // S03 package to perform Wigner transform on the rotation group SO(3)
-// Copyright (C) 2013  Jason McEwen
+// Copyright (C) 2013 Martin Buettner and Jason McEwen
 // See LICENSE.txt for license details
 
 #ifndef SO3_CORE
@@ -16,6 +16,6 @@ void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
 	int L, int N,
         so3_storage_t storage,
 	int verbosity);
-	
+
 
 #endif

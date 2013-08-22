@@ -1,16 +1,17 @@
 % so3_demo3 - Run demo3
 %
 % Simple demo to compute inverse and forward transform of real scalar
-% function, using simplest interface with default options. 
+% function, using simplest interface with default options.
 %
 % Default usage is given by
 %
 %   so3_demo3
 %
-% Author: Jason McEwen (www.jasonmcewen.org)
+% Authors: Martin Buettner (m.buettner.d@gmail.com)
+%          Jason McEwen (www.jasonmcewen.org)
 
 % SO3 package to perform Wigner transforms
-% Copyright (C) 2013  Jason McEwen
+% Copyright (C) 2013 Martin Buettner and Jason McEwen
 % See LICENSE.txt for license details
 
 clear all;
@@ -26,7 +27,7 @@ for n = -N+1:N-1,
         for m = 0:el,
             sample = rand + 1i*rand;
             sample = 2*(sample - (1+1i)/2);
-            
+
             if m == 0 && n == 0
                 ind = so3_elmn2ind(el,m,n,L,N);
                 flmn(ind) = real(sample);
