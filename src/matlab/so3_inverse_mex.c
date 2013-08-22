@@ -16,7 +16,8 @@
  *   [f] = ...
  *     so3_inverse_mex(flmn, L, N, order, storage);
  *
- * \author Martin Buettner and Jason McEwen
+ * \author Martin Buettner
+ * \author Jason McEwen
  */
 void mexFunction( int nlhs, mxArray *plhs[],
                    int nrhs, const mxArray *prhs[])

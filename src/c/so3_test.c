@@ -15,7 +15,7 @@
  * Defaults: L = 4, N = 4, seed = 1
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
 #include <stdio.h>
@@ -255,7 +255,7 @@ double get_max_error(complex double *expected, complex double *actual, int n)
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_test_gen_compact_flmn_complex(complex double *flmn, int L, int N, int seed)
 {
@@ -276,7 +276,7 @@ void so3_test_gen_compact_flmn_complex(complex double *flmn, int L, int N, int s
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_test_gen_padded_zero_first_flmn_complex(complex double *flmn, int L, int N, int seed)
 {
@@ -305,7 +305,7 @@ void so3_test_gen_padded_zero_first_flmn_complex(complex double *flmn, int L, in
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_test_gen_padded_neg_first_flmn_complex(complex double *flmn, int L, int N, int seed)
 {
@@ -327,7 +327,7 @@ void so3_test_gen_padded_neg_first_flmn_complex(complex double *flmn, int L, int
  * \retval ran_dp Generated uniform deviate.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double ran2_dp(int idum)
 {

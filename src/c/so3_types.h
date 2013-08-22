@@ -11,7 +11,7 @@
  * <a href="../../index.html">here</a>.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
 
@@ -19,7 +19,7 @@
  *  Types used in SO3 package.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
 #ifndef SO3_TYPES

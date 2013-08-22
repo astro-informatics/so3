@@ -10,7 +10,7 @@
  * Usage: so3_about
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
 #include <stdio.h>
@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 
   printf("%s\n", "===================================================================");
   printf("%s\n", "SO3 package to perform Wigner transform on the rotation group SO(3)");
-  printf("%s\n", "By Jason McEwen and Yves Wiaux");
+  printf("%s\n", "By Martin Buettner and Jason McEwen");
 
   printf("%s\n", "See www.jasonmcewen.org for more information.");
   printf("%s\n", "See LICENSE.txt for license details.");

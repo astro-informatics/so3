@@ -14,7 +14,8 @@
  * Usage:
  *   [n, nalpha, nbeta, ngamma, alphas, betas, gammas] = so3_sampling_mex(L, N)
  *
- * \author Martin Buettner and Jason McEwen
+ * \author Martin Buettner
+ * \author Jason McEwen
  */
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[])

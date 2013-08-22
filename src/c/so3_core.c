@@ -7,7 +7,7 @@
  * Core algorithms to perform Wigner transform on the rotation group SO(§).
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
 #include <stdio.h>
@@ -35,7 +35,7 @@
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
 	int L, int N,

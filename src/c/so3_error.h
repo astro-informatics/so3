@@ -6,7 +6,7 @@
  *  Error macros used in SO3 package.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
 #ifndef SO3_ERROR

@@ -16,7 +16,8 @@
  * Usage:
  *   [el, m, n] = so3_ind2elmn(ind, L, N, order, storage)
  *
- * \author Martin Buettner and Jason McEwen
+ * \author Martin Buettner
+ * \author Jason McEwen
  **/
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[])

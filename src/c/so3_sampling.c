@@ -23,7 +23,7 @@
  * \retval n Number of samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_n(int L, int N)
 {
@@ -39,7 +39,7 @@ int so3_sampling_mw_n(int L, int N)
  * \retval nalpha Number of alpha samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_nalpha(int L)
 {
@@ -57,7 +57,7 @@ int so3_sampling_mw_nalpha(int L)
  * \retval nbeta Number of beta samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_nbeta(int L)
 {
@@ -72,7 +72,7 @@ int so3_sampling_mw_nbeta(int L)
  * \retval ngamma Number of gamma samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_ngamma(int N)
 {
@@ -91,7 +91,7 @@ int so3_sampling_mw_ngamma(int N)
  * \retval alpha Alpha angle.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double so3_sampling_mw_a2alpha(int a, int L)
 {
@@ -110,7 +110,7 @@ double so3_sampling_mw_a2alpha(int a, int L)
  * \retval beta Beta angle.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double so3_sampling_mw_b2beta(int b, int L)
 {
@@ -129,7 +129,7 @@ double so3_sampling_mw_b2beta(int b, int L)
  * \retval gamma Gamma angle.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double so3_sampling_mw_g2gamma(int g, int N)
 {
@@ -159,7 +159,7 @@ double so3_sampling_mw_g2gamma(int g, int N)
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, so3_storage_t storage)
 {
@@ -225,7 +225,7 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, 
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
-           <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, int L, int N, so3_storage_t storage)
 {

@@ -16,7 +16,8 @@
  *   [flmn] = ...
  *     so3_forward_mex(f, L, N, order, storage);
  *
- * \author Martin Buettner and Jason McEwen
+ * \author Martin Buettner
+ * \author Jason McEwen
  */
  void mexFunction( int nlhs, mxArray *plhs[],
                    int nrhs, const mxArray *prhs[])
