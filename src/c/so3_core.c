@@ -157,9 +157,9 @@ void so3_core_mw_inverse_via_ssht(
         // The conditional applies the spatial transform, so that we store
         // the results in n-order 0, 1, 2, -2, -1
         offset = (n < 0 ? n + 2*N-1 : n);
-        ssht_core_mw_inverse_sov_sym(
+        ssht_core_mw_lb_inverse_sov_sym(
             fn + offset*fn_n_stride, flm,
-            L, -n,
+            L0, L, -n,
             SSHT_DL_TRAPANI,
             verbosity
         );
@@ -312,9 +312,9 @@ void so3_core_mw_forward_via_ssht(
         case SO3_STORE_ZERO_FIRST_PAD:
         case SO3_STORE_NEG_FIRST_PAD:
             so3_sampling_elmn2ind(&ind, 0, 0, n, L, N, storage);
-            ssht_core_mw_forward_sov_conv_sym(
+            ssht_core_mw_lb_forward_sov_conv_sym(
                 flmn + ind, fn + offset*fn_n_stride,
-                L, -n,
+                L0, L, -n,
                 SSHT_DL_TRAPANI,
                 verbosity
             );
@@ -324,9 +324,9 @@ void so3_core_mw_forward_via_ssht(
             break;
         case SO3_STORE_ZERO_FIRST_COMPACT:
         case SO3_STORE_NEG_FIRST_COMPACT:
-            ssht_core_mw_forward_sov_conv_sym(
+            ssht_core_mw_lb_forward_sov_conv_sym(
                 flm, fn + offset*fn_n_stride,
-                L, -n,
+                L0, L, -n,
                 SSHT_DL_TRAPANI,
                 verbosity
             );
