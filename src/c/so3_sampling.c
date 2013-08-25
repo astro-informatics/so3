@@ -142,6 +142,35 @@ double so3_sampling_mw_g2gamma(int g, int N)
 //============================================================================
 
 /*!
+ * Get storage size of flmn array for different storage methods.
+ *
+ * \param[in]  L  Harmonic band-limit.
+ * \param[in]  N   Orientational band-limit.
+ * \param[in]  storage   Indicates how flm-blocks are stored.
+ * \retval Number of coefficients to be stored or 0 for invalid storage
+ *         parameter.
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+inline int so3_sampling_flmn_size(
+    int L,
+    int N,
+    so3_storage_t storage
+) {
+    switch (storage)
+    {
+    case SO3_STORE_ZERO_FIRST_PAD:
+    case SO3_STORE_NEG_FIRST_PAD:
+        return (2*N-1)*L*L;
+    case SO3_STORE_ZERO_FIRST_COMPACT:
+    case SO3_STORE_NEG_FIRST_COMPACT:
+        return (2*N-1)*(3*L*L-N*(N-1))/3;
+    }
+    return 0;
+}
+
+/*!
  * Convert (el,m,n) harmonic indices to 1D index used to access flmn
  * array.
  *

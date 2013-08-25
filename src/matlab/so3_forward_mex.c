@@ -184,8 +184,10 @@
     flmn = malloc(flmn_size * sizeof(*flmn));
     so3_core_mw_forward_via_ssht(
         flmn, f,
-        L, N,
-        method, 0
+        0, L, N,
+        method,
+        SO3_N_MODE_ALL,
+        0
     );
 
     // Copy result to output argument

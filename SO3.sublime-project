@@ -12,7 +12,7 @@
         {
             "name": "SO3",
             "cmd": ["make", "all"],
-            "file_regex": "^([^:]*):(\\d+):(\\d+): ((?:error|note|warning): .*)$",
+            "file_regex": "^([^:]*):(\\d+):(?:(\\d+):)? ((?:(?:fatal )?error|note|warning): .*)$",
             "working_dir": "$project_path",
             "variants": [
                 {

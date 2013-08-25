@@ -48,6 +48,18 @@ typedef enum {
     SO3_STORE_NEG_FIRST_COMPACT
 } so3_storage_t;
 
+typedef enum {
+    // flmn are potentially non-zero for all values of n
+    SO3_N_MODE_ALL,
+    // flmn are only non-zero for even n
+    SO3_N_MODE_EVEN,
+    // flmn are only non-zero for odd n
+    SO3_N_MODE_ODD,
+    // flmn are only non-zero for |n| = N-1
+    SO3_N_MODE_MAXIMUM,
+    // flmn are only non-zero for |n| = el
+    SO3_N_MODE_EL
+} so3_n_mode_t;
 
 #endif
 

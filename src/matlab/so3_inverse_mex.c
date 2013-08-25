@@ -163,8 +163,10 @@ void mexFunction( int nlhs, mxArray *plhs[],
     f = malloc(nalpha * nbeta * ngamma * sizeof(*f));
     so3_core_mw_inverse_via_ssht(
         f, flmn,
-        L, N,
-        method, 0
+        0, L, N,
+        method,
+        SO3_N_MODE_ALL,
+        0
     );
 
     // Copy result to output argument

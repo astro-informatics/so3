@@ -7,15 +7,21 @@
 
 #include <complex.h>
 
-void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
-	int L, int N,
-        so3_storage_t storage,
-	int verbosity);
+void so3_core_mw_inverse_via_ssht(
+    complex double *f, const complex double *flmn,
+    int L0, int L, int N,
+    so3_storage_t storage,
+    so3_n_mode_t n_mode,
+    int verbosity
+);
 
-void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
-	int L, int N,
-        so3_storage_t storage,
-	int verbosity);
+void so3_core_mw_forward_via_ssht(
+    complex double *flmn, const complex double *f,
+    int L0, int L, int N,
+    so3_storage_t storage,
+    so3_n_mode_t n_mode,
+    int verbosity
+);
 
 
 #endif

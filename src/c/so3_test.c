@@ -10,9 +10,9 @@
  * performed on a random signal with harmonic coefficients uniformly
  * sampled from (-1,1).
  *
- * Usage: so3_test [L [N [seed]]], e.g. so3_test 64 4 314
+ * Usage: so3_test [L [N [L0 [seed]]], e.g. so3_test 64 4 32 314
  *
- * Defaults: L = 4, N = 4, seed = 1
+ * Defaults: L = 16, N = L, L0 = 0, seed = 1
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
@@ -31,13 +31,11 @@
 
 double get_max_error(complex double *expected, complex double *actual, int n);
 double ran2_dp(int idum);
-void so3_test_gen_compact_flmn_complex(complex double *flmn, int L, int N, int seed);
-void so3_test_gen_padded_zero_first_flmn_complex(complex double *flmn, int L, int N, int seed);
-void so3_test_gen_padded_neg_first_flmn_complex(complex double *flmn, int L, int N, int seed);
+void so3_test_gen_flmn_complex(complex double *flmn, int L0, int L, int N, so3_storage_t storage, int seed);
 
 int main(int argc, char **argv)
 {
-    int L, N;
+    int L, N, L0;
     complex double *flmn_compact_orig, *flmn_compact_syn, *flmn_padded_orig, *flmn_padded_syn;
     complex double *f;
     int verbosity = 0;
@@ -62,7 +60,8 @@ int main(int argc, char **argv)
     double min_time;
 
     // Parse command line arguments
-    L = N = 32;
+    L = N = 16;
+    L0 = 0;
     seed = 1;
     if (argc > 1)
     {
@@ -74,7 +73,10 @@ int main(int argc, char **argv)
     }
 
     if (argc > 3)
-        seed = atoi(argv[3]);
+        L0 = atoi(argv[3]);
+
+    if (argc > 4)
+        seed = atoi(argv[4]);
 
     flmn_padded_orig = malloc((2*N-1)*L*L * sizeof *flmn_padded_orig);
     SO3_ERROR_MEM_ALLOC_CHECK(flmn_padded_orig);
@@ -98,15 +100,15 @@ int main(int argc, char **argv)
         // Padded storage with n-order 0, -1, 1, -2, 2, ...
         printf("Testing padded storage with n = 0 first. (run %d)\n", i+1);
 
-        so3_test_gen_padded_zero_first_flmn_complex(flmn_padded_orig, L, N, seed);
+        so3_test_gen_flmn_complex(flmn_padded_orig, L0, L, N, SO3_STORE_ZERO_FIRST_PAD, seed);
 
         time_start = clock();
-        so3_core_mw_inverse_via_ssht(f, flmn_padded_orig, L, N, SO3_STORE_ZERO_FIRST_PAD, verbosity);
+        so3_core_mw_inverse_via_ssht(f, flmn_padded_orig, 0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_inverse_padded_zero_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         time_start = clock();
-        so3_core_mw_forward_via_ssht(flmn_padded_syn, f, L, N, SO3_STORE_ZERO_FIRST_PAD, verbosity);
+        so3_core_mw_forward_via_ssht(flmn_padded_syn, f, 0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_forward_padded_zero_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
@@ -116,15 +118,15 @@ int main(int argc, char **argv)
         // Padded storage with n-order ..., -2, -1, 0, 1, 2, ...
         printf("Testing padded storage with n = -N+1 first. (run %d)\n", i+1);
 
-        so3_test_gen_padded_neg_first_flmn_complex(flmn_padded_orig, L, N, seed);
+        so3_test_gen_flmn_complex(flmn_padded_orig, L0, L, N, SO3_STORE_NEG_FIRST_PAD, seed);
 
         time_start = clock();
-        so3_core_mw_inverse_via_ssht(f, flmn_padded_orig, L, N, SO3_STORE_NEG_FIRST_PAD, verbosity);
+        so3_core_mw_inverse_via_ssht(f, flmn_padded_orig, 0, L, N, SO3_STORE_NEG_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_inverse_padded_neg_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         time_start = clock();
-        so3_core_mw_forward_via_ssht(flmn_padded_syn, f, L, N, SO3_STORE_NEG_FIRST_PAD, verbosity);
+        so3_core_mw_forward_via_ssht(flmn_padded_syn, f, 0, L, N, SO3_STORE_NEG_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_forward_padded_neg_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
@@ -134,15 +136,15 @@ int main(int argc, char **argv)
         // Compact storage with n-order 0, -1, 1, -2, 2, ...
         printf("Testing compact storage with n = 0 first. (run %d)\n", i+1);
 
-        so3_test_gen_compact_flmn_complex(flmn_compact_orig, L, N, seed);
+        so3_test_gen_flmn_complex(flmn_compact_orig, L0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, seed);
 
         time_start = clock();
-        so3_core_mw_inverse_via_ssht(f, flmn_compact_orig, L, N, SO3_STORE_ZERO_FIRST_COMPACT, verbosity);
+        so3_core_mw_inverse_via_ssht(f, flmn_compact_orig, 0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_inverse_compact_zero_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         time_start = clock();
-        so3_core_mw_forward_via_ssht(flmn_compact_syn, f, L, N, SO3_STORE_ZERO_FIRST_COMPACT, verbosity);
+        so3_core_mw_forward_via_ssht(flmn_compact_syn, f, 0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_forward_compact_zero_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
@@ -152,15 +154,15 @@ int main(int argc, char **argv)
         // Compact storage with n-order ..., -2, -1, 0, 1, 2, ...
         printf("Testing compact storage with n = -N+1 first. (run %d)\n", i+1);
 
-        so3_test_gen_compact_flmn_complex(flmn_compact_orig, L, N, seed);
+        so3_test_gen_flmn_complex(flmn_compact_orig, L0, L, N, SO3_STORE_NEG_FIRST_COMPACT, seed);
 
         time_start = clock();
-        so3_core_mw_inverse_via_ssht(f, flmn_compact_orig, L, N, SO3_STORE_NEG_FIRST_COMPACT, verbosity);
+        so3_core_mw_inverse_via_ssht(f, flmn_compact_orig, 0, L, N, SO3_STORE_NEG_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_inverse_compact_neg_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         time_start = clock();
-        so3_core_mw_forward_via_ssht(flmn_compact_syn, f, L, N, SO3_STORE_NEG_FIRST_COMPACT, verbosity);
+        so3_core_mw_forward_via_ssht(flmn_compact_syn, f, 0, L, N, SO3_STORE_NEG_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_forward_compact_neg_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
@@ -245,75 +247,44 @@ double get_max_error(complex double *expected, complex double *actual, int n)
 }
 
 /*!
- * Generate random spherical harmonic coefficients of a complex
- * signal for compact storage methods.
+ * Generate random Wigner coefficients of a complex signal.
  *
  * \param[out] flmn Random spherical harmonic coefficients generated.
- * \param[in] L Harmonic band-limit.
+ * \param[in] L0 Lower harmonic band-limit.
+ * \param[in] L Upper harmonic band-limit.
  * \param[in] N Orientational band-limit.
+ * \param[in] storage Indicates how flm blocks are stored.
  * \param[in] seed Integer seed required for random number generator.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-void so3_test_gen_compact_flmn_complex(complex double *flmn, int L, int N, int seed)
+void so3_test_gen_flmn_complex(
+    complex double *flmn,
+    int L0, int L, int N,
+    so3_storage_t storage,
+    int seed)
 {
-    int i;
+    int i, el, m, n, ind;
 
-    for (i = 0; i < (2*N-1)*(3*L*L-N*(N-1))/3; ++i)
-        flmn[i]  = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
-}
-
-/*!
- * Generate random spherical harmonic coefficients of a complex
- * signal for storage with n = 0 components first.
- *
- * \param[out] flmn Random spherical harmonic coefficients generated.
- * \param[in] L Harmonic band-limit.
- * \param[in] N Orientational band-limit.
- * \param[in] seed Integer seed required for random number generator.
- * \retval none
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-void so3_test_gen_padded_zero_first_flmn_complex(complex double *flmn, int L, int N, int seed)
-{
-    int n, el, m, offset;
-    for(n = -N+1; n < N; ++n)
+    if (storage == SO3_STORE_ZERO_FIRST_PAD || storage == SO3_STORE_NEG_FIRST_PAD)
     {
-        if (n < 0)
-            offset = -2*n-1;
-        else
-            offset = 2*n;
-
-        for(el = 0; el < L; ++el)
-            for(m = -el; m <= el; ++m)
-                flmn[offset*L*L + el*el + el + m]  = (el < abs(n)) ? 0.0 : (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
+        for (i = 0; i < so3_sampling_flmn_size(L, N, storage); ++i)
+            flmn[i] = 0.0;
     }
-}
 
-/*!
- * Generate random spherical harmonic coefficients of a complex
- * signal for storage with negative n components first.
- *
- * \param[out] flmn Random spherical harmonic coefficients generated.
- * \param[in] L Harmonic band-limit.
- * \param[in] N Orientational band-limit.
- * \param[in] seed Integer seed required for random number generator.
- * \retval none
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-void so3_test_gen_padded_neg_first_flmn_complex(complex double *flmn, int L, int N, int seed)
-{
-    int n, el, m;
-    for(n = -N+1; n < N; ++n)
-        for(el = 0; el < L; ++el)
-            for(m = -el; m <= el; ++m)
-                flmn[(n + N-1)*L*L + el*el + el + m]  = (el < abs(n)) ? 0.0 : (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
+    for (n = -N+1; n < N; ++n)
+    {
+        for (el = MAX(L0, abs(n)); el < L; ++el)
+        {
+            for (m = -el; m <= el; ++m)
+            {
+                so3_sampling_elmn2ind(&ind, el, m, n, L, N, storage);
+                flmn[ind] = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
+            }
+        }
+    }
 }
 
 /*!

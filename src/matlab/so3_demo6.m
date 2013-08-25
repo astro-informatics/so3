@@ -22,8 +22,8 @@ N = 3;
 
 % Generate normally distributed random flmn of complex signal
 % with mean 0 and variance 1
-stream = RandStream.getGlobalStream;
-reset(stream);
+%stream = RandStream.getGlobalStream;
+%reset(stream);
 flmn = zeros((2*N-1)*(3*L^2-N*(N-1))/3, 1);
 flmn = (randn(size(flmn)) + 1i*randn(size(flmn)))/sqrt(2);
 

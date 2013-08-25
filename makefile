@@ -1,6 +1,6 @@
 # ======== COMPILER ========
 
-CC	= gcc
+CC	= gcc-4.4
 #OPT	= -Wall -O3 -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`svnversion -n .`\"
 OPT	= -Wall -g -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`svnversion -n .`\"
 
@@ -11,7 +11,7 @@ UNAME := $(shell uname)
 PROGDIR = ..
 
 ifeq ($(UNAME), Linux)
-  MLAB		= /usr/local/MATLAB/R2012b
+  MLAB		= /usr/local/MATLAB/R2013a
   MLABINC	= ${MLAB}/extern/include
   MLABLIB	= ${MLAB}/extern/lib
 
@@ -20,7 +20,7 @@ ifeq ($(UNAME), Linux)
   MEXFLAGS	= -cxx
 endif
 ifeq ($(UNAME), Darwin)
-  MLAB		= /Applications/MATLAB_R2012b.app
+  MLAB		= /Applications/MATLAB_R2013a.app
   MLABINC	= ${MLAB}/extern/include
   MLABLIB	= ${MLAB}/extern/lib
 

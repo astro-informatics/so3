@@ -18,6 +18,7 @@ double so3_sampling_mw_g2gamma(int g, int N);
 
 // Note, if this is compiled using C99-standard then the "extern" belongs in the
 // .c file instead.
+extern inline int so3_sampling_flmn_size(int L, int N, so3_storage_t storage);
 extern inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, so3_storage_t storage);
 extern inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, int L, int N, so3_storage_t storage);
 

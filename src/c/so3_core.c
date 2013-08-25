@@ -23,27 +23,34 @@
 #include "so3_error.h"
 #include "so3_sampling.h"
 
+#define MAX(a,b) ((a > b) ? (a) : (b))
+
 /*!
  * Compute inverse transform for MW method via SSHT.
  *
  * \param[out] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
  * \param[in] flmn Harmonic coefficients.
- * \param[in] L Harmonic band-limit.
- * \param[in] M Azimuthal band-limit.
+ * \param[in] L0 Lower harmonic band-limit.
+ * \param[in] L Upper harmonic band-limit.
  * \param[in] N Orientational band-limit.
+ * \param[in] storage Indicates how flm-blocks are stored.
+ * \param[in] n_mode Indicates which n are non-zero.
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
-	int L, int N,
-        so3_storage_t storage,
-	int verbosity)
-{
+void so3_core_mw_inverse_via_ssht(
+    complex double *f, const complex double *flmn,
+    int L0, int L, int N,
+    so3_storage_t storage,
+    so3_n_mode_t n_mode,
+    int verbosity
+) {
     // Iterator
     int n;
+    int n_start, n_stop, n_inc;
     // Intermediate results
     complex double *fn, *flm;
     // Stride for several arrays
@@ -90,7 +97,32 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
     flm = calloc(L*L, sizeof *flm);
     SO3_ERROR_MEM_ALLOC_CHECK(flm);
 
-    for(n = -N+1; n < N; ++n)
+    switch (n_mode)
+    {
+    case SO3_N_MODE_ALL:
+    case SO3_N_MODE_EL:
+        n_start = -N+1;
+        n_stop  =  N-1;
+        n_inc = 1;
+        break;
+    case SO3_N_MODE_EVEN:
+        n_start = (N-1 % 2 == 0) ? -N+1 : -N+2;
+        n_stop =  (N-1 % 2 == 0) ?  N-1 :  N-2;
+        n_inc = 2;
+        break;
+    case SO3_N_MODE_ODD:
+        n_start = (N-1 % 2 != 0) ? -N+1 : -N+2;
+        n_stop =  (N-1 % 2 != 0) ?  N-1 :  N-2;
+        n_inc = 2;
+        break;
+    case SO3_N_MODE_MAXIMUM:
+        n_start = -N+1;
+        n_stop  =  N-1;
+        n_inc = 2*N - 2;
+        break;
+    }
+
+    for(n = n_start; n <= n_stop; n += n_inc)
     {
         int ind, offset, i, el;
 
@@ -114,7 +146,7 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
 
         offset = 0;
         i = 0;
-        for(el = 0; el < L; ++el)
+        for(el = L0; el < L; ++el)
         {
             for (; i < offset + 2*el+1; ++i)
                 flm[i] *= sqrt((double)(2*el+1)/(16.*pow(SO3_PI, 3.)));
@@ -125,7 +157,12 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
         // The conditional applies the spatial transform, so that we store
         // the results in n-order 0, 1, 2, -2, -1
         offset = (n < 0 ? n + 2*N-1 : n);
-        ssht_core_mw_inverse_sov_sym(fn + offset*fn_n_stride, flm, L, -n, SSHT_DL_TRAPANI, verbosity);
+        ssht_core_mw_inverse_sov_sym(
+            fn + offset*fn_n_stride, flm,
+            L, -n,
+            SSHT_DL_TRAPANI,
+            verbosity
+        );
 
         if(n % 2)
             for(i = 0; i < fn_n_stride; ++i)
@@ -146,13 +183,33 @@ void so3_core_mw_inverse_via_ssht(complex double *f, const complex double *flmn,
         printf("%sInverse transform computed!\n", SO3_PROMPT);
 }
 
-void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
-	int L, int N,
-        so3_storage_t storage,
-	int verbosity)
-{
+
+/*!
+ * Compute forward transform for MW method via SSHT.
+ *
+ * \param[out] flmn Harmonic coefficients.
+ * \param[in] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
+ * \param[in] L0 Lower harmonic band-limit.
+ * \param[in] L Upper harmonic band-limit.
+ * \param[in] N Orientational band-limit.
+ * \param[in] storage Indicates how flm-blocks are stored.
+ * \param[in] n_mode Indicates which n are non-zero.
+ * \param[in] verbosity Verbosity flag in range [0,5].
+ * \retval none
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+void so3_core_mw_forward_via_ssht(
+    complex double *flmn, const complex double *f,
+    int L0, int L, int N,
+    so3_storage_t storage,
+    so3_n_mode_t n_mode,
+    int verbosity
+) {
     // Iterator
     int i, n;
+    int n_start, n_stop, n_inc;
     // Intermediate results
     complex double *ftemp, *flm, *fn;
     // Stride for several arrays
@@ -212,7 +269,32 @@ void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
     if (storage == SO3_STORE_ZERO_FIRST_COMPACT || storage == SO3_STORE_NEG_FIRST_COMPACT)
         flm = malloc(L*L * sizeof *flm);
 
-    for(n = -N+1; n < N; ++n)
+    switch (n_mode)
+    {
+    case SO3_N_MODE_ALL:
+    case SO3_N_MODE_EL:
+        n_start = -N+1;
+        n_stop  =  N-1;
+        n_inc = 1;
+        break;
+    case SO3_N_MODE_EVEN:
+        n_start = (N-1 % 2 == 0) ? -N+1 : -N+2;
+        n_stop =  (N-1 % 2 == 0) ?  N-1 :  N-2;
+        n_inc = 2;
+        break;
+    case SO3_N_MODE_ODD:
+        n_start = (N-1 % 2 != 0) ? -N+1 : -N+2;
+        n_stop =  (N-1 % 2 != 0) ?  N-1 :  N-2;
+        n_inc = 2;
+        break;
+    case SO3_N_MODE_MAXIMUM:
+        n_start = -N+1;
+        n_stop  =  N-1;
+        n_inc = 2*N - 2;
+        break;
+    }
+
+    for(n = n_start; n <= n_stop; n += n_inc)
     {
         int ind, offset, el, sign;
 
@@ -230,19 +312,29 @@ void so3_core_mw_forward_via_ssht(complex double *flmn, const complex double *f,
         case SO3_STORE_ZERO_FIRST_PAD:
         case SO3_STORE_NEG_FIRST_PAD:
             so3_sampling_elmn2ind(&ind, 0, 0, n, L, N, storage);
-            ssht_core_mw_forward_sov_conv_sym(flmn + ind, fn + offset*fn_n_stride, L, -n, SSHT_DL_TRAPANI, verbosity);
+            ssht_core_mw_forward_sov_conv_sym(
+                flmn + ind, fn + offset*fn_n_stride,
+                L, -n,
+                SSHT_DL_TRAPANI,
+                verbosity
+            );
 
             i = offset = 0;
-            el = 0;
+            el = L0;
             break;
         case SO3_STORE_ZERO_FIRST_COMPACT:
         case SO3_STORE_NEG_FIRST_COMPACT:
-            ssht_core_mw_forward_sov_conv_sym(flm, fn + offset*fn_n_stride, L, -n, SSHT_DL_TRAPANI, verbosity);
+            ssht_core_mw_forward_sov_conv_sym(
+                flm, fn + offset*fn_n_stride,
+                L, -n,
+                SSHT_DL_TRAPANI,
+                verbosity
+            );
             so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, L, N, storage);
             memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
 
             i = offset = 0;
-            el = abs(n);
+            el = MAX(L0, abs(n));
             break;
         default:
             SO3_ERROR_GENERIC("Invalid storage method.");
