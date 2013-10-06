@@ -101,9 +101,9 @@ int main(int argc, char **argv)
 
     // We only need (2*L) * (L+1) * (2*N-1) samples for MW symmetric sampling.
     // For the usual MW sampling, only part of the memory will be used.
-    f = malloc((2*L-1)*(L)*(2*N-1) * sizeof *f);
+    f = malloc((2*L)*(L+1)*(2*N-1) * sizeof *f);
     SO3_ERROR_MEM_ALLOC_CHECK(f);
-    f_real = malloc((2*L-1)*(L)*(2*N-1) * sizeof *f_real);
+    f_real = malloc((2*L)*(L+1)*(2*N-1) * sizeof *f_real);
     SO3_ERROR_MEM_ALLOC_CHECK(f_real);
 
     // Write program name.
@@ -117,14 +117,18 @@ int main(int argc, char **argv)
     {
         for (sampling_scheme = 0; sampling_scheme < SO3_SAMPLING_SIZE; ++sampling_scheme)
         {
-            for (storage_mode = 0; storage_mode < SO3_STORE_SIZE-1; ++storage_mode)
+            for (storage_mode = 0; storage_mode < SO3_STORE_SIZE; ++storage_mode)
             {
                 for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                 {
-                    printf("Testing %s for a %s signal with %s sampling. Using %s. Running %d times: ",
-                               storage_mode_str[storage_mode],
+                    durations_inverse[sampling_scheme][storage_mode][n_mode][real] = 0.0;
+                    durations_forward[sampling_scheme][storage_mode][n_mode][real] = 0.0;
+                    errors[sampling_scheme][storage_mode][n_mode][real] = 0.0;
+
+                    printf("Testing a %s signal with %s sampling using %s. N-Mode: %s. Running %d times: ",
                                reality_str[real],
                                sampling_str[sampling_scheme],
+                               storage_mode_str[storage_mode],
                                n_mode_str[n_mode],
                                NREPEAT);
 
@@ -143,8 +147,8 @@ int main(int argc, char **argv)
                         else      so3_test_gen_flmn_complex(flmn_orig, L0, L, N, storage_mode, n_mode, seed);
 
                         time_start = clock();
-                        if (real) so3_core_mw_inverse_via_ssht_real(f_real, flmn_orig, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_RISBO, verbosity);
-                        else      so3_core_mw_inverse_via_ssht(f, flmn_orig, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_RISBO, verbosity);
+                        if (real) so3_core_mw_inverse_via_ssht_real(f_real, flmn_orig, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, verbosity);
+                        else      so3_core_mw_inverse_via_ssht(f, flmn_orig, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, verbosity);
                         time_end = clock();
 
                         duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
@@ -152,8 +156,8 @@ int main(int argc, char **argv)
                             durations_inverse[sampling_scheme][storage_mode][n_mode][real] = duration;
 
                         time_start = clock();
-                        if (real) so3_core_mw_forward_via_ssht_real(flmn_syn, f_real, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_RISBO, verbosity);
-                        else      so3_core_mw_forward_via_ssht(flmn_syn, f, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_RISBO, verbosity);
+                        if (real) so3_core_mw_forward_via_ssht_real(flmn_syn, f_real, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, verbosity);
+                        else      so3_core_mw_forward_via_ssht(flmn_syn, f, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, verbosity);
                         time_end = clock();
 
                         duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
@@ -192,7 +196,7 @@ int main(int argc, char **argv)
     for (real = 0; real < 2; ++real)
     {
         printf("Results for %s signals...\n", reality_str[real]);
-        for (sampling_scheme = 0; sampling_scheme < SO3_SAMPLING_SIZE-1; ++sampling_scheme)
+        for (sampling_scheme = 0; sampling_scheme < SO3_SAMPLING_SIZE; ++sampling_scheme)
         {
             printf("  ..using %s sampling...\n", sampling_str[sampling_scheme]);
             for (storage_mode = 0; storage_mode < SO3_STORE_SIZE; ++storage_mode)
