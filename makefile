@@ -2,7 +2,7 @@
 
 CC	= gcc-4.4
 #OPT	= -Wall -O3 -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`svnversion -n .`\"
-OPT	= -Wall -g -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`svnversion -n .`\"
+OPT	= -Wall -g -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"``\"
 
 
 # ======== LINKS ========

@@ -115,6 +115,7 @@ int main(int argc, char **argv)
             {
                 for (i = 0; i <NREPEAT; ++i)
                 {
+                    int j;
                     double duration;
 
                     printf("Testing %s for a %s signal. Using %s. (run %d)\n",
@@ -122,6 +123,10 @@ int main(int argc, char **argv)
                            reality_str[real],
                            n_mode_str[n_mode],
                            i+1);
+
+                    // Reset output array
+                    for (j = 0; j < (2*N-1)*L*L; ++j)
+                        flmn_syn[j] = 0.0;
 
                     if (real) so3_test_gen_flmn_real(flmn_orig, L0, L, N, storage_mode, n_mode, seed);
                     else      so3_test_gen_flmn_complex(flmn_orig, L0, L, N, storage_mode, n_mode, seed);

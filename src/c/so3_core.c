@@ -95,7 +95,7 @@ void so3_core_mw_inverse_via_ssht(
             FFTW_BACKWARD, FFTW_ESTIMATE
     );
 
-    flm = calloc(L*L, sizeof *flm);
+    flm = malloc(L*L * sizeof *flm);
     SO3_ERROR_MEM_ALLOC_CHECK(flm);
 
     for(n = -N+1; n <= N-1; ++n)
@@ -104,8 +104,8 @@ void so3_core_mw_inverse_via_ssht(
 
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
-            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1))
-        {
+            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1)
+        ) {
             continue;
         }
 
@@ -170,7 +170,8 @@ void so3_core_mw_inverse_via_ssht(
 /*!
  * Compute forward transform for MW method via SSHT.
  *
- * \param[out] flmn Harmonic coefficients.
+ * \param[out] flmn Harmonic coefficients. If n_mode is different from SO3_N_MODE_ALL,
+ *                  this array has to be nulled before being past to the function.
  * \param[in] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
  * \param[in] L0 Lower harmonic band-limit.
  * \param[in] L Upper harmonic band-limit.
@@ -257,17 +258,8 @@ void so3_core_mw_forward_via_ssht(
 
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
-            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1))
-        {
-            for(el = abs(n); el < L; ++el)
-            {
-                int m;
-                for (m = -el; m <= el; ++m)
-                {
-                    so3_sampling_elmn2ind(&ind, el, m, n, L, N, storage);
-                    flmn[ind] = 0.0;
-                }
-            }
+            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1)
+        ) {
             continue;
         }
 
@@ -361,7 +353,6 @@ void so3_core_mw_inverse_via_ssht_real(
 ) {
     // Iterator
     int n;
-    int n_start, n_stop, n_inc;
     // Intermediate results
     complex double *fn, *flm;
     // Stride for several arrays
@@ -408,34 +399,8 @@ void so3_core_mw_inverse_via_ssht_real(
             FFTW_ESTIMATE
     );
 
-    flm = calloc(L*L, sizeof *flm);
+    flm = malloc(L*L * sizeof *flm);
     SO3_ERROR_MEM_ALLOC_CHECK(flm);
-
-    switch (n_mode)
-    {
-    case SO3_N_MODE_ALL:
-        n_start =  0;
-        n_stop  =  N-1;
-        n_inc = 1;
-        break;
-    case SO3_N_MODE_EVEN:
-        n_start = 0;
-        n_stop =  ((N-1) % 2 == 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_ODD:
-        n_start = 1;
-        n_stop =  ((N-1) % 2 != 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_MAXIMUM:
-        n_start =  N-1;
-        n_stop  =  N-1;
-        n_inc = 1; // There is only one value
-        break;
-    default:
-        SO3_ERROR_GENERIC("Invalid n-mode.");
-    }
 
     for(n = 0; n <= N-1; ++n)
     {
@@ -443,8 +408,8 @@ void so3_core_mw_inverse_via_ssht_real(
 
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
-            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1))
-        {
+            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1)
+        ) {
             continue;
         }
 
@@ -505,7 +470,8 @@ void so3_core_mw_inverse_via_ssht_real(
 /*!
  * Compute forward transform for MW method via SSHT for a real signal.
  *
- * \param[out] flmn Harmonic coefficients.
+ * \param[out] flmn Harmonic coefficients. If n_mode is different from SO3_N_MODE_ALL,
+ *                  this array has to be nulled before being past to the function.
  * \param[in] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
  * \param[in] L0 Lower harmonic band-limit.
  * \param[in] L Upper harmonic band-limit.
@@ -594,17 +560,8 @@ void so3_core_mw_forward_via_ssht_real(
 
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
-            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1))
-        {
-            for(el = n; el < L; ++el)
-            {
-                int m;
-                for (m = -el; m <= el; ++m)
-                {
-                    so3_sampling_elmn2ind_real(&ind, el, m, n, L, N, storage);
-                    flmn[ind] = 0.0;
-                }
-            }
+            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1)
+        ) {
             continue;
         }
 
