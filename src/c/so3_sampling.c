@@ -9,7 +9,7 @@
 #include "so3_types.h"
 
 //============================================================================
-// Sampling relations
+// Sampling relations for McEwen and Wiaux sampling
 //============================================================================
 
 /*!
@@ -136,6 +136,133 @@ double so3_sampling_mw_g2gamma(int g, int N)
     return 2.0 * g * SO3_PI / (2.0*N - 1.0);
 }
 
+//============================================================================
+// Sampling relations for McEwen and Wiaux symmetric sampling
+//============================================================================
+
+/*!
+ * Compute total number of samples for McEwen and Wiaux symmetric sampling.
+ *
+ * /note Computes number of samples on rotation group, *not* over
+ * extended domain.
+ *
+ * \param[in] L Harmonic band-limit.
+ * \param[in] N Orientational harmonic band-limit.
+ * \retval n Number of samples.
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+int so3_sampling_mw_ss_n(int L, int N)
+{
+    // Is this actually correct?
+    return (2*L)*(L-1)*(2*N-1) + 2;
+}
+
+
+/*!
+ * Compute number of alpha samples for McEwen and Wiaux symmetric sampling.
+ *
+ * \param[in] L Harmonic band-limit.
+ * \retval nalpha Number of alpha samples.
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+int so3_sampling_mw_ss_nalpha(int L)
+{
+    return 2*L;
+}
+
+
+/*!
+ * Compute number of beta samples for McEwen and Wiaux symmetric sampling.
+ *
+ * /note Computes number of samples in [0,pi], *not* over extended
+ * domain.
+ *
+ * \param[in] L Harmonic band-limit.
+ * \retval nbeta Number of beta samples.
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+int so3_sampling_mw_ss_nbeta(int L)
+{
+    return L+1;
+}
+
+
+/*!
+ * Compute number of gamma samples for McEwen and Wiaux symmetric sampling.
+ *
+ * \param[in] N Orientational harmonic band-limit.
+ * \retval ngamma Number of gamma samples.
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+int so3_sampling_mw_ss_ngamma(int N)
+{
+    return 2*N-1;
+}
+
+
+/*!
+ * Convert alpha index to angle for McEwen and Wiaux symmetric sampling.
+ *
+ * \note
+ *  - a ranges from [0 .. 2*L-1] => 2*L points in [0,2*pi).
+ *
+ * \param[in] a Alpha index.
+ * \param[in] L Harmonic band-limit.
+ * \retval alpha Alpha angle.
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+double so3_sampling_mw_ss_a2alpha(int a, int L)
+{
+    return 2.0 * a * SO3_PI / (2.0*L);
+}
+
+
+/*!
+ * Convert beta index to angle for McEwen and Wiaux symmetric sampling.
+ *
+ * \note
+ *  - b ranges from [0 .. 2*L-1] => 2*L points in [0,2*pi).
+ *
+ * \param[in] b Beta index.
+ * \param[in] L Harmonic band-limit.
+ * \retval beta Beta angle.
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+double so3_sampling_mw_ss_b2beta(int b, int L)
+{
+    return 2.0 * b * SO3_PI / (2.0*L);
+}
+
+
+/*!
+ * Convert gamma index to angle for McEwen and Wiaux symmetric sampling.
+ *
+ * \note
+ *  - g ranges from [0 .. 2*L-2] => 2*L-1 points in [0,2*pi).
+ *
+ * \param[in] g Gamma index.
+ * \param[in] N Orientational harmonic band-limit.
+ * \retval gamma Gamma angle.
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+double so3_sampling_mw_ss_g2gamma(int g, int N)
+{
+    return 2.0 * g * SO3_PI / (2.0*N - 1.0);
+}
 
 //============================================================================
 // Harmonic index relations

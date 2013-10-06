@@ -16,6 +16,15 @@ double so3_sampling_mw_a2alpha(int a, int L);
 double so3_sampling_mw_b2beta(int b, int L);
 double so3_sampling_mw_g2gamma(int g, int N);
 
+int so3_sampling_mw_ss_n(int L, int N);
+int so3_sampling_mw_ss_nalpha(int L);
+int so3_sampling_mw_ss_nbeta(int L);
+int so3_sampling_mw_ss_ngamma(int N);
+
+double so3_sampling_mw_ss_a2alpha(int a, int L);
+double so3_sampling_mw_ss_b2beta(int b, int L);
+double so3_sampling_mw_ss_g2gamma(int g, int N);
+
 // Note, if this is compiled using C99-standard then the "extern" belongs in the
 // .c file instead.
 extern inline int so3_sampling_flmn_size(int L, int N, so3_storage_t storage, int real);

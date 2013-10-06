@@ -11,6 +11,7 @@
 void so3_core_mw_inverse_via_ssht(
     complex double *f, const complex double *flmn,
     int L0, int L, int N,
+    so3_sampling_t sampling,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
@@ -20,6 +21,7 @@ void so3_core_mw_inverse_via_ssht(
 void so3_core_mw_forward_via_ssht(
     complex double *flmn, const complex double *f,
     int L0, int L, int N,
+    so3_sampling_t sampling,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
@@ -29,6 +31,7 @@ void so3_core_mw_forward_via_ssht(
 void so3_core_mw_inverse_via_ssht_real(
     double *f, const complex double *flmn,
     int L0, int L, int N,
+    so3_sampling_t sampling,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
@@ -38,6 +41,7 @@ void so3_core_mw_inverse_via_ssht_real(
 void so3_core_mw_forward_via_ssht_real(
     complex double *flmn, const double *f,
     int L0, int L, int N,
+    so3_sampling_t sampling,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,

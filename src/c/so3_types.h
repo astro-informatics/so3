@@ -65,5 +65,20 @@ typedef enum {
     SO3_N_MODE_SIZE
 } so3_n_mode_t;
 
-#endif
+typedef enum {
+    // McEwen and Wiaux sampling:
+    // 2*L-1 samples in alpha, in [0, 2pi).
+    // L samples in beta, in (0, pi].
+    // 2*N-1 samples in gamma, in [0, 2pi).
+    SO3_SAMPLING_MW,
+    // McEwen and Wiaux symmetric sampling:
+    // 2*L samples in alpha, in [0, 2pi).
+    // L+1 samples in beta, in [0, pi].
+    // 2*N-1 samples in gamma, in [0, 2pi).
+    SO3_SAMPLING_MW_SS,
+    // "guard" value that equals the number of usable enum values.
+    // useful in loops, for instance.
+    SO3_SAMPLING_SIZE
+} so3_sampling_t;
 
+#endif

@@ -33,6 +33,7 @@
  * \param[in] L0 Lower harmonic band-limit.
  * \param[in] L Upper harmonic band-limit.
  * \param[in] N Orientational band-limit.
+ * \param[in] sampling Indicates how the function values are sampled.
  * \param[in] storage Indicates how flm-blocks are stored.
  * \param[in] n_mode Indicates which n are non-zero.
  * \param[in] dl_method Method to use when computing the Wigner functions.
@@ -46,6 +47,7 @@
 void so3_core_mw_inverse_via_ssht(
     complex double *f, const complex double *flmn,
     int L0, int L, int N,
+    so3_sampling_t sampling,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
@@ -76,7 +78,17 @@ void so3_core_mw_inverse_via_ssht(
 
     // Compute fn(a,b)
 
-    fn_n_stride = L * (2*L-1);
+    switch (sampling)
+    {
+    case SO3_SAMPLING_MW:
+        fn_n_stride = L * (2*L-1);
+        break;
+    case SO3_SAMPLING_MW_SS:
+        fn_n_stride = (L+1) * 2*L;
+        break;
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 
     fn = calloc((2*N-1)*fn_n_stride, sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
@@ -143,12 +155,29 @@ void so3_core_mw_inverse_via_ssht(
         // The conditional applies the spatial transform, so that we store
         // the results in n-order 0, 1, 2, -2, -1
         offset = (n < 0 ? n + 2*N-1 : n);
-        ssht_core_mw_lb_inverse_sov_sym(
-            fn + offset*fn_n_stride, flm,
-            L0, L, -n,
-            dl_method,
-            verbosity
-        );
+
+
+        switch (sampling)
+        {
+        case SO3_SAMPLING_MW:
+            ssht_core_mw_lb_inverse_sov_sym(
+                fn + offset*fn_n_stride, flm,
+                L0, L, -n,
+                dl_method,
+                verbosity
+            );
+            break;
+        case SO3_SAMPLING_MW_SS:
+            ssht_core_mw_lb_inverse_sov_sym_ss(
+                fn + offset*fn_n_stride, flm,
+                L0, L, -n,
+                dl_method,
+                verbosity
+            );
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid sampling scheme.");
+        }
 
         if(n % 2)
             for(i = 0; i < fn_n_stride; ++i)
@@ -179,6 +208,7 @@ void so3_core_mw_inverse_via_ssht(
  * \param[in] L0 Lower harmonic band-limit.
  * \param[in] L Upper harmonic band-limit.
  * \param[in] N Orientational band-limit.
+ * \param[in] sampling Indicates how the function values are sampled.
  * \param[in] storage Indicates how flm-blocks are stored.
  * \param[in] n_mode Indicates which n are non-zero.
  * \param[in] dl_method Method to use when computing the Wigner functions.
@@ -192,6 +222,7 @@ void so3_core_mw_inverse_via_ssht(
 void so3_core_mw_forward_via_ssht(
     complex double *flmn, const complex double *f,
     int L0, int L, int N,
+    so3_sampling_t sampling,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
@@ -220,7 +251,17 @@ void so3_core_mw_forward_via_ssht(
                     , storage);
     }
 
-    fn_n_stride = L * (2*L-1);
+    switch (sampling)
+    {
+    case SO3_SAMPLING_MW:
+        fn_n_stride = L * (2*L-1);
+        break;
+    case SO3_SAMPLING_MW_SS:
+        fn_n_stride = (L+1) * 2*L;
+        break;
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 
     // Make a copy of the input, because input is const
     // This could potentially be avoided by copying the input into fn and using an
@@ -278,24 +319,55 @@ void so3_core_mw_forward_via_ssht(
         case SO3_STORE_ZERO_FIRST_PAD:
         case SO3_STORE_NEG_FIRST_PAD:
             so3_sampling_elmn2ind(&ind, 0, 0, n, L, N, storage);
-            ssht_core_mw_lb_forward_sov_conv_sym(
-                flmn + ind, fn + offset*fn_n_stride,
-                L0, L, -n,
-                dl_method,
-                verbosity
-            );
+            switch (sampling)
+            {
+            case SO3_SAMPLING_MW:
+                ssht_core_mw_lb_forward_sov_conv_sym(
+                    flmn + ind, fn + offset*fn_n_stride,
+                    L0, L, -n,
+                    dl_method,
+                    verbosity
+                );
+                break;
+            case SO3_SAMPLING_MW_SS:
+                ssht_core_mw_lb_forward_sov_conv_sym_ss(
+                    flmn + ind, fn + offset*fn_n_stride,
+                    L0, L, -n,
+                    dl_method,
+                    verbosity
+                );
+                break;
+            default:
+                SO3_ERROR_GENERIC("Invalid sampling scheme.");
+            }
 
             i = offset = L0*L0;
             el = L0;
             break;
         case SO3_STORE_ZERO_FIRST_COMPACT:
         case SO3_STORE_NEG_FIRST_COMPACT:
-            ssht_core_mw_lb_forward_sov_conv_sym(
-                flm, fn + offset*fn_n_stride,
-                L0, L, -n,
-                dl_method,
-                verbosity
-            );
+            switch (sampling)
+            {
+            case SO3_SAMPLING_MW:
+                ssht_core_mw_lb_forward_sov_conv_sym(
+                    flm, fn + offset*fn_n_stride,
+                    L0, L, -n,
+                    dl_method,
+                    verbosity
+                );
+                break;
+            case SO3_SAMPLING_MW_SS:
+                ssht_core_mw_lb_forward_sov_conv_sym_ss(
+                    flm, fn + offset*fn_n_stride,
+                    L0, L, -n,
+                    dl_method,
+                    verbosity
+                );
+                break;
+            default:
+                SO3_ERROR_GENERIC("Invalid sampling scheme.");
+            }
+
             so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, L, N, storage);
             memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
 
@@ -342,6 +414,7 @@ void so3_core_mw_forward_via_ssht(
  * \param[in] L0 Lower harmonic band-limit.
  * \param[in] L Upper harmonic band-limit.
  * \param[in] N Orientational band-limit.
+ * \param[in] sampling Indicates how the function values are sampled.
  * \param[in] storage Indicates how flm-blocks are stored.
  * \param[in] n_mode Indicates which n are non-zero.
  * \param[in] dl_method Method to use when computing the Wigner functions.
@@ -355,6 +428,7 @@ void so3_core_mw_forward_via_ssht(
 void so3_core_mw_inverse_via_ssht_real(
     double *f, const complex double *flmn,
     int L0, int L, int N,
+    so3_sampling_t sampling,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
@@ -385,7 +459,17 @@ void so3_core_mw_inverse_via_ssht_real(
 
     // Compute fn(a,b)
 
-    fn_n_stride = L * (2*L-1);
+    switch (sampling)
+    {
+    case SO3_SAMPLING_MW:
+        fn_n_stride = L * (2*L-1);
+        break;
+    case SO3_SAMPLING_MW_SS:
+        fn_n_stride = (L+1) * 2*L;
+        break;
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 
     // Only need to store for non-negative n
     fn = calloc(N*fn_n_stride, sizeof *fn);
@@ -450,12 +534,27 @@ void so3_core_mw_inverse_via_ssht_real(
             offset = i;
         }
 
-        ssht_core_mw_lb_inverse_sov_sym(
-            fn + n*fn_n_stride, flm,
-            L0, L, -n,
-            dl_method,
-            verbosity
-        );
+        switch (sampling)
+        {
+        case SO3_SAMPLING_MW:
+            ssht_core_mw_lb_inverse_sov_sym(
+                fn + n*fn_n_stride, flm,
+                L0, L, -n,
+                dl_method,
+                verbosity
+            );
+            break;
+        case SO3_SAMPLING_MW_SS:
+            ssht_core_mw_lb_inverse_sov_sym_ss(
+                fn + n*fn_n_stride, flm,
+                L0, L, -n,
+                dl_method,
+                verbosity
+            );
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid sampling scheme.");
+        }
 
         if(n % 2)
             for(i = 0; i < fn_n_stride; ++i)
@@ -485,6 +584,7 @@ void so3_core_mw_inverse_via_ssht_real(
  * \param[in] L0 Lower harmonic band-limit.
  * \param[in] L Upper harmonic band-limit.
  * \param[in] N Orientational band-limit.
+ * \param[in] sampling Indicates how the function values are sampled.
  * \param[in] storage Indicates how flm-blocks are stored.
  * \param[in] n_mode Indicates which n are non-zero.
  * \param[in] dl_method Method to use when computing the Wigner functions.
@@ -498,6 +598,7 @@ void so3_core_mw_inverse_via_ssht_real(
 void so3_core_mw_forward_via_ssht_real(
     complex double *flmn, const double *f,
     int L0, int L, int N,
+    so3_sampling_t sampling,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
@@ -527,7 +628,17 @@ void so3_core_mw_forward_via_ssht_real(
                     , storage);
     }
 
-    fn_n_stride = L * (2*L-1);
+    switch (sampling)
+    {
+    case SO3_SAMPLING_MW:
+        fn_n_stride = L * (2*L-1);
+        break;
+    case SO3_SAMPLING_MW_SS:
+        fn_n_stride = (L+1) * 2*L;
+        break;
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 
     // Make a copy of the input, because input is const
     // This could potentially be avoided by copying the input into fn and using an
@@ -582,24 +693,54 @@ void so3_core_mw_forward_via_ssht_real(
         case SO3_STORE_ZERO_FIRST_PAD:
         case SO3_STORE_NEG_FIRST_PAD:
             so3_sampling_elmn2ind_real(&ind, 0, 0, n, L, N, storage);
-            ssht_core_mw_lb_forward_sov_conv_sym(
-                flmn + ind, fn + n*fn_n_stride,
-                L0, L, -n,
-                dl_method,
-                verbosity
-            );
+            switch (sampling)
+            {
+            case SO3_SAMPLING_MW:
+                ssht_core_mw_lb_forward_sov_conv_sym(
+                    flmn + ind, fn + n*fn_n_stride,
+                    L0, L, -n,
+                    dl_method,
+                    verbosity
+                );
+                break;
+            case SO3_SAMPLING_MW_SS:
+                ssht_core_mw_lb_forward_sov_conv_sym_ss(
+                    flmn + ind, fn + n*fn_n_stride,
+                    L0, L, -n,
+                    dl_method,
+                    verbosity
+                );
+                break;
+            default:
+                SO3_ERROR_GENERIC("Invalid sampling scheme.");
+            }
 
             i = offset = L0*L0;
             el = L0;
             break;
         case SO3_STORE_ZERO_FIRST_COMPACT:
         case SO3_STORE_NEG_FIRST_COMPACT:
-            ssht_core_mw_lb_forward_sov_conv_sym(
-                flm, fn + n*fn_n_stride,
-                L0, L, -n,
-                dl_method,
-                verbosity
-            );
+            switch (sampling)
+            {
+            case SO3_SAMPLING_MW:
+                ssht_core_mw_lb_forward_sov_conv_sym(
+                    flm, fn + n*fn_n_stride,
+                    L0, L, -n,
+                    dl_method,
+                    verbosity
+                );
+                break;
+            case SO3_SAMPLING_MW_SS:
+                ssht_core_mw_lb_forward_sov_conv_sym_ss(
+                    flm, fn + n*fn_n_stride,
+                    L0, L, -n,
+                    dl_method,
+                    verbosity
+                );
+                break;
+            default:
+                SO3_ERROR_GENERIC("Invalid sampling scheme.");
+            }
             so3_sampling_elmn2ind_real(&ind, n, -n, n, L, N, storage);
             memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
 
