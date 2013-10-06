@@ -1,11 +1,11 @@
-% so3_demo4 - Run demo4
+% so3_demo_compact_storage - Run compact storage demo.
 %
 % Simple demo to compute inverse and forward transform of complex scalar
 % function, using compact storage.
 %
 % Default usage is given by
 %
-%   so3_demo4
+%   so3_demo_compact_storage
 %
 % Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)

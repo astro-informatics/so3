@@ -1,11 +1,11 @@
-% so3_demo3 - Run demo3
+% so3_demo_real_signal - Run real signal demo.
 %
 % Simple demo to compute inverse and forward transform of real scalar
 % function, using simplest interface with default options.
 %
 % Default usage is given by
 %
-%   so3_demo3
+%   so3_demo_real_signal
 %
 % Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)

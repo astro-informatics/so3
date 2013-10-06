@@ -1,11 +1,12 @@
-% so3_demo1 - Run demo1
+% so3_demo_demo_plot_wigner - Run demo to create a plot of a Wigner
+% function.
 %
 % Plot Wigner functions on SO(3) by plotting a sphere for each sample
 % of gamma.
 %
 % Default usage is given by
 %
-%   so3_demo1
+%   so3_demo_demo_plot_wigner
 %
 % Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)

@@ -1,11 +1,11 @@
-% so3_demo7 - Run demo7
+% so3_demo_even_n - Run optimisation demo for even n.
 %
 % Simple demo to compute inverse and forward transform of complex scalar
 % function, using only flmn of even n.
 %
 % Default usage is given by
 %
-%   so3_demo7
+%   so3_demo_even_n
 %
 % Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)

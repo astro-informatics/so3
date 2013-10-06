@@ -1,11 +1,11 @@
-% so3_demo5 - Run demo5
+% so3_demo_storage_order - Run storage order demo.
 %
 % Simple demo to compute inverse and forward transform of complex scalar
 % function, storing the flmn for n = -N+1 first.
 %
 % Default usage is given by
 %
-%   so3_demo5
+%   so3_demo_storage_order
 %
 % Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)

@@ -1,10 +1,10 @@
-% so3_demo0 - Run demo0
+% so3_demo_errors_timing - Create error and timing plots.
 %
 % Tests the C implementation and plots errors and computation times.
 %
 % Default usage is given by
 %
-%   so3_demo0
+%   so3_demo_errors_timing
 %
 % Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)

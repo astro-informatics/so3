@@ -1,4 +1,4 @@
-% so3_demo6 - Run demo6
+% so3_demo_covariance - Run covariance demo.
 %
 % Demo to compare theoretical covariance of signal with empirical data from
 % using our transform functions. The empirical covariance is computed for 
@@ -8,7 +8,7 @@
 %
 % Default usage is given by
 %
-%   so3_demo6
+%   so3_demo_covariance
 %
 % Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)
