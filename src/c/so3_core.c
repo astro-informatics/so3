@@ -35,6 +35,8 @@
  * \param[in] N Orientational band-limit.
  * \param[in] storage Indicates how flm-blocks are stored.
  * \param[in] n_mode Indicates which n are non-zero.
+ * \param[in] dl_method Method to use when computing the Wigner functions.
+ *                      See SSHT package for details.
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
@@ -46,6 +48,7 @@ void so3_core_mw_inverse_via_ssht(
     int L0, int L, int N,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
+    ssht_dl_method_t dl_method,
     int verbosity
 ) {
     // Iterator
@@ -143,7 +146,7 @@ void so3_core_mw_inverse_via_ssht(
         ssht_core_mw_lb_inverse_sov_sym(
             fn + offset*fn_n_stride, flm,
             L0, L, -n,
-            SSHT_DL_TRAPANI,
+            dl_method,
             verbosity
         );
 
@@ -178,6 +181,8 @@ void so3_core_mw_inverse_via_ssht(
  * \param[in] N Orientational band-limit.
  * \param[in] storage Indicates how flm-blocks are stored.
  * \param[in] n_mode Indicates which n are non-zero.
+ * \param[in] dl_method Method to use when computing the Wigner functions.
+ *                      See SSHT package for details.
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
@@ -189,6 +194,7 @@ void so3_core_mw_forward_via_ssht(
     int L0, int L, int N,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
+    ssht_dl_method_t dl_method,
     int verbosity
 ) {
     // Iterator
@@ -275,7 +281,7 @@ void so3_core_mw_forward_via_ssht(
             ssht_core_mw_lb_forward_sov_conv_sym(
                 flmn + ind, fn + offset*fn_n_stride,
                 L0, L, -n,
-                SSHT_DL_TRAPANI,
+                dl_method,
                 verbosity
             );
 
@@ -287,7 +293,7 @@ void so3_core_mw_forward_via_ssht(
             ssht_core_mw_lb_forward_sov_conv_sym(
                 flm, fn + offset*fn_n_stride,
                 L0, L, -n,
-                SSHT_DL_TRAPANI,
+                dl_method,
                 verbosity
             );
             so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, L, N, storage);
@@ -338,6 +344,8 @@ void so3_core_mw_forward_via_ssht(
  * \param[in] N Orientational band-limit.
  * \param[in] storage Indicates how flm-blocks are stored.
  * \param[in] n_mode Indicates which n are non-zero.
+ * \param[in] dl_method Method to use when computing the Wigner functions.
+ *                      See SSHT package for details.
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
@@ -349,6 +357,7 @@ void so3_core_mw_inverse_via_ssht_real(
     int L0, int L, int N,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
+    ssht_dl_method_t dl_method,
     int verbosity
 ) {
     // Iterator
@@ -444,7 +453,7 @@ void so3_core_mw_inverse_via_ssht_real(
         ssht_core_mw_lb_inverse_sov_sym(
             fn + n*fn_n_stride, flm,
             L0, L, -n,
-            SSHT_DL_TRAPANI,
+            dl_method,
             verbosity
         );
 
@@ -478,6 +487,8 @@ void so3_core_mw_inverse_via_ssht_real(
  * \param[in] N Orientational band-limit.
  * \param[in] storage Indicates how flm-blocks are stored.
  * \param[in] n_mode Indicates which n are non-zero.
+ * \param[in] dl_method Method to use when computing the Wigner functions.
+ *                      See SSHT package for details.
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
@@ -489,6 +500,7 @@ void so3_core_mw_forward_via_ssht_real(
     int L0, int L, int N,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
+    ssht_dl_method_t dl_method,
     int verbosity
 ) {
     // Iterator
@@ -573,7 +585,7 @@ void so3_core_mw_forward_via_ssht_real(
             ssht_core_mw_lb_forward_sov_conv_sym(
                 flmn + ind, fn + n*fn_n_stride,
                 L0, L, -n,
-                SSHT_DL_TRAPANI,
+                dl_method,
                 verbosity
             );
 
@@ -585,7 +597,7 @@ void so3_core_mw_forward_via_ssht_real(
             ssht_core_mw_lb_forward_sov_conv_sym(
                 flm, fn + n*fn_n_stride,
                 L0, L, -n,
-                SSHT_DL_TRAPANI,
+                dl_method,
                 verbosity
             );
             so3_sampling_elmn2ind_real(&ind, n, -n, n, L, N, storage);

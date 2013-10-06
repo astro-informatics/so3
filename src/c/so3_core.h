@@ -5,6 +5,7 @@
 #ifndef SO3_CORE
 #define SO3_CORE
 
+#include "ssht.h"
 #include <complex.h>
 
 void so3_core_mw_inverse_via_ssht(
@@ -12,6 +13,7 @@ void so3_core_mw_inverse_via_ssht(
     int L0, int L, int N,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
+    ssht_dl_method_t dl_method,
     int verbosity
 );
 
@@ -20,6 +22,7 @@ void so3_core_mw_forward_via_ssht(
     int L0, int L, int N,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
+    ssht_dl_method_t dl_method,
     int verbosity
 );
 
@@ -28,6 +31,7 @@ void so3_core_mw_inverse_via_ssht_real(
     int L0, int L, int N,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
+    ssht_dl_method_t dl_method,
     int verbosity
 );
 
@@ -36,6 +40,7 @@ void so3_core_mw_forward_via_ssht_real(
     int L0, int L, int N,
     so3_storage_t storage,
     so3_n_mode_t n_mode,
+    ssht_dl_method_t dl_method,
     int verbosity
 );
 

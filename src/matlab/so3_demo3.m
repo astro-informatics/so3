@@ -21,34 +21,45 @@ L = 64;
 N = 3;
 
 % Generate random flmn of real signal
-flmn = zeros((2*N-1)*L*L, 1);
-for n = -N+1:N-1,
-    for el = abs(n):L-1,
-        for m = 0:el,
-            sample = rand + 1i*rand;
-            sample = 2*(sample - (1+1i)/2);
+flmn = zeros(N*L*L, 1);
+% Handle n = 0
+for el = 0:L-1,
+    % Fill fl00 with random real values
+    sample = rand;
+    sample = 2*sample - 1;
 
-            if m == 0 && n == 0
-                ind = so3_elmn2ind(el,m,n,L,N);
-                flmn(ind) = real(sample);
-            else
-                ind = so3_elmn2ind(el,m,n,L,N);
-                flmn(ind) = sample;
-                ind = so3_elmn2ind(el,-m,-n,L,N);
-                flmn(ind) = (-1)^(m+n) * conj(sample);
-            end
+    ind = so3_elmn2ind(el,0,0,L,N,'Reality',true);
+    flmn(ind) = sample;
+
+    % Fill fl+-m0 with conjugated random values
+    for m = 1:el,
+        sample = rand + i*rand;
+        sample = 2*sample - 1 - i;
+        ind = so3_elmn2ind(el,m,0,L,N,'Reality',true);
+        flmn(ind) = sample;
+        ind = so3_elmn2ind(el,-m,0,L,N,'Reality',true);
+        flmn(ind) = (-1)^m * conj(sample);
+    end
+end
+
+% Fill the remaining coefficients randomly
+for n = 1:N-1,
+    for el = n:L-1,
+        for m = -el:el,
+            sample = rand + i*rand;
+            sample = 2*sample - 1 - i;
+            ind = so3_elmn2ind(el,m,n,L,N,'Reality',true);
+            flmn(ind) = sample;
         end
     end
 end
 
 % Compute inverse then forward transform.
-f = so3_inverse(flmn, L, N);
-flmn_syn = so3_forward(f, L, N);
+f = so3_inverse(flmn, L, N, 'Reality', true);
+flmn_syn = so3_forward(f, L, N, 'Reality', true);
 
 % Compute maximum error in harmonic space.
 maxerr = max(abs(flmn_syn - flmn))
-% Compute maximum imaginary part in SO(3).
-maximag = max(imag(f(:)))
 
 % Compute sampling grids.
 [alphas, betas, gammas, n, nalpha, nbeta, ngamma] = so3_sampling(L, N, 'Grid', true);

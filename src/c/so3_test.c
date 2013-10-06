@@ -132,8 +132,8 @@ int main(int argc, char **argv)
                     else      so3_test_gen_flmn_complex(flmn_orig, L0, L, N, storage_mode, n_mode, seed);
 
                     time_start = clock();
-                    if (real) so3_core_mw_inverse_via_ssht_real(f_real, flmn_orig, L0, L, N, storage_mode, n_mode, verbosity);
-                    else      so3_core_mw_inverse_via_ssht(f, flmn_orig, L0, L, N, storage_mode, n_mode, verbosity);
+                    if (real) so3_core_mw_inverse_via_ssht_real(f_real, flmn_orig, L0, L, N, storage_mode, n_mode, SSHT_DL_RISBO, verbosity);
+                    else      so3_core_mw_inverse_via_ssht(f, flmn_orig, L0, L, N, storage_mode, n_mode, SSHT_DL_RISBO, verbosity);
                     time_end = clock();
 
                     duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
@@ -141,8 +141,8 @@ int main(int argc, char **argv)
                         durations_inverse[storage_mode][n_mode][real] = duration;
 
                     time_start = clock();
-                    if (real) so3_core_mw_forward_via_ssht_real(flmn_syn, f_real, L0, L, N, storage_mode, n_mode, verbosity);
-                    else      so3_core_mw_forward_via_ssht(flmn_syn, f, L0, L, N, storage_mode, n_mode, verbosity);
+                    if (real) so3_core_mw_forward_via_ssht_real(flmn_syn, f_real, L0, L, N, storage_mode, n_mode, SSHT_DL_RISBO, verbosity);
+                    else      so3_core_mw_forward_via_ssht(flmn_syn, f, L0, L, N, storage_mode, n_mode, SSHT_DL_RISBO, verbosity);
                     time_end = clock();
 
                     duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;

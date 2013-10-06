@@ -14,7 +14,7 @@
  * Compute harmonic indices from array index.
  *
  * Usage:
- *   [el, m, n] = so3_ind2elmn(ind, L, N, order, storage)
+ *   [el, m, n] = so3_ind2elmn(ind, L, N, order, storage, reality)
  *
  * \author Martin Büttner
  * \author Jason McEwen
@@ -26,11 +26,12 @@ void mexFunction( int nlhs, mxArray *plhs[],
     int len, iin, iout = 0;
     char order[SO3_STRING_LEN], storage[SO3_STRING_LEN];
     so3_storage_t method;
+    int reality;
 
     /* Check number of arguments */
-    if (nrhs != 5)
+    if (nrhs != 6)
         mexErrMsgIdAndTxt("so3_ind2elmn_mex:InvalidInput:nrhs",
-                          "Require five inputs.");
+                          "Require six inputs.");
     if (nlhs != 3)
         mexErrMsgIdAndTxt("so3_ind2elmn_mex:InvalidInput:nlhs",
                           "Require three outputs.");
@@ -110,11 +111,22 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Storage type exceeds maximum string length.");
     mxGetString(prhs[iin], storage, len);
 
+    /* Parse reality. */
+    iin = 5;
+    if( !mxIsLogicalScalar(prhs[iin]) )
+        mexErrMsgIdAndTxt("so3_ind2elmn_mex:InvalidInput:reality",
+                          "Reality flag must be logical.");
+    reality = mxIsLogicalScalarTrue(prhs[iin]);
+
     if (strcmp(storage, SO3_STORAGE_PADDED) == 0)
     {
-        if (ind > (2*N-1)*L*L)
+        if (reality && ind > N*L*L)
+            mexErrMsgIdAndTxt("so3_ind2elmn:InvalidInput:indOutOfRange",
+                              "The array index must lie between 1 and N*L*L.");
+        if (!reality && ind > (2*N-1)*L*L)
             mexErrMsgIdAndTxt("so3_ind2elmn:InvalidInput:indOutOfRange",
                               "The array index must lie between 1 and (2*N-1)*L*L.");
+
         if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
             method = SO3_STORE_ZERO_FIRST_PAD;
         else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
@@ -125,7 +137,10 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
     else if (strcmp(storage, SO3_STORAGE_COMPACT) == 0)
     {
-        if (ind > (2*N-1)*(3*L*L-N*(N-1))/3)
+        if (reality && ind > N*(6*L*L-(N-1)*(2*N-1))/6)
+            mexErrMsgIdAndTxt("so3_ind2elmn:InvalidInput:indOutOfRange",
+                              "The array index must lie between 1 and N*(6*L*L-(N-1)*(2*N-1))/6.");
+        if (!reality && ind > (2*N-1)*(3*L*L-N*(N-1))/3)
             mexErrMsgIdAndTxt("so3_ind2elmn:InvalidInput:indOutOfRange",
                               "The array index must lie between 1 and (2*N-1)*(3*L*L-N*(N-1))/3.");
 
@@ -142,7 +157,11 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Invalid storage type.");
 
     --ind; // Adjust index from MATLAB-style 1-based to C-style 0-based
-    so3_sampling_ind2elmn(&el, &m, &n, ind, L, N, method);
+    if (reality)
+        so3_sampling_ind2elmn_real(&el, &m, &n, ind, L, N, method);
+    else
+        so3_sampling_ind2elmn(&el, &m, &n, ind, L, N, method);
+
     plhs[iout++] = mxCreateDoubleScalar(el);
     plhs[iout++] = mxCreateDoubleScalar(m);
     plhs[iout++] = mxCreateDoubleScalar(n);

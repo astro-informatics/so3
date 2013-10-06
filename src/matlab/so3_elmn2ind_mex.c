@@ -14,7 +14,7 @@
  * Compute array index from harmonic indices.
  *
  * Usage:
- *   [ind] = so3_elmn2ind(el, m, n, L, N, order, storage)
+ *   [ind] = so3_elmn2ind(el, m, n, L, N, order, storage, reality)
  *
  * \author Martin Büttner
  * \author Jason McEwen
@@ -26,11 +26,12 @@ void mexFunction( int nlhs, mxArray *plhs[],
     int len, iin, iout = 0;
     char order[SO3_STRING_LEN], storage[SO3_STRING_LEN];
     so3_storage_t method;
+    int reality;
 
     /* Check number of arguments */
-    if (nrhs != 7)
+    if (nrhs != 8)
         mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:nrhs",
-                          "Require seven inputs.");
+                          "Require eight inputs.");
     if (nlhs != 1)
         mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:nlhs",
                           "Require one output.");
@@ -159,6 +160,17 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Storage type exceeds maximum string length.");
     mxGetString(prhs[iin], storage, len);
 
+    /* Parse reality. */
+    iin = 7;
+    if( !mxIsLogicalScalar(prhs[iin]) )
+        mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:reality",
+                          "Reality flag must be logical.");
+    reality = mxIsLogicalScalarTrue(prhs[iin]);
+
+    if (reality && n < 0)
+        mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:negativeNForRealSignal",
+                          "For a real signal, negative n are not stored.");
+
     if (strcmp(storage, SO3_STORAGE_PADDED) == 0)
     {
         if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
@@ -187,7 +199,11 @@ void mexFunction( int nlhs, mxArray *plhs[],
         mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:storage",
                           "Invalid storage type.");
 
-    so3_sampling_elmn2ind(&ind, el, m, n, L, N, method);
+    if (reality)
+        so3_sampling_elmn2ind_real(&ind, el, m, n, L, N, method);
+    else
+        so3_sampling_elmn2ind(&ind, el, m, n, L, N, method);
+
     ++ind; // Adjust index from C-style 0-based to MATLAB-style 1-based
     plhs[iout] = mxCreateDoubleScalar(ind);
 }

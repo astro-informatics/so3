@@ -2,7 +2,7 @@
 // Copyright (C) 2013 Martin Büttner and Jason McEwen
 // See LICENSE.txt for license details
 
-
+#include "ssht.h"
 #include <so3.h>
 #include "so3_mex.h"
 #include <string.h>
@@ -14,7 +14,7 @@
  *
  * Usage:
  *   [f] = ...
- *     so3_inverse_mex(flmn, L, N, order, storage);
+ *     so3_inverse_mex(flmn, L, N, order, storage, n_mode, dl_method, reality);
  *
  * \author Martin Büttner
  * \author Jason McEwen
@@ -24,28 +24,40 @@ void mexFunction( int nlhs, mxArray *plhs[],
 {
     int i, iin, iout, a, b, g;
 
-    int flmn_m, flmn_n;
+    int flmn_m, flmn_n, flmn_size;
     double *flmn_real, *flmn_imag;
     complex double *flmn;
     int L, N;
     int len;
-    char order[SO3_STRING_LEN], storage[SO3_STRING_LEN];
+    char order_str[SO3_STRING_LEN], storage_str[SO3_STRING_LEN], n_mode_str[SO3_STRING_LEN], dl_method_str[SO3_STRING_LEN];
 
-    so3_storage_t method;
+    so3_storage_t storage_method;
+    so3_n_mode_t n_mode;
+    ssht_dl_method_t dl_method;
+
+    int reality;
 
     complex double *f;
     double *f_real, *f_imag;
+    double *fr;
     mwSize ndim = 3;
     mwSize dims[ndim];
     int nalpha, nbeta, ngamma;
 
     /* Check number of arguments. */
-    if (nrhs != 5)
+    if (nrhs != 8)
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:nrhs",
-                          "Require five inputs.");
+                          "Require eight inputs.");
     if (nlhs != 1)
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidOutput:nlhs",
                           "Require one output.");
+
+    /* Parse reality. */
+    iin = 7;
+    if( !mxIsLogicalScalar(prhs[iin]) )
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:reality",
+                          "Reality flag must be logical.");
+    reality = mxIsLogicalScalarTrue(prhs[iin]);
 
     /* Parse harmonic coefficients flmn. */
     iin = 0;
@@ -54,7 +66,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
     if (flmn_m != 1 && flmn_n != 1)
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:flmnVector",
                           "Harmonic coefficients must be contained in vector.");
-    flmn = malloc(flmn_m * flmn_n * sizeof(*flmn));
+    flmn_size = flmn_m * flmn_n;
+    flmn = malloc(flmn_size * sizeof(*flmn));
     flmn_real = mxGetPr(prhs[iin]);
     for (i = 0; i < flmn_m*flmn_n; ++i)
         flmn[i] = flmn_real[i];
@@ -109,7 +122,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     if (len >= SO3_STRING_LEN)
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:orderTooLong",
                           "Storage order exceeds string length.");
-    mxGetString(prhs[iin], order, len);
+    mxGetString(prhs[iin], order_str, len);
 
     /* Parse storage type. */
     iin = 4;
@@ -121,53 +134,116 @@ void mexFunction( int nlhs, mxArray *plhs[],
     if (len >= SO3_STRING_LEN)
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:storageTooLong",
                           "Storage type exceeds string length.");
-    mxGetString(prhs[iin], storage, len);
+    mxGetString(prhs[iin], storage_str, len);
 
-    if (strcmp(storage, SO3_STORAGE_PADDED) == 0)
+    if (strcmp(storage_str, SO3_STORAGE_PADDED) == 0)
     {
-        if (flmn_m * flmn_n != (2*N-1)*L*L)
+
+        if ((reality && flmn_size != N*L*L)
+            || (!reality && flmn_size != (2*N-1)*L*L))
             mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:flmnSize",
                               "Invalid number of harmonic coefficients.");
 
-        if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
-            method = SO3_STORE_ZERO_FIRST_PAD;
-        else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
-            method = SO3_STORE_NEG_FIRST_PAD;
+        if (strcmp(order_str, SO3_ORDER_ZEROFIRST) == 0)
+            storage_method = SO3_STORE_ZERO_FIRST_PAD;
+        else if (strcmp(order_str, SO3_ORDER_NEGFIRST) == 0)
+            storage_method = SO3_STORE_NEG_FIRST_PAD;
         else
             mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:order",
                               "Invalid storage order.");
     }
-    else if (strcmp(storage, SO3_STORAGE_COMPACT) == 0)
+    else if (strcmp(storage_str, SO3_STORAGE_COMPACT) == 0)
     {
-        if (flmn_m * flmn_n != (2*N-1)*(3*L*L-N*(N-1))/3)
+        if ((reality && flmn_size != N*(6*L*L-(N-1)*(2*N-1))/6)
+            || (!reality && flmn_size != (2*N-1)*(3*L*L-N*(N-1))/3))
             mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:flmnSize",
                               "Invalid number of harmonic coefficients.");
 
-        if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
-            method = SO3_STORE_ZERO_FIRST_COMPACT;
-        else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
-            method = SO3_STORE_NEG_FIRST_COMPACT;
+        if (strcmp(order_str, SO3_ORDER_ZEROFIRST) == 0)
+            storage_method = SO3_STORE_ZERO_FIRST_COMPACT;
+        else if (strcmp(order_str, SO3_ORDER_NEGFIRST) == 0)
+            storage_method = SO3_STORE_NEG_FIRST_COMPACT;
         else
-            mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:order",
+            mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:order_str",
                               "Invalid storage order.");
     }
     else
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:storage",
                           "Invalid storage type.");
 
+    /* Parse n-mode. */
+    iin = 5;
+    if( !mxIsChar(prhs[iin]) ) {
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:nModeChar",
+                          "Storage type must be string.");
+    }
+    len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
+    if (len >= SO3_STRING_LEN)
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:nModeTooLong",
+                          "n-mode exceeds string length.");
+    mxGetString(prhs[iin], n_mode_str, len);
+
+    if (strcmp(n_mode_str, SO3_N_MODE_ALL_STR) == 0)
+        n_mode = SO3_N_MODE_ALL;
+    else if (strcmp(n_mode_str, SO3_N_MODE_EVEN_STR) == 0)
+        n_mode = SO3_N_MODE_EVEN;
+    else if (strcmp(n_mode_str, SO3_N_MODE_ODD_STR) == 0)
+        n_mode = SO3_N_MODE_ODD;
+    else if (strcmp(n_mode_str, SO3_N_MODE_MAXIMUM_STR) == 0)
+        n_mode = SO3_N_MODE_MAXIMUM;
+    else
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:nMode",
+                          "Invalid n-mode.");
+
+    /* Parse Wigner recursion method. */
+    iin = 6;
+    if( !mxIsChar(prhs[iin]) ) {
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:dlMethodChar",
+                          "Wigner recursion method must be string.");
+    }
+    len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
+    if (len >= SO3_STRING_LEN)
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:dlMethodTooLong",
+                          "Wigner recursion method exceeds string length.");
+    mxGetString(prhs[iin], dl_method_str, len);
+
+    if (strcmp(dl_method_str, SSHT_RECURSION_RISBO) == 0)
+        dl_method = SSHT_DL_RISBO;
+    else if (strcmp(dl_method_str, SSHT_RECURSION_TRAPANI) == 0)
+        dl_method = SSHT_DL_TRAPANI;
+    else
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:storage",
+                          "Invalid Wigner recursion method.");
+
     /* Compute inverse transform. */
     nalpha = so3_sampling_mw_nalpha(L);
     nbeta = so3_sampling_mw_nbeta(L);
     ngamma = so3_sampling_mw_ngamma(N);
 
-    f = malloc(nalpha * nbeta * ngamma * sizeof(*f));
-    so3_core_mw_inverse_via_ssht(
-        f, flmn,
-        0, L, N,
-        method,
-        SO3_N_MODE_ALL,
-        0
-    );
+    if (reality)
+    {
+        fr = malloc(nalpha * nbeta * ngamma * sizeof(*fr));
+        so3_core_mw_inverse_via_ssht_real(
+            fr, flmn,
+            0, L, N,
+            storage_method,
+            n_mode,
+            dl_method,
+            0
+        );
+    }
+    else
+    {
+        f = malloc(nalpha * nbeta * ngamma * sizeof(*f));
+        so3_core_mw_inverse_via_ssht(
+            f, flmn,
+            0, L, N,
+            storage_method,
+            n_mode,
+            dl_method,
+            0
+        );
+    }
 
     // Copy result to output argument
 
@@ -175,23 +251,49 @@ void mexFunction( int nlhs, mxArray *plhs[],
     dims[1] = nbeta;
     dims[2] = nalpha;
 
-    iout = 0;
-    plhs[iout] = mxCreateNumericArray(ndim, dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    f_real = mxGetPr(plhs[iout]);
-    f_imag = mxGetPi(plhs[iout]);
-    for(g = 0; g < ngamma; ++g)
+    if (reality)
     {
-        for(b = 0; b < nbeta; ++b)
+        iout = 0;
+        plhs[iout] = mxCreateNumericArray(ndim, dims, mxDOUBLE_CLASS, mxREAL);
+        f_real = mxGetPr(plhs[iout]);
+        for(g = 0; g < ngamma; ++g)
         {
-            for(a = 0; a < nalpha; ++a)
+            for(b = 0; b < nbeta; ++b)
             {
-                f_real[a*ngamma*nbeta + b*ngamma + g] = creal(f[g*nalpha*nbeta + b*nalpha + a]);
-                f_imag[a*ngamma*nbeta + b*ngamma + g] = cimag(f[g*nalpha*nbeta + b*nalpha + a]);
+                for(a = 0; a < nalpha; ++a)
+                {
+                    f_real[a*ngamma*nbeta + b*ngamma + g] = fr[g*nalpha*nbeta + b*nalpha + a];
+                }
+            }
+        }
+    }
+    else
+    {
+        iout = 0;
+        plhs[iout] = mxCreateNumericArray(ndim, dims, mxDOUBLE_CLASS, mxCOMPLEX);
+        f_real = mxGetPr(plhs[iout]);
+        f_imag = mxGetPi(plhs[iout]);
+        for(g = 0; g < ngamma; ++g)
+        {
+            for(b = 0; b < nbeta; ++b)
+            {
+                for(a = 0; a < nalpha; ++a)
+                {
+                    f_real[a*ngamma*nbeta + b*ngamma + g] = creal(f[g*nalpha*nbeta + b*nalpha + a]);
+                    f_imag[a*ngamma*nbeta + b*ngamma + g] = cimag(f[g*nalpha*nbeta + b*nalpha + a]);
+                }
             }
         }
     }
 
     /* Free memory. */
     free(flmn);
-    free(f);
+    if (reality)
+    {
+        free(fr);
+    }
+    else
+    {
+        free(f);
+    }
 }

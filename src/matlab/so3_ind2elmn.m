@@ -20,6 +20,10 @@ function [el, em, en] = so3_ind2elmn(ind, L, N, varargin)
 %                                  ..., -2, -1, 0, 1, 2, ...] }
 %   'Storage' = { 'Padded'        [indices for el < en are zero (default)],
 %                 'Compact'       [indices for el < en are omitted] }
+%
+%  'Reality' = { false            [do not assume f real (default)],
+%                true             [assume f real; in this case, the Order
+%                                  parameter will be ignored] }
 
 % Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)
@@ -35,8 +39,9 @@ p.addRequired('L', @isnumeric);
 p.addRequired('N', @isnumeric);
 p.addParamValue('Order', 'ZeroFirst', @ischar);
 p.addParamValue('Storage', 'Padded', @ischar);
+p.addParamValue('Reality', false, @islogical);
 p.parse(ind, L, N, varargin{:});
 args = p.Results;
 
 % Compute index
-[el, em, en] = so3_ind2elmn_mex(ind, L, N, args.Order, args.Storage);
+[el, em, en] = so3_ind2elmn_mex(ind, L, N, args.Order, args.Storage, args.Reality);

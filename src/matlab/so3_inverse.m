@@ -18,8 +18,22 @@ function [f] = so3_inverse(flmn, L, N, varargin)
 %                                  0, -1, 1, -2, 2, ... (default)],
 %                 'NegativeFirst' [el-em blocks are stored in en-order
 %                                  ..., -2, -1, 0, 1, 2, ...] }
+%
 %   'Storage' = { 'Padded'        [indices for el < en are zero (default)],
 %                 'Compact'       [indices for el < en are omitted] }
+%
+%   'NMode' = { 'All'             [all flmn are non-zero (default)],
+%               'Even'            [only flmn for even n are non-zero],
+%               'Odd'             [only flmn for odd n are non-zero],
+%               'Maximum'         [only flmn for |n| = N-1 are non-zero] }
+%
+%   'WignerMethod' = { 'Trapani'  [Trapani-recursion is used to compute the
+%                                  the Wigner functions (default)],
+%                      'Risbo'    [Risbo-recursion is used to compute the
+%                                  the Wigner functions] }
+%
+%  'Reality' = { false            [do not assume f real (default)],
+%                true             [assume f real (improves performance)] }
 %
 % Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)
@@ -35,9 +49,12 @@ p.addRequired('L', @isnumeric);
 p.addRequired('N', @isnumeric);
 p.addParamValue('Order', 'ZeroFirst', @ischar);
 p.addParamValue('Storage', 'Padded', @ischar);
+p.addParamValue('NMode', 'All', @ischar);
+p.addParamValue('WignerMethod', 'Trapani', @ischar);
+p.addParamValue('Reality', false, @islogical);
 p.parse(flmn, L, N, varargin{:});
 args = p.Results;
 
 % Computing inverse transform.
 [f] = ...
-    so3_inverse_mex(flmn, L, N, args.Order, args.Storage);
+    so3_inverse_mex(flmn, L, N, args.Order, args.Storage, args.NMode, args.WignerMethod, args.Reality);
