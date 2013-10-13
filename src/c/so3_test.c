@@ -1,5 +1,5 @@
 // S03 package to perform Wigner transform on the rotation group SO(3)
-// Copyright (C) 2013 Martin Buettner and Jason McEwen
+// Copyright (C) 2013 Martin Büttner and Jason McEwen
 // See LICENSE.txt for license details
 
 /*!
@@ -14,7 +14,7 @@
  *
  * Defaults: L = 16, N = L, L0 = 0, seed = 1
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
@@ -257,7 +257,7 @@ double get_max_error(complex double *expected, complex double *actual, int n)
  * \param[in] seed Integer seed required for random number generator.
  * \retval none
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_test_gen_flmn_complex(
@@ -297,7 +297,7 @@ void so3_test_gen_flmn_complex(
  * \param[in] idum Seed.
  * \retval ran_dp Generated uniform deviate.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double ran2_dp(int idum)

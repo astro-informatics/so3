@@ -1,5 +1,5 @@
 // S03 package to perform Wigner transform on the rotation group SO(3)
-// Copyright (C) 2013 Martin Buettner and Jason McEwen
+// Copyright (C) 2013 Martin Büttner and Jason McEwen
 // See LICENSE.txt for license details
 
 #ifndef SO3_CORE

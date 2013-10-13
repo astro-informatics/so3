@@ -1,5 +1,5 @@
 // S03 package to perform Wigner transform on the rotation group SO(3)
-// Copyright (C) 2013 Martin Buettner and Jason McEwen
+// Copyright (C) 2013 Martin Büttner and Jason McEwen
 // See LICENSE.txt for license details
 
 #include <stdlib.h>
@@ -22,7 +22,7 @@
  * \param[in] N Orientational harmonic band-limit.
  * \retval n Number of samples.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_n(int L, int N)
@@ -38,7 +38,7 @@ int so3_sampling_mw_n(int L, int N)
  * \param[in] L Harmonic band-limit.
  * \retval nalpha Number of alpha samples.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_nalpha(int L)
@@ -56,7 +56,7 @@ int so3_sampling_mw_nalpha(int L)
  * \param[in] L Harmonic band-limit.
  * \retval nbeta Number of beta samples.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_nbeta(int L)
@@ -71,7 +71,7 @@ int so3_sampling_mw_nbeta(int L)
  * \param[in] N Orientational harmonic band-limit.
  * \retval ngamma Number of gamma samples.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 int so3_sampling_mw_ngamma(int N)
@@ -90,7 +90,7 @@ int so3_sampling_mw_ngamma(int N)
  * \param[in] L Harmonic band-limit.
  * \retval alpha Alpha angle.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double so3_sampling_mw_a2alpha(int a, int L)
@@ -109,7 +109,7 @@ double so3_sampling_mw_a2alpha(int a, int L)
  * \param[in] L Harmonic band-limit.
  * \retval beta Beta angle.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double so3_sampling_mw_b2beta(int b, int L)
@@ -128,7 +128,7 @@ double so3_sampling_mw_b2beta(int b, int L)
  * \param[in] N Orientational harmonic band-limit.
  * \retval gamma Gamma angle.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 double so3_sampling_mw_g2gamma(int g, int N)
@@ -150,7 +150,7 @@ double so3_sampling_mw_g2gamma(int g, int N)
  * \retval Number of coefficients to be stored or 0 for invalid storage
  *         parameter.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 inline int so3_sampling_flmn_size(
@@ -187,7 +187,7 @@ inline int so3_sampling_flmn_size(
  * \param[in]  n   Orientational harmonic index [input].
  * \retval none
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, so3_storage_t storage)
@@ -253,7 +253,7 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, int L, int N, 
  * \param[out] n   Orientational harmonic index [input].
  * \retval none
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, int L, int N, so3_storage_t storage)

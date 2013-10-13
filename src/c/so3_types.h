@@ -1,5 +1,5 @@
 // S03 package to perform Wigner transform on the rotation group SO(3)
-// Copyright (C) 2013 Martin Buettner and Jason McEwen
+// Copyright (C) 2013 Martin Büttner and Jason McEwen
 // See LICENSE.txt for license details
 
 /*! \mainpage SO3 C documentation
@@ -10,7 +10,7 @@
  * documentation available
  * <a href="../../index.html">here</a>.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
@@ -18,7 +18,7 @@
 /*! \file so3_types.h
  *  Types used in SO3 package.
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 

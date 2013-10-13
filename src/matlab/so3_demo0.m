@@ -6,11 +6,11 @@
 %
 %   so3_demo0
 %
-% Authors: Martin Buettner (m.buettner.d@gmail.com)
+% Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)
 
 % SO3 package to perform Wigner transforms
-% Copyright (C) 2013 Martin Buettner and Jason McEwen
+% Copyright (C) 2013 Martin Büttner and Jason McEwen
 % See LICENSE.txt for license details
 
 clear all;

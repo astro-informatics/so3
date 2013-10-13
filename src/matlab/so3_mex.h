@@ -1,6 +1,6 @@
 
 // SO3 package to perform Wigner transforms
-// Copyright (C) 2013 Martin Buettner and Jason McEwen
+// Copyright (C) 2013 Martin Büttner and Jason McEwen
 // See LICENSE.txt for license details
 
 #define SO3_ORDER_ZEROFIRST "ZeroFirst"

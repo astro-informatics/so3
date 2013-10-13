@@ -1,12 +1,12 @@
 // S03 package to perform Wigner transform on the rotation group SO(3)
-// Copyright (C) 2013 Martin Buettner and Jason McEwen
+// Copyright (C) 2013 Martin Büttner and Jason McEwen
 // See LICENSE.txt for license details
 
 /*!
  * \file so3_core.c
  * Core algorithms to perform Wigner transform on the rotation group SO(§).
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 
@@ -38,7 +38,7 @@
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_core_mw_inverse_via_ssht(
@@ -197,7 +197,7 @@ void so3_core_mw_inverse_via_ssht(
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Buettner</a>
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
 void so3_core_mw_forward_via_ssht(
