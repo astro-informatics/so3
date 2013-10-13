@@ -24,7 +24,6 @@
  {
     int i, iin, iout, a, b, g;
 
-    mwSize ndim;
     const mwSize *dims;
     int f_na, f_nb, f_ng;
     double *f_real, *f_imag;

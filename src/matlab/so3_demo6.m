@@ -27,27 +27,58 @@ var_flmn = 1; % Should we use the actual variance var(flmn) of each
               % realization here instead?
 
 % Compute theoretical variance of signal.
+% The covariance <f(rho)f*(rho')> is 0 when rho != rho' and given by the
+% following expression otherwise:
+% 
+% sigma^2 Sum(l,m,n) ((2*l+1)/(8pi^2))^2 |Dlmn(rho)|^2
+%
+% Where sigma^2 is the variance of the harmonic coefficients and Dlmn is
+% the Wigner function:
+%
+% Dlmn(alpha, beta, gamma) = exp(-i*m*alpha)*exp(-i*n*gamma)*dlmn(beta)
+%
+% Note that the exponentials drop out when taking the modulus sqaured. dlmn
+% are the real polar d-functions given by, which we can compute using the
+% ssht_dl function. The covariance reduces to
+%
+%   sigma^2 Sum(l,m,n) ((2*l+1)/(8pi^2))^2 |dlmn(beta)|^2
+% = sigma^2 Sum(l) (((2*l+1)/(8pi^2))^2 Sum(m,n) |dlmn(beta)|^2)
+%
+% The inner sum can be simplified further as follows:
+%
+%   Sum(m,n) |dlmn(beta)|^2
+% = Sum(m,n) dlmn(beta) * dlmn(beta)*
+% = Sum(m,n) dlmn(beta) * dlnm(-beta)
+% = Sum(m) dlmm(beta - beta)
+% = Sum(m) dlmm(0)
+%
+% The penultimate equality follows from the addition theorem found on pages
+% 87-88 of Varshalovich.
+% Therefore, we obtain the following equation for the covariance:
+%
+% sigma^2 Sum(l,m) (((2*l+1)/(8pi^2))^2 dlmm(0)
+
 covar_f_theory = 0; %zeros(1, L);
 dl = zeros(2*L-1, 2*L-1);
 for l = 0:L-1,
     scale = ((2*l+1)/(8*pi^2))^2;
-    dl = ssht_dl(dl, L, l, pi/2);
+    dl = ssht_dl(dl, L, l, 0);
     for m = -l:l,
-        maxn = min(N-1,l);
-        for n = -maxn:maxn,
+        %maxn = min(N-1,l);
+        %for n = -maxn:maxn,
             %for b = 0:L-1,
-                dlmn = 0;
-                for mp = -l:l, % m'
+                %dlmn = 0;
+                %for mp = -l:l, % m'
                    % We leave out the exponential contributions in alpha
                    % and gamma to Dlmn, because we are only interested in
                    % the squared modulus of Dlmn.
                    % Similarly we leave out the phase of the dlmn.
-                   dlmn = dlmn + dl(L+mp,L+m)*dl(L+mp,L+n);%*exp(1i*mp*pi*(2*b+1)/(2*L-1));
-                end
+                   %dlmn = dlmn + dl(L+mp,L+m)*dl(L+mp,L+n)*exp(1i*mp*pi*(2*b+1)/(2*L-1));
+                %end
                 %covar_f_theory(b+1) = covar_f_theory(b+1) + scale*abs(dlmn)^2;
-                covar_f_theory = covar_f_theory + scale*abs(dlmn)^2;
             %end
-        end
+        %end
+        covar_f_theory = covar_f_theory + scale*dl(L+m,L+m);
     end
 end
 

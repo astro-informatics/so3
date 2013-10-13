@@ -32,12 +32,16 @@
 double get_max_error(complex double *expected, complex double *actual, int n);
 double ran2_dp(int idum);
 void so3_test_gen_flmn_complex(complex double *flmn, int L0, int L, int N, so3_storage_t storage, int seed);
+void so3_test_gen_flmn_real(complex double *flmn, int L0, int L, int N, so3_storage_t storage, int seed);
 
 int main(int argc, char **argv)
 {
     int L, N, L0;
     complex double *flmn_compact_orig, *flmn_compact_syn, *flmn_padded_orig, *flmn_padded_syn;
     complex double *f;
+
+    complex double *flmn_real_compact_orig, *flmn_real_compact_syn, *flmn_real_padded_orig, *flmn_real_padded_syn;
+    double *f_real;
     int verbosity = 0;
     int seed;
     clock_t time_start, time_end;
@@ -47,6 +51,7 @@ int main(int argc, char **argv)
     double errors_compact_neg_first[NREPEAT];
     double errors_padded_zero_first[NREPEAT];
     double errors_padded_neg_first[NREPEAT];
+    double errors_padded_real[NREPEAT];
     double durations_forward_compact_zero_first[NREPEAT];
     double durations_inverse_compact_zero_first[NREPEAT];
     double durations_forward_compact_neg_first[NREPEAT];
@@ -55,6 +60,8 @@ int main(int argc, char **argv)
     double durations_inverse_padded_zero_first[NREPEAT];
     double durations_forward_padded_neg_first[NREPEAT];
     double durations_inverse_padded_neg_first[NREPEAT];
+    double durations_forward_padded_real[NREPEAT];
+    double durations_inverse_padded_real[NREPEAT];
 
     double total_error;
     double min_time;
@@ -88,6 +95,18 @@ int main(int argc, char **argv)
     SO3_ERROR_MEM_ALLOC_CHECK(flmn_compact_syn);
     f = malloc((2*L-1)*L*(2*N-1) * sizeof *f);
     SO3_ERROR_MEM_ALLOC_CHECK(f);
+
+
+    flmn_real_padded_orig = malloc(N*L*L * sizeof *flmn_real_padded_orig);
+    SO3_ERROR_MEM_ALLOC_CHECK(flmn_real_padded_orig);
+    flmn_real_padded_syn = malloc(N*L*L * sizeof *flmn_real_padded_syn);
+    SO3_ERROR_MEM_ALLOC_CHECK(flmn_real_padded_syn);
+    flmn_real_compact_orig = malloc(N*L*L * sizeof *flmn_real_compact_orig);
+    SO3_ERROR_MEM_ALLOC_CHECK(flmn_real_compact_orig);
+    flmn_real_compact_syn = malloc(N*L*L * sizeof *flmn_real_compact_syn);
+    SO3_ERROR_MEM_ALLOC_CHECK(flmn_real_compact_syn);
+    f_real = malloc((2*L-1)*L*(2*N-1) * sizeof *f_real);
+    SO3_ERROR_MEM_ALLOC_CHECK(f_real);
 
     // Write program name.
     printf("\n");
@@ -167,6 +186,24 @@ int main(int argc, char **argv)
         durations_forward_compact_neg_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         errors_compact_neg_first[i] = get_max_error(flmn_compact_orig, flmn_compact_syn, (2*N-1)*(3*L*L-N*(N-1))/3);
+
+        // ===========================================================================================
+        // Padded storage for real signals (only non-negative n)
+        printf("Testing padded storage for real signal. (run %d)\n", i+1);
+
+        so3_test_gen_flmn_real(flmn_real_padded_orig, L0, L, N, SO3_STORE_ZERO_FIRST_PAD, seed);
+
+        time_start = clock();
+        so3_core_mw_inverse_via_ssht_real(f_real, flmn_real_padded_orig, 0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
+        time_end = clock();
+        durations_inverse_padded_real[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
+
+        time_start = clock();
+        so3_core_mw_forward_via_ssht_real(flmn_real_padded_syn, f_real, 0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
+        time_end = clock();
+        durations_forward_padded_real[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
+
+        errors_padded_real[i] = get_max_error(flmn_real_padded_orig, flmn_real_padded_syn, N*L*L);
     }
 
     free(flmn_padded_orig);
@@ -174,6 +211,12 @@ int main(int argc, char **argv)
     free(flmn_compact_orig);
     free(flmn_compact_syn);
     free(f);
+
+    free(flmn_real_padded_orig);
+    free(flmn_real_padded_syn);
+    free(flmn_real_compact_orig);
+    free(flmn_real_compact_syn);
+    free(f_real);
 
     // =========================================================================
     // Summarise results
@@ -228,6 +271,17 @@ int main(int argc, char **argv)
     for(i = 1; i < NREPEAT; ++i) total_error += errors_compact_neg_first[i];
     printf("  Average max error for inverse transform: %e\n", total_error/(double)NREPEAT);
 
+    printf("Padded storage for real signal.\n");
+    min_time = durations_forward_padded_real[0];
+    for(i = 1; i < NREPEAT; ++i) min_time = MIN(min_time, durations_forward_padded_real[i]);
+    printf("  Minimum time for forward transform: %fs\n", min_time);
+    min_time = durations_inverse_padded_real[0];
+    for(i = 1; i < NREPEAT; ++i) min_time = MIN(min_time, durations_inverse_padded_real[i]);
+    printf("  Minimum time for inverse transform: %fs\n", min_time);
+    total_error = errors_padded_real[0];
+    for(i = 1; i < NREPEAT; ++i) total_error += errors_padded_real[i];
+    printf("  Average max error for inverse transform: %e\n", total_error/(double)NREPEAT);
+
 
     return 0;
 }
@@ -270,7 +324,7 @@ void so3_test_gen_flmn_complex(
 
     if (storage == SO3_STORE_ZERO_FIRST_PAD || storage == SO3_STORE_NEG_FIRST_PAD)
     {
-        for (i = 0; i < so3_sampling_flmn_size(L, N, storage); ++i)
+        for (i = 0; i < so3_sampling_flmn_size(L, N, storage, 0); ++i)
             flmn[i] = 0.0;
     }
 
@@ -281,6 +335,48 @@ void so3_test_gen_flmn_complex(
             for (m = -el; m <= el; ++m)
             {
                 so3_sampling_elmn2ind(&ind, el, m, n, L, N, storage);
+                flmn[ind] = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
+            }
+        }
+    }
+}
+
+/*!
+ * Generate random Wigner coefficients of a real signal.
+ *
+ * \param[out] flmn Random spherical harmonic coefficients generated.
+ * \param[in] L0 Lower harmonic band-limit.
+ * \param[in] L Upper harmonic band-limit.
+ * \param[in] N Orientational band-limit.
+ * \param[in] storage Indicates how flm blocks are stored.
+ * \param[in] seed Integer seed required for random number generator.
+ * \retval none
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+void so3_test_gen_flmn_real(
+    complex double *flmn,
+    int L0, int L, int N,
+    so3_storage_t storage,
+    int seed)
+{
+    int i, el, m, n, ind;
+
+    if (storage == SO3_STORE_ZERO_FIRST_PAD || storage == SO3_STORE_NEG_FIRST_PAD)
+    {
+        for (i = 0; i < so3_sampling_flmn_size(L, N, storage, 1); ++i)
+            flmn[i] = 0.0;
+    }
+
+    for (n = 0; n < N; ++n)
+    {
+        for (el = MAX(L0, n); el < L; ++el)
+        {
+            for (m = -el; m <= el; ++m)
+            {
+
+                so3_sampling_elmn2ind_real(&ind, el, m, n, L, N, storage);
                 flmn[ind] = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
             }
         }

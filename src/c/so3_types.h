@@ -56,9 +56,7 @@ typedef enum {
     // flmn are only non-zero for odd n
     SO3_N_MODE_ODD,
     // flmn are only non-zero for |n| = N-1
-    SO3_N_MODE_MAXIMUM,
-    // flmn are only non-zero for |n| = el
-    SO3_N_MODE_EL
+    SO3_N_MODE_MAXIMUM
 } so3_n_mode_t;
 
 #endif

@@ -144,9 +144,12 @@ double so3_sampling_mw_g2gamma(int g, int N)
 /*!
  * Get storage size of flmn array for different storage methods.
  *
- * \param[in]  L  Harmonic band-limit.
- * \param[in]  N   Orientational band-limit.
- * \param[in]  storage   Indicates how flm-blocks are stored.
+ * \param[in]  L        Harmonic band-limit.
+ * \param[in]  N        Orientational band-limit.
+ * \param[in]  storage  Indicates how flm-blocks are stored.
+ * \param[in]  real     Pass in a non-zero value to indicate that the
+ *                      flmn belong to a real signal.
+ *
  * \retval Number of coefficients to be stored or 0 for invalid storage
  *         parameter.
  *
@@ -156,16 +159,23 @@ double so3_sampling_mw_g2gamma(int g, int N)
 inline int so3_sampling_flmn_size(
     int L,
     int N,
-    so3_storage_t storage
+    so3_storage_t storage,
+    int real
 ) {
     switch (storage)
     {
     case SO3_STORE_ZERO_FIRST_PAD:
     case SO3_STORE_NEG_FIRST_PAD:
-        return (2*N-1)*L*L;
+        if (real)
+            return N*L*L;
+        else
+            return (2*N-1)*L*L;
     case SO3_STORE_ZERO_FIRST_COMPACT:
     case SO3_STORE_NEG_FIRST_COMPACT:
-        return (2*N-1)*(3*L*L-N*(N-1))/3;
+        if (real)
+            return N*(6*L*L-(N-1)*(2*N-1))/6;
+        else
+            return (2*N-1)*(3*L*L-N*(N-1))/3;
     }
     return 0;
 }
@@ -325,6 +335,91 @@ inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, int L, int N
 
         *el = sqrt(ind);
         *m = ind - (*el)*(*el) - *el;
+        return;
+    default:
+        SO3_ERROR_GENERIC("Invalid storage method.");
+    }
+}
+
+/*!
+ * Convert (el,m,n) harmonic indices to 1D index used to access flmn
+ * array for a real signal.
+ *
+ * \note Index ranges are as follows:
+ *  - el ranges from [0 .. L-1].
+ *  - m ranges from [-el .. el].
+ *  - n ranges from [0 .. el'], where el' = min{el, N}
+ *  - ind ranges from [0 .. N*(L*L-(N-1)*(2*N-1)/6)-1] for compact storage methods
+             and from [0 .. N*L*L-1] for 0-padded storage methods.
+ *
+ * \param[out] ind 1D index to access flmn array [output].
+ * \param[in]  el  Harmonic index [input].
+ * \param[in]  m   Azimuthal harmonic index [input].
+ * \param[in]  n   Orientational harmonic index [input].
+ * \retval none
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+inline void so3_sampling_elmn2ind_real(int *ind, int el, int m, int n, int L, int N, so3_storage_t storage)
+{
+    int base_ind;
+
+    // TODO: Could be optimized by computing the indices directly.
+    switch(storage)
+    {
+    case SO3_STORE_ZERO_FIRST_PAD:
+    case SO3_STORE_NEG_FIRST_PAD:
+        so3_sampling_elmn2ind(&base_ind, 0, 0, 0, L, N, SO3_STORE_NEG_FIRST_PAD);
+        so3_sampling_elmn2ind(ind, el, m, n, L, N, SO3_STORE_NEG_FIRST_PAD);
+        (*ind) -= base_ind;
+        return;
+    case SO3_STORE_ZERO_FIRST_COMPACT:
+    case SO3_STORE_NEG_FIRST_COMPACT:
+        so3_sampling_elmn2ind(&base_ind, 0, 0, 0, L, N, SO3_STORE_NEG_FIRST_COMPACT);
+        so3_sampling_elmn2ind(ind, el, m, n, L, N, SO3_STORE_NEG_FIRST_COMPACT);
+        (*ind) -= base_ind;
+        return;
+    default:
+        SO3_ERROR_GENERIC("Invalid storage method.");
+    }
+}
+
+/*!
+ * Convert 1D index used to access flmn array to (el,m,n) harmonic
+ * indices for a real signal.
+ *
+ * \note Index ranges are as follows:
+ *  - el ranges from [0 .. L-1].
+ *  - m ranges from [-el .. el].
+ *  - n ranges from [0 .. el'], where el' = min{el, N}
+ *  - ind ranges from [0 .. N*(L*L-(N-1)*(2*N-1)/6)-1] for compact storage methods
+             and from [0 .. N*L*L-1] for 0-padded storage methods.
+ *
+ * \param[in]  ind 1D index to access flm array [output].
+ * \param[out] el  Harmonic index [input].
+ * \param[out] m   Azimuthal harmonic index [input].
+ * \param[out] n   Orientational harmonic index [input].
+ * \retval none
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+inline void so3_sampling_ind2elmn_real(int *el, int *m, int *n, int ind, int L, int N, so3_storage_t storage)
+{
+    int base_ind;
+
+    switch(storage)
+    {
+    case SO3_STORE_ZERO_FIRST_PAD:
+    case SO3_STORE_NEG_FIRST_PAD:
+        so3_sampling_elmn2ind(&base_ind, 0, 0, 0, L, N, SO3_STORE_NEG_FIRST_PAD);
+        so3_sampling_ind2elmn(el, m, n, base_ind + ind, L, N, SO3_STORE_NEG_FIRST_PAD);
+        return;
+    case SO3_STORE_ZERO_FIRST_COMPACT:
+    case SO3_STORE_NEG_FIRST_COMPACT:
+        so3_sampling_elmn2ind(&base_ind, 0, 0, 0, L, N, SO3_STORE_NEG_FIRST_COMPACT);
+        so3_sampling_ind2elmn(el, m, n, base_ind + ind, L, N, SO3_STORE_NEG_FIRST_COMPACT);
         return;
     default:
         SO3_ERROR_GENERIC("Invalid storage method.");
