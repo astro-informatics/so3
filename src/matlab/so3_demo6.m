@@ -20,13 +20,14 @@
 clear all;
 
 % Define parameters
-L = 32;
-N = 3;
+L = 16;
+N = 16; % Necessary for simplification of the covariance calculation. See
+        % proof further down.
 
 var_flmn = 1; % Should we use the actual variance var(flmn) of each
               % realization here instead?
 
-% Compute theoretical variance of signal.
+% Compute theoretical covariance of signal.
 % The covariance <f(rho)f*(rho')> is 0 when rho != rho' and given by the
 % following expression otherwise:
 % 
@@ -53,7 +54,8 @@ var_flmn = 1; % Should we use the actual variance var(flmn) of each
 % = Sum(m) dlmm(0)
 %
 % The penultimate equality follows from the addition theorem found on pages
-% 87-88 of Varshalovich.
+% 87-88 of Varshalovich. Note that this step requires the sum over n to go
+% from -l to l. Hence, we can only use this simplification if N = L.
 % Therefore, we obtain the following equation for the covariance:
 %
 % sigma^2 Sum(l,m) (((2*l+1)/(8pi^2))^2 dlmm(0)
@@ -82,7 +84,7 @@ for l = 0:L-1,
     end
 end
 
-covar_f_theory = covar_f_theory .* var_flmn
+covar_f_theory = covar_f_theory .* var_flmn;
 
 runs = 100;
 covar_f_data = zeros(runs,1);
