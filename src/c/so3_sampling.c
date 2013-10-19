@@ -176,8 +176,9 @@ inline int so3_sampling_flmn_size(
             return N*(6*L*L-(N-1)*(2*N-1))/6;
         else
             return (2*N-1)*(3*L*L-N*(N-1))/3;
+    default:
+        return 0;
     }
-    return 0;
 }
 
 /*!

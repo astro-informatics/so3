@@ -50,7 +50,6 @@ void so3_core_mw_inverse_via_ssht(
 ) {
     // Iterator
     int n;
-    int n_start, n_stop, n_inc;
     // Intermediate results
     complex double *fn, *flm;
     // Stride for several arrays
@@ -76,7 +75,7 @@ void so3_core_mw_inverse_via_ssht(
 
     fn_n_stride = L * (2*L-1);
 
-    fn = malloc((2*N-1)*fn_n_stride * sizeof *fn);
+    fn = calloc((2*N-1)*fn_n_stride, sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
 
     // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
@@ -99,33 +98,16 @@ void so3_core_mw_inverse_via_ssht(
     flm = calloc(L*L, sizeof *flm);
     SO3_ERROR_MEM_ALLOC_CHECK(flm);
 
-    switch (n_mode)
-    {
-    case SO3_N_MODE_ALL:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        n_inc = 1;
-        break;
-    case SO3_N_MODE_EVEN:
-        n_start = (N-1 % 2 == 0) ? -N+1 : -N+2;
-        n_stop =  (N-1 % 2 == 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_ODD:
-        n_start = (N-1 % 2 != 0) ? -N+1 : -N+2;
-        n_stop =  (N-1 % 2 != 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_MAXIMUM:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        n_inc = 2*N - 2;
-        break;
-    }
-
-    for(n = n_start; n <= n_stop; n += n_inc)
+    for(n = -N+1; n <= N-1; ++n)
     {
         int ind, offset, i, el;
+
+        if ((n_mode == SO3_N_MODE_EVEN && n % 2)
+            || (n_mode == SO3_N_MODE_ODD && !(n % 2))
+            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1))
+        {
+            continue;
+        }
 
         switch (storage)
         {
@@ -210,7 +192,6 @@ void so3_core_mw_forward_via_ssht(
 ) {
     // Iterator
     int i, n;
-    int n_start, n_stop, n_inc;
     // Intermediate results
     complex double *ftemp, *flm, *fn;
     // Stride for several arrays
@@ -270,33 +251,25 @@ void so3_core_mw_forward_via_ssht(
     if (storage == SO3_STORE_ZERO_FIRST_COMPACT || storage == SO3_STORE_NEG_FIRST_COMPACT)
         flm = malloc(L*L * sizeof *flm);
 
-    switch (n_mode)
-    {
-    case SO3_N_MODE_ALL:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        n_inc = 1;
-        break;
-    case SO3_N_MODE_EVEN:
-        n_start = (N-1 % 2 == 0) ? -N+1 : -N+2;
-        n_stop =  (N-1 % 2 == 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_ODD:
-        n_start = (N-1 % 2 != 0) ? -N+1 : -N+2;
-        n_stop =  (N-1 % 2 != 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_MAXIMUM:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        n_inc = 2*N - 2;
-        break;
-    }
-
-    for(n = n_start; n <= n_stop; n += n_inc)
+    for(n = -N+1; n <= N-1; ++n)
     {
         int ind, offset, el, sign;
+
+        if ((n_mode == SO3_N_MODE_EVEN && n % 2)
+            || (n_mode == SO3_N_MODE_ODD && !(n % 2))
+            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1))
+        {
+            for(el = abs(n); el < L; ++el)
+            {
+                int m;
+                for (m = -el; m <= el; ++m)
+                {
+                    so3_sampling_elmn2ind(&ind, el, m, n, L, N, storage);
+                    flmn[ind] = 0.0;
+                }
+            }
+            continue;
+        }
 
         // The conditional applies the spatial transform, because the fn
         // are stored in n-order 0, 1, 2, -2, -1
@@ -415,7 +388,7 @@ void so3_core_mw_inverse_via_ssht_real(
     fn_n_stride = L * (2*L-1);
 
     // Only need to store for non-negative n
-    fn = malloc(N*fn_n_stride * sizeof *fn);
+    fn = calloc(N*fn_n_stride, sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
 
     // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
@@ -447,12 +420,12 @@ void so3_core_mw_inverse_via_ssht_real(
         break;
     case SO3_N_MODE_EVEN:
         n_start = 0;
-        n_stop =  (N-1 % 2 == 0) ?  N-1 :  N-2;
+        n_stop =  ((N-1) % 2 == 0) ?  N-1 :  N-2;
         n_inc = 2;
         break;
     case SO3_N_MODE_ODD:
         n_start = 1;
-        n_stop =  (N-1 % 2 != 0) ?  N-1 :  N-2;
+        n_stop =  ((N-1) % 2 != 0) ?  N-1 :  N-2;
         n_inc = 2;
         break;
     case SO3_N_MODE_MAXIMUM:
@@ -460,11 +433,20 @@ void so3_core_mw_inverse_via_ssht_real(
         n_stop  =  N-1;
         n_inc = 1; // There is only one value
         break;
+    default:
+        SO3_ERROR_GENERIC("Invalid n-mode.");
     }
 
-    for(n = n_start; n <= n_stop; n += n_inc)
+    for(n = 0; n <= N-1; ++n)
     {
         int ind, offset, i, el;
+
+        if ((n_mode == SO3_N_MODE_EVEN && n % 2)
+            || (n_mode == SO3_N_MODE_ODD && !(n % 2))
+            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1))
+        {
+            continue;
+        }
 
         switch (storage)
         {
@@ -545,7 +527,6 @@ void so3_core_mw_forward_via_ssht_real(
 ) {
     // Iterator
     int i, n;
-    int n_start, n_stop, n_inc;
     // Intermediate results
     double *ftemp;
     complex double *flm, *fn;
@@ -607,33 +588,25 @@ void so3_core_mw_forward_via_ssht_real(
     if (storage == SO3_STORE_ZERO_FIRST_COMPACT || storage == SO3_STORE_NEG_FIRST_COMPACT)
         flm = malloc(L*L * sizeof *flm);
 
-    switch (n_mode)
-    {
-    case SO3_N_MODE_ALL:
-        n_start = 0;
-        n_stop  = N-1;
-        n_inc = 1;
-        break;
-    case SO3_N_MODE_EVEN:
-        n_start = 0;
-        n_stop  = (N-1 % 2 == 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_ODD:
-        n_start = 1;
-        n_stop  = (N-1 % 2 != 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_MAXIMUM:
-        n_start = N-1;
-        n_stop  = N-1;
-        n_inc = 1;
-        break;
-    }
-
-    for(n = n_start; n <= n_stop; n += n_inc)
+    for(n = 0; n <= N-1; ++n)
     {
         int ind, offset, el, sign;
+
+        if ((n_mode == SO3_N_MODE_EVEN && n % 2)
+            || (n_mode == SO3_N_MODE_ODD && !(n % 2))
+            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1))
+        {
+            for(el = n; el < L; ++el)
+            {
+                int m;
+                for (m = -el; m <= el; ++m)
+                {
+                    so3_sampling_elmn2ind_real(&ind, el, m, n, L, N, storage);
+                    flmn[ind] = 0.0;
+                }
+            }
+            continue;
+        }
 
         switch (storage)
         {

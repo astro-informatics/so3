@@ -45,7 +45,10 @@ typedef enum {
     SO3_STORE_NEG_FIRST_PAD,
     // order of n in storage is -2, -1, 0, 1, 2, ...
     // do not store lm for l < |n|
-    SO3_STORE_NEG_FIRST_COMPACT
+    SO3_STORE_NEG_FIRST_COMPACT,
+    // "guard" value that equals the number of usable enum values.
+    // useful in loops, for instance.
+    SO3_STORE_SIZE
 } so3_storage_t;
 
 typedef enum {
@@ -56,7 +59,10 @@ typedef enum {
     // flmn are only non-zero for odd n
     SO3_N_MODE_ODD,
     // flmn are only non-zero for |n| = N-1
-    SO3_N_MODE_MAXIMUM
+    SO3_N_MODE_MAXIMUM,
+    // "guard" value that equals the number of usable enum values.
+    // useful in loops, for instance.
+    SO3_N_MODE_SIZE
 } so3_n_mode_t;
 
 #endif
