@@ -145,9 +145,9 @@ void so3_core_mw_inverse_via_ssht(
             SO3_ERROR_GENERIC("Invalid storage method.");
         }
 
-        offset = 0;
-        i = 0;
-        for(el = L0; el < L; ++el)
+        el = MAX(L0,abs(n));
+        i = offset = el*el;
+        for(; el < L; ++el)
         {
             for (; i < offset + 2*el+1; ++i)
                 flm[i] *= sqrt((double)(2*el+1)/(16.*pow(SO3_PI, 3.)));
@@ -298,11 +298,6 @@ void so3_core_mw_forward_via_ssht(
     {
         int ind, offset, el, sign;
 
-        if (n % 2)
-            sign = -1;
-        else
-            sign = 1;
-
         // The conditional applies the spatial transform, because the fn
         // are stored in n-order 0, 1, 2, -2, -1
         offset = (n < 0 ? n + 2*N-1 : n);
@@ -319,7 +314,7 @@ void so3_core_mw_forward_via_ssht(
                 verbosity
             );
 
-            i = offset = 0;
+            i = offset = L0*L0;
             el = L0;
             break;
         case SO3_STORE_ZERO_FIRST_COMPACT:
@@ -333,12 +328,17 @@ void so3_core_mw_forward_via_ssht(
             so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, L, N, storage);
             memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
 
-            i = offset = 0;
             el = MAX(L0, abs(n));
+            i = offset = el*el-n*n;
             break;
         default:
             SO3_ERROR_GENERIC("Invalid storage method.");
         }
+
+        if (n % 2)
+            sign = -1;
+        else
+            sign = 1;
 
         for(; el < L; ++el)
         {
@@ -484,9 +484,9 @@ void so3_core_mw_inverse_via_ssht_real(
             SO3_ERROR_GENERIC("Invalid storage method.");
         }
 
-        offset = 0;
-        i = 0;
-        for(el = L0; el < L; ++el)
+        el = MAX(L0,abs(n));
+        i = offset = el*el;
+        for(; el < L; ++el)
         {
             for (; i < offset + 2*el+1; ++i)
                 flm[i] *= sqrt((double)(2*el+1)/(16.*pow(SO3_PI, 3.)));
@@ -635,11 +635,6 @@ void so3_core_mw_forward_via_ssht_real(
     {
         int ind, offset, el, sign;
 
-        if (n % 2)
-            sign = -1;
-        else
-            sign = 1;
-
         switch (storage)
         {
         case SO3_STORE_ZERO_FIRST_PAD:
@@ -652,7 +647,7 @@ void so3_core_mw_forward_via_ssht_real(
                 verbosity
             );
 
-            i = offset = 0;
+            i = offset = L0*L0;
             el = L0;
             break;
         case SO3_STORE_ZERO_FIRST_COMPACT:
@@ -666,12 +661,17 @@ void so3_core_mw_forward_via_ssht_real(
             so3_sampling_elmn2ind_real(&ind, n, -n, n, L, N, storage);
             memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
 
-            i = offset = 0;
-            el = MAX(L0, n);
+            el = MAX(L0, abs(n));
+            i = offset = el*el-n*n;
             break;
         default:
             SO3_ERROR_GENERIC("Invalid storage method.");
         }
+
+        if (n % 2)
+            sign = -1;
+        else
+            sign = 1;
 
         for(; el < L; ++el)
         {

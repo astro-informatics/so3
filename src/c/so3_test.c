@@ -31,8 +31,8 @@
 
 double get_max_error(complex double *expected, complex double *actual, int n);
 double ran2_dp(int idum);
-void so3_test_gen_flmn_complex(complex double *flmn, int L0, int L, int N, so3_storage_t storage, int seed);
-void so3_test_gen_flmn_real(complex double *flmn, int L0, int L, int N, so3_storage_t storage, int seed);
+void so3_test_gen_flmn_complex(complex double *flmn, int L0, int L, int N, so3_storage_t storage, so3_n_mode_t n_mode, int seed);
+void so3_test_gen_flmn_real(complex double *flmn, int L0, int L, int N, so3_storage_t storage, so3_n_mode_t n_mode, int seed);
 
 int main(int argc, char **argv)
 {
@@ -122,15 +122,15 @@ int main(int argc, char **argv)
         // Padded storage with n-order 0, -1, 1, -2, 2, ...
         printf("Testing padded storage with n = 0 first. (run %d)\n", i+1);
 
-        so3_test_gen_flmn_complex(flmn_padded_orig, L0, L, N, SO3_STORE_ZERO_FIRST_PAD, seed);
+        so3_test_gen_flmn_complex(flmn_padded_orig, L0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, seed);
 
         time_start = clock();
-        so3_core_mw_inverse_via_ssht(f, flmn_padded_orig, 0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_inverse_via_ssht(f, flmn_padded_orig, L0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_inverse_padded_zero_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         time_start = clock();
-        so3_core_mw_forward_via_ssht(flmn_padded_syn, f, 0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_forward_via_ssht(flmn_padded_syn, f, L0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_forward_padded_zero_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
@@ -140,15 +140,15 @@ int main(int argc, char **argv)
         // Padded storage with n-order ..., -2, -1, 0, 1, 2, ...
         printf("Testing padded storage with n = -N+1 first. (run %d)\n", i+1);
 
-        so3_test_gen_flmn_complex(flmn_padded_orig, L0, L, N, SO3_STORE_NEG_FIRST_PAD, seed);
+        so3_test_gen_flmn_complex(flmn_padded_orig, L0, L, N, SO3_STORE_NEG_FIRST_PAD, SO3_N_MODE_ALL, seed);
 
         time_start = clock();
-        so3_core_mw_inverse_via_ssht(f, flmn_padded_orig, 0, L, N, SO3_STORE_NEG_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_inverse_via_ssht(f, flmn_padded_orig, L0, L, N, SO3_STORE_NEG_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_inverse_padded_neg_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         time_start = clock();
-        so3_core_mw_forward_via_ssht(flmn_padded_syn, f, 0, L, N, SO3_STORE_NEG_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_forward_via_ssht(flmn_padded_syn, f, L0, L, N, SO3_STORE_NEG_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_forward_padded_neg_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
@@ -158,15 +158,15 @@ int main(int argc, char **argv)
         // Compact storage with n-order 0, -1, 1, -2, 2, ...
         printf("Testing compact storage with n = 0 first. (run %d)\n", i+1);
 
-        so3_test_gen_flmn_complex(flmn_compact_orig, L0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, seed);
+        so3_test_gen_flmn_complex(flmn_compact_orig, L0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, seed);
 
         time_start = clock();
-        so3_core_mw_inverse_via_ssht(f, flmn_compact_orig, 0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_inverse_via_ssht(f, flmn_compact_orig, L0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_inverse_compact_zero_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         time_start = clock();
-        so3_core_mw_forward_via_ssht(flmn_compact_syn, f, 0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_forward_via_ssht(flmn_compact_syn, f, L0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_forward_compact_zero_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
@@ -176,15 +176,15 @@ int main(int argc, char **argv)
         // Compact storage with n-order ..., -2, -1, 0, 1, 2, ...
         printf("Testing compact storage with n = -N+1 first. (run %d)\n", i+1);
 
-        so3_test_gen_flmn_complex(flmn_compact_orig, L0, L, N, SO3_STORE_NEG_FIRST_COMPACT, seed);
+        so3_test_gen_flmn_complex(flmn_compact_orig, L0, L, N, SO3_STORE_NEG_FIRST_COMPACT, SO3_N_MODE_ALL, seed);
 
         time_start = clock();
-        so3_core_mw_inverse_via_ssht(f, flmn_compact_orig, 0, L, N, SO3_STORE_NEG_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_inverse_via_ssht(f, flmn_compact_orig, L0, L, N, SO3_STORE_NEG_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_inverse_compact_neg_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         time_start = clock();
-        so3_core_mw_forward_via_ssht(flmn_compact_syn, f, 0, L, N, SO3_STORE_NEG_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_forward_via_ssht(flmn_compact_syn, f, L0, L, N, SO3_STORE_NEG_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_forward_compact_neg_first[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
@@ -194,15 +194,15 @@ int main(int argc, char **argv)
         // Padded storage for real signals (only non-negative n)
         printf("Testing padded storage for real signal. (run %d)\n", i+1);
 
-        so3_test_gen_flmn_real(flmn_real_padded_orig, L0, L, N, SO3_STORE_ZERO_FIRST_PAD, seed);
+        so3_test_gen_flmn_real(flmn_real_padded_orig, L0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, seed);
 
         time_start = clock();
-        so3_core_mw_inverse_via_ssht_real(f_real, flmn_real_padded_orig, 0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_inverse_via_ssht_real(f_real, flmn_real_padded_orig, L0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_inverse_padded_real[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         time_start = clock();
-        so3_core_mw_forward_via_ssht_real(flmn_real_padded_syn, f_real, 0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_forward_via_ssht_real(flmn_real_padded_syn, f_real, L0, L, N, SO3_STORE_ZERO_FIRST_PAD, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_forward_padded_real[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
@@ -212,15 +212,15 @@ int main(int argc, char **argv)
         // Compact storage for real signals (only non-negative n)
         printf("Testing compact storage for real signal. (run %d)\n", i+1);
 
-        so3_test_gen_flmn_real(flmn_real_compact_orig, L0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, seed);
+        so3_test_gen_flmn_real(flmn_real_compact_orig, L0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, seed);
 
         time_start = clock();
-        so3_core_mw_inverse_via_ssht_real(f_real, flmn_real_compact_orig, 0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_inverse_via_ssht_real(f_real, flmn_real_compact_orig, L0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_inverse_compact_real[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         time_start = clock();
-        so3_core_mw_forward_via_ssht_real(flmn_real_compact_syn, f_real, 0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
+        so3_core_mw_forward_via_ssht_real(flmn_real_compact_syn, f_real, L0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
         time_end = clock();
         durations_forward_compact_real[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
@@ -245,6 +245,7 @@ int main(int argc, char **argv)
     printf("================================================================\n");
     printf("Summary\n\n");
     printf("Runs   = %40d\n", NREPEAT);
+    printf("L0     = %40d\n", L0);
     printf("L      = %40d\n", L);
     printf("N      = %40d\n\n", N);
 
@@ -340,6 +341,7 @@ double get_max_error(complex double *expected, complex double *actual, int n)
  * \param[in] L Upper harmonic band-limit.
  * \param[in] N Orientational band-limit.
  * \param[in] storage Indicates how flm blocks are stored.
+ * \param[in] n_mode Indicates which n are non-zero.
  * \param[in] seed Integer seed required for random number generator.
  * \retval none
  *
@@ -350,11 +352,12 @@ void so3_test_gen_flmn_complex(
     complex double *flmn,
     int L0, int L, int N,
     so3_storage_t storage,
+    so3_n_mode_t n_mode,
     int seed)
 {
     int i, el, m, n, ind;
 
-    if (storage == SO3_STORE_ZERO_FIRST_PAD || storage == SO3_STORE_NEG_FIRST_PAD)
+    if (L0 > 0 || storage == SO3_STORE_ZERO_FIRST_PAD || storage == SO3_STORE_NEG_FIRST_PAD)
     {
         for (i = 0; i < so3_sampling_flmn_size(L, N, storage, 0); ++i)
             flmn[i] = 0.0;
@@ -383,6 +386,7 @@ void so3_test_gen_flmn_complex(
  * \param[in] L Upper harmonic band-limit.
  * \param[in] N Orientational band-limit.
  * \param[in] storage Indicates how flm blocks are stored.
+ * \param[in] n_mode Indicates which n are non-zero.
  * \param[in] seed Integer seed required for random number generator.
  * \retval none
  *
@@ -393,12 +397,13 @@ void so3_test_gen_flmn_real(
     complex double *flmn,
     int L0, int L, int N,
     so3_storage_t storage,
+    so3_n_mode_t n_mode,
     int seed)
 {
     int i, el, m, n, ind;
     double real, imag;
 
-    if (storage == SO3_STORE_ZERO_FIRST_PAD || storage == SO3_STORE_NEG_FIRST_PAD)
+    if (L0 > 0 || storage == SO3_STORE_ZERO_FIRST_PAD || storage == SO3_STORE_NEG_FIRST_PAD)
     {
         for (i = 0; i < so3_sampling_flmn_size(L, N, storage, 1); ++i)
             flmn[i] = 0.0;
