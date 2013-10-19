@@ -49,6 +49,7 @@ int main(int argc, char **argv)
 
     double errors_compact_zero_first[NREPEAT];
     double errors_compact_neg_first[NREPEAT];
+    double errors_compact_real[NREPEAT];
     double errors_padded_zero_first[NREPEAT];
     double errors_padded_neg_first[NREPEAT];
     double errors_padded_real[NREPEAT];
@@ -56,6 +57,8 @@ int main(int argc, char **argv)
     double durations_inverse_compact_zero_first[NREPEAT];
     double durations_forward_compact_neg_first[NREPEAT];
     double durations_inverse_compact_neg_first[NREPEAT];
+    double durations_forward_compact_real[NREPEAT];
+    double durations_inverse_compact_real[NREPEAT];
     double durations_forward_padded_zero_first[NREPEAT];
     double durations_inverse_padded_zero_first[NREPEAT];
     double durations_forward_padded_neg_first[NREPEAT];
@@ -101,9 +104,9 @@ int main(int argc, char **argv)
     SO3_ERROR_MEM_ALLOC_CHECK(flmn_real_padded_orig);
     flmn_real_padded_syn = malloc(N*L*L * sizeof *flmn_real_padded_syn);
     SO3_ERROR_MEM_ALLOC_CHECK(flmn_real_padded_syn);
-    flmn_real_compact_orig = malloc(N*L*L * sizeof *flmn_real_compact_orig);
+    flmn_real_compact_orig = malloc(N*(6*L*L-(N-1)*(2*N-1))/6 * sizeof *flmn_real_compact_orig);
     SO3_ERROR_MEM_ALLOC_CHECK(flmn_real_compact_orig);
-    flmn_real_compact_syn = malloc(N*L*L * sizeof *flmn_real_compact_syn);
+    flmn_real_compact_syn = malloc(N*(6*L*L-(N-1)*(2*N-1))/6 * sizeof *flmn_real_compact_syn);
     SO3_ERROR_MEM_ALLOC_CHECK(flmn_real_compact_syn);
     f_real = malloc((2*L-1)*L*(2*N-1) * sizeof *f_real);
     SO3_ERROR_MEM_ALLOC_CHECK(f_real);
@@ -204,6 +207,24 @@ int main(int argc, char **argv)
         durations_forward_padded_real[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
 
         errors_padded_real[i] = get_max_error(flmn_real_padded_orig, flmn_real_padded_syn, N*L*L);
+
+        // ===========================================================================================
+        // Compact storage for real signals (only non-negative n)
+        printf("Testing compact storage for real signal. (run %d)\n", i+1);
+
+        so3_test_gen_flmn_real(flmn_real_compact_orig, L0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, seed);
+
+        time_start = clock();
+        so3_core_mw_inverse_via_ssht_real(f_real, flmn_real_compact_orig, 0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
+        time_end = clock();
+        durations_inverse_compact_real[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
+
+        time_start = clock();
+        so3_core_mw_forward_via_ssht_real(flmn_real_compact_syn, f_real, 0, L, N, SO3_STORE_ZERO_FIRST_COMPACT, SO3_N_MODE_ALL, verbosity);
+        time_end = clock();
+        durations_forward_compact_real[i] = (time_end - time_start) / (double)CLOCKS_PER_SEC;
+
+        errors_compact_real[i] = get_max_error(flmn_real_compact_orig, flmn_real_compact_syn, N*(6*L*L-(N-1)*(2*N-1))/6);
     }
 
     free(flmn_padded_orig);
@@ -282,6 +303,17 @@ int main(int argc, char **argv)
     for(i = 1; i < NREPEAT; ++i) total_error += errors_padded_real[i];
     printf("  Average max error for inverse transform: %e\n", total_error/(double)NREPEAT);
 
+    printf("Compact storage for real signal.\n");
+    min_time = durations_forward_compact_real[0];
+    for(i = 1; i < NREPEAT; ++i) min_time = MIN(min_time, durations_forward_compact_real[i]);
+    printf("  Minimum time for forward transform: %fs\n", min_time);
+    min_time = durations_inverse_compact_real[0];
+    for(i = 1; i < NREPEAT; ++i) min_time = MIN(min_time, durations_inverse_compact_real[i]);
+    printf("  Minimum time for inverse transform: %fs\n", min_time);
+    total_error = errors_compact_real[0];
+    for(i = 1; i < NREPEAT; ++i) total_error += errors_compact_real[i];
+    printf("  Average max error for inverse transform: %e\n", total_error/(double)NREPEAT);
+
 
     return 0;
 }
@@ -342,7 +374,9 @@ void so3_test_gen_flmn_complex(
 }
 
 /*!
- * Generate random Wigner coefficients of a real signal.
+ * Generate random Wigner coefficients of a real signal. We only generate
+ * coefficients for n >= 0, and for n = 0, we need flm0* = (-1)^(m)*fl-m0, so that
+ * fl00 has to be real.
  *
  * \param[out] flmn Random spherical harmonic coefficients generated.
  * \param[in] L0 Lower harmonic band-limit.
@@ -362,6 +396,7 @@ void so3_test_gen_flmn_real(
     int seed)
 {
     int i, el, m, n, ind;
+    double real, imag;
 
     if (storage == SO3_STORE_ZERO_FIRST_PAD || storage == SO3_STORE_NEG_FIRST_PAD)
     {
@@ -369,7 +404,33 @@ void so3_test_gen_flmn_real(
             flmn[i] = 0.0;
     }
 
-    for (n = 0; n < N; ++n)
+    // Fill fl00 with random real values
+    for (el = L0; el < L; ++el)
+    {
+        so3_sampling_elmn2ind_real(&ind, el, 0, 0, L, N, storage);
+        flmn[ind] = (2.0*ran2_dp(seed) - 1.0);
+    }
+
+    // Fill fl+-m0 with conjugated random values
+
+    for (el = L0; el < L; ++el)
+    {
+        for (m = 1; m <= el; ++m)
+        {
+            real = (2.0*ran2_dp(seed) - 1.0);
+            imag = (2.0*ran2_dp(seed) - 1.0);
+            so3_sampling_elmn2ind_real(&ind, el, m, 0, L, N, storage);
+            flmn[ind] = real + imag * I;
+            so3_sampling_elmn2ind_real(&ind, el, -m, 0, L, N, storage);
+            flmn[ind] = real - imag * I;
+            if (m % 2)
+                flmn[ind] = - real + imag * I;
+            else
+                flmn[ind] = real - imag * I;
+        }
+    }
+
+    for (n = 1; n < N; ++n)
     {
         for (el = MAX(L0, n); el < L; ++el)
         {

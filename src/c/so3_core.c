@@ -254,8 +254,8 @@ void so3_core_mw_forward_via_ssht(
 
     plan = fftw_plan_many_dft(
             fftw_rank, &fftw_n, fftw_howmany,
-            ftemp, NULL, fftw_ostride, fftw_odist,
-            fn, NULL, fftw_istride, fftw_idist,
+            ftemp, NULL, fftw_istride, fftw_idist,
+            fn, NULL, fftw_ostride, fftw_odist,
             FFTW_FORWARD, FFTW_ESTIMATE
     );
 
@@ -366,7 +366,8 @@ void so3_core_mw_forward_via_ssht(
  * Compute inverse transform for MW method via SSHT for a real signal.
  *
  * \param[out] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
- * \param[in] flmn Harmonic coefficients for n >= 0.
+ * \param[in] flmn Harmonic coefficients for n >= 0. Note that for n = 0, these have to
+ *                 respect the symmetry flm0* = (-1)^(m+n)*fl-m0, and hence fl00 has to be real.
  * \param[in] L0 Lower harmonic band-limit.
  * \param[in] L Upper harmonic band-limit.
  * \param[in] N Orientational band-limit.
@@ -562,7 +563,7 @@ void so3_core_mw_forward_via_ssht_real(
         printf("%sComputing forward transform using MW sampling with\n", SO3_PROMPT);
         printf("%sparameters  (L, N, reality) = (%d, %d, FALSE)\n", SO3_PROMPT, L, N);
         if (verbosity > 1)
-            printf("%sUsing routine so3_core_mw_forward_via_ssht with storage method %d...\n"
+            printf("%sUsing routine so3_core_mw_forward_via_ssht_real with storage method %d...\n"
                     , SO3_PROMPT
                     , storage);
     }
@@ -590,8 +591,8 @@ void so3_core_mw_forward_via_ssht_real(
 
     plan = fftw_plan_many_dft_r2c(
             fftw_rank, &fftw_n, fftw_howmany,
-            ftemp, NULL, fftw_ostride, fftw_odist,
-            fn, NULL, fftw_istride, fftw_idist,
+            ftemp, NULL, fftw_istride, fftw_idist,
+            fn, NULL, fftw_ostride, fftw_odist,
             FFTW_ESTIMATE
     );
 
