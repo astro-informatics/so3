@@ -29,11 +29,12 @@ void mexFunction( int nlhs, mxArray *plhs[],
     complex double *flmn;
     int L, N;
     int len;
-    char order_str[SO3_STRING_LEN], storage_str[SO3_STRING_LEN], n_mode_str[SO3_STRING_LEN], dl_method_str[SO3_STRING_LEN];
+    char order_str[SO3_STRING_LEN], storage_str[SO3_STRING_LEN], n_mode_str[SO3_STRING_LEN], dl_method_str[SO3_STRING_LEN], sampling_str[SO3_STRING_LEN];
 
     so3_storage_t storage_method;
     so3_n_mode_t n_mode;
     ssht_dl_method_t dl_method;
+    so3_sampling_t sampling_scheme;
 
     int reality;
 
@@ -45,9 +46,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
     int nalpha, nbeta, ngamma;
 
     /* Check number of arguments. */
-    if (nrhs != 8)
+    if (nrhs != 9)
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:nrhs",
-                          "Require eight inputs.");
+                          "Require nine inputs.");
     if (nlhs != 1)
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidOutput:nlhs",
                           "Require one output.");
@@ -215,10 +216,37 @@ void mexFunction( int nlhs, mxArray *plhs[],
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:storage",
                           "Invalid Wigner recursion method.");
 
+    /* Parse sampling scheme method. */
+    iin = 8;
+    if( !mxIsChar(prhs[iin]) ) {
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:samplingSchemeChar",
+                          "Sampling scheme must be string.");
+    }
+    len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
+    if (len >= SO3_STRING_LEN)
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:samplingSchemeTooLong",
+                          "Sampling scheme exceeds string length.");
+    mxGetString(prhs[iin], sampling_str, len);
+
+    if (strcmp(sampling_str, SO3_SAMPLING_MW_STR) == 0)
+    {
+        sampling_scheme = SO3_SAMPLING_MW;
+        nalpha = so3_sampling_mw_nalpha(L);
+        nbeta = so3_sampling_mw_nbeta(L);
+        ngamma = so3_sampling_mw_ngamma(N);
+    }
+    else if (strcmp(sampling_str, SO3_SAMPLING_MW_SS_STR) == 0)
+    {
+        sampling_scheme = SO3_SAMPLING_MW_SS;
+        nalpha = so3_sampling_mw_ss_nalpha(L);
+        nbeta = so3_sampling_mw_ss_nbeta(L);
+        ngamma = so3_sampling_mw_ss_ngamma(N);
+    }
+    else
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:samplingScheme",
+                          "Invalid sampling scheme.");
+
     /* Compute inverse transform. */
-    nalpha = so3_sampling_mw_nalpha(L);
-    nbeta = so3_sampling_mw_nbeta(L);
-    ngamma = so3_sampling_mw_ngamma(N);
 
     if (reality)
     {
@@ -226,6 +254,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         so3_core_mw_inverse_via_ssht_real(
             fr, flmn,
             0, L, N,
+            sampling_scheme,
             storage_method,
             n_mode,
             dl_method,
@@ -238,6 +267,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         so3_core_mw_inverse_via_ssht(
             f, flmn,
             0, L, N,
+            sampling_scheme,
             storage_method,
             n_mode,
             dl_method,

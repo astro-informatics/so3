@@ -14,9 +14,12 @@ function [flmn] = so3_forward(f, L, N, varargin)
 % Options consist of parameter type and value pairs.  Valid options
 % include:
 %
-%   'Order'   = { 'ZeroFirst'     [el-em blocks are stored in en-order
+%   'Sampling' = { 'MW'           [McEwen & Wiaux sampling (default)],
+%                  'MWSS'         [McEwen & Wiaux symmetric sampling] }
+%
+%   'Order' = { 'ZeroFirst'       [el-em blocks are stored in en-order
 %                                  0, -1, 1, -2, 2, ... (default)],
-%                 'NegativeFirst' [el-em blocks are stored in en-order
+%               'NegativeFirst'   [el-em blocks are stored in en-order
 %                                  ..., -2, -1, 0, 1, 2, ...] }
 %
 %   'Storage' = { 'Padded'        [indices for el < en are zero (default)],
@@ -47,6 +50,7 @@ p = inputParser;
 p.addRequired('f', @isnumeric);
 p.addRequired('L', @isnumeric);
 p.addRequired('N', @isnumeric);
+p.addParamValue('Sampling', 'MW', @ischar);
 p.addParamValue('Order', 'ZeroFirst', @ischar);
 p.addParamValue('Storage', 'Padded', @ischar);
 p.addParamValue('NMode', 'All', @ischar);
@@ -57,4 +61,4 @@ args = p.Results;
 
 % Computing forward transform.
 [flmn] = ...
-    so3_forward_mex(f, L, N, args.Order, args.Storage, args.NMode, args.WignerMethod, args.Reality);
+    so3_forward_mex(f, L, N, args.Order, args.Storage, args.NMode, args.WignerMethod, args.Reality, args.Sampling);

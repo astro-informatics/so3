@@ -2,6 +2,7 @@
 // Copyright (C) 2013 Martin Büttner and Jason McEwen
 // See LICENSE.txt for license details
 
+#include <string.h>
 
 #include <so3.h>
 #include "so3_mex.h"
@@ -12,7 +13,7 @@
  * Compute sampling positions.
  *
  * Usage:
- *   [n, nalpha, nbeta, ngamma, alphas, betas, gammas] = so3_sampling_mex(L, N)
+ *   [n, nalpha, nbeta, ngamma, alphas, betas, gammas] = so3_sampling_mex(L, N, sampling_scheme)
  *
  * \author Martin Büttner
  * \author Jason McEwen
@@ -23,11 +24,13 @@ void mexFunction( int nlhs, mxArray *plhs[],
     int L, N, nalpha, nbeta, ngamma, n, a, b, g, iin;
     double *alphas, *betas, *gammas;
     int iout = 0;
+    int len;
+    char sampling_str[SO3_STRING_LEN];
 
     /* Check number of arguments. */
-    if(nrhs!=2) {
+    if(nrhs!=3) {
         mexErrMsgIdAndTxt("so3_sampling_mex:InvalidInput:nrhs",
-                "Require two inputs.");
+                "Require three inputs.");
     }
     if(nlhs!=7) {
         mexErrMsgIdAndTxt("so3_sampling_mex:InvalidOutput:nlhs",
@@ -71,11 +74,37 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Orientational band-limit must not be greater than harmonic band-limit.");
     }
 
+    /* Parse sampling scheme method. */
+    iin = 2;
+    if( !mxIsChar(prhs[iin]) ) {
+        mexErrMsgIdAndTxt("so3_sampling_mex:InvalidInput:samplingSchemeChar",
+                          "Sampling scheme must be string.");
+    }
+    len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
+    if (len >= SO3_STRING_LEN)
+        mexErrMsgIdAndTxt("so3_sampling_mex:InvalidInput:samplingSchemeTooLong",
+                          "Sampling scheme exceeds string length.");
+    mxGetString(prhs[iin], sampling_str, len);
+
+    if (strcmp(sampling_str, SO3_SAMPLING_MW_STR) == 0)
+    {
+        n = so3_sampling_mw_n(L, N);
+        nalpha = so3_sampling_mw_nalpha(L);
+        nbeta = so3_sampling_mw_nbeta(L);
+        ngamma = so3_sampling_mw_ngamma(N);
+    }
+    else if (strcmp(sampling_str, SO3_SAMPLING_MW_SS_STR) == 0)
+    {
+        n = so3_sampling_mw_ss_n(L, N);
+        nalpha = so3_sampling_mw_ss_nalpha(L);
+        nbeta = so3_sampling_mw_ss_nbeta(L);
+        ngamma = so3_sampling_mw_ss_ngamma(N);
+    }
+    else
+        mexErrMsgIdAndTxt("so3_sampling_mex:InvalidInput:samplingScheme",
+                          "Invalid sampling scheme.");
+
     /* Compute sample positions. */
-    nalpha = so3_sampling_mw_nalpha(L);
-    nbeta = so3_sampling_mw_nbeta(L);
-    ngamma = so3_sampling_mw_ngamma(N);
-    n = so3_sampling_mw_n(L, N);
     plhs[iout++] = mxCreateDoubleScalar(n);
     plhs[iout++] = mxCreateDoubleScalar(nalpha);
     plhs[iout++] = mxCreateDoubleScalar(nbeta);

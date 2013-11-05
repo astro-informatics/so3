@@ -15,7 +15,7 @@
  *
  * Usage:
  *   [flmn] = ...
- *     so3_forward_mex(f, L, N, order, storage, n_mode, dl_method, reality);
+ *     so3_forward_mex(f, L, N, order, storage, n_mode, dl_method, reality, sampling_scheme);
  *
  * \author Martin Büttner
  * \author Jason McEwen
@@ -32,12 +32,13 @@
     double *fr;
     int L, N;
     int len;
-    char order_str[SO3_STRING_LEN], storage_str[SO3_STRING_LEN], n_mode_str[SO3_STRING_LEN], dl_method_str[SO3_STRING_LEN];
+    char order_str[SO3_STRING_LEN], storage_str[SO3_STRING_LEN], n_mode_str[SO3_STRING_LEN], dl_method_str[SO3_STRING_LEN], sampling_str[SO3_STRING_LEN];
     int nalpha, nbeta, ngamma;
 
     so3_storage_t storage_method;
     so3_n_mode_t n_mode;
     ssht_dl_method_t dl_method;
+    so3_sampling_t sampling_scheme;
 
     int reality;
 
@@ -46,9 +47,9 @@
     double *flmn_real, *flmn_imag;
 
     /* Check number of arguments. */
-    if (nrhs != 8)
+    if (nrhs != 9)
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:nrhs",
-                          "Require eight inputs.");
+                          "Require nine inputs.");
     if (nlhs != 1)
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidOutput:nlhs",
                           "Require one output.");
@@ -156,14 +157,6 @@
                           "Storage type exceeds string length.");
     mxGetString(prhs[iin], storage_str, len);
 
-    nalpha = so3_sampling_mw_nalpha(L);
-    nbeta = so3_sampling_mw_nbeta(L);
-    ngamma = so3_sampling_mw_ngamma(N);
-
-    if (f_na != nalpha || f_nb != nbeta || f_ng != ngamma)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:fSize",
-                          "Invalid dimension sizes of function samples.");
-
     if (strcmp(storage_str, SO3_STORAGE_PADDED) == 0)
     {
         if (reality)
@@ -200,12 +193,12 @@
     /* Parse n-mode. */
     iin = 5;
     if( !mxIsChar(prhs[iin]) ) {
-        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:nModeChar",
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:nModeChar",
                           "Storage type must be string.");
     }
     len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
     if (len >= SO3_STRING_LEN)
-        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:nModeTooLong",
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:nModeTooLong",
                           "n-mode exceeds string length.");
     mxGetString(prhs[iin], n_mode_str, len);
 
@@ -218,18 +211,18 @@
     else if (strcmp(n_mode_str, SO3_N_MODE_MAXIMUM_STR) == 0)
         n_mode = SO3_N_MODE_MAXIMUM;
     else
-        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:nMode",
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:nMode",
                           "Invalid n-mode.");
 
     /* Parse Wigner recursion method. */
     iin = 6;
     if( !mxIsChar(prhs[iin]) ) {
-        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:dlMethodChar",
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:dlMethodChar",
                           "Wigner recursion method must be string.");
     }
     len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
     if (len >= SO3_STRING_LEN)
-        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:dlMethodTooLong",
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:dlMethodTooLong",
                           "Wigner recursion method exceeds string length.");
     mxGetString(prhs[iin], dl_method_str, len);
 
@@ -238,8 +231,44 @@
     else if (strcmp(dl_method_str, SSHT_RECURSION_TRAPANI) == 0)
         dl_method = SSHT_DL_TRAPANI;
     else
-        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:storage",
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:dlMethod",
                           "Invalid Wigner recursion method.");
+
+    /* Parse sampling scheme method. */
+    iin = 8;
+    if( !mxIsChar(prhs[iin]) ) {
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:samplingSchemeChar",
+                          "Sampling scheme must be string.");
+    }
+    len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
+    if (len >= SO3_STRING_LEN)
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:samplingSchemeTooLong",
+                          "Sampling scheme exceeds string length.");
+    mxGetString(prhs[iin], sampling_str, len);
+
+    if (strcmp(sampling_str, SO3_SAMPLING_MW_STR) == 0)
+    {
+        sampling_scheme = SO3_SAMPLING_MW;
+
+        nalpha = so3_sampling_mw_nalpha(L);
+        nbeta = so3_sampling_mw_nbeta(L);
+        ngamma = so3_sampling_mw_ngamma(N);
+    }
+    else if (strcmp(sampling_str, SO3_SAMPLING_MW_SS_STR) == 0)
+    {
+        sampling_scheme = SO3_SAMPLING_MW_SS;
+
+        nalpha = so3_sampling_mw_ss_nalpha(L);
+        nbeta = so3_sampling_mw_ss_nbeta(L);
+        ngamma = so3_sampling_mw_ss_ngamma(N);
+    }
+    else
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:samplingScheme",
+                          "Invalid sampling scheme.");
+
+    if (f_na != nalpha || f_nb != nbeta || f_ng != ngamma)
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:fSize",
+                          "Invalid dimension sizes of function samples.");
 
     /* Compute inverse transform. */
 
@@ -250,6 +279,7 @@
         so3_core_mw_forward_via_ssht_real(
             flmn, fr,
             0, L, N,
+            sampling_scheme,
             storage_method,
             n_mode,
             dl_method,
@@ -261,6 +291,7 @@
         so3_core_mw_forward_via_ssht(
             flmn, f,
             0, L, N,
+            sampling_scheme,
             storage_method,
             n_mode,
             dl_method,

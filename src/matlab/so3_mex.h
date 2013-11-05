@@ -17,4 +17,7 @@
 #define SSHT_RECURSION_TRAPANI "Trapani"
 #define SSHT_RECURSION_RISBO "Risbo"
 
+#define SO3_SAMPLING_MW_STR "MW"
+#define SO3_SAMPLING_MW_SS_STR "MWSS"
+
 #define SO3_STRING_LEN 128
