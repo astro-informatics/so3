@@ -38,6 +38,9 @@
  * \param[in] n_mode Indicates which n are non-zero.
  * \param[in] dl_method Method to use when computing the Wigner functions.
  *                      See SSHT package for details.
+ * \param[in] use_dft Pass in a non-zero value to perform the Fourier transform
+ *                    in gamma/n as a DFT instead of an FFT. This can be faster
+ *                    if there is only a small set of n with non-zero flmn.
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
@@ -51,6 +54,7 @@ void so3_core_mw_inverse_via_ssht(
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
+    int use_dft,
     int verbosity
 ) {
     // Iterator
@@ -93,22 +97,25 @@ void so3_core_mw_inverse_via_ssht(
     fn = calloc((2*N-1)*fn_n_stride, sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
 
-    // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
-    // necessary but still good practice.
-    fftw_rank = 1; // We compute 1d transforms
-    fftw_n = 2*N-1; // Each transform is over 2*N-1
-    fftw_howmany = fn_n_stride; // We need L*(2*L-1) of these transforms
+    if (!use_dft)
+    {
+        // Initialize fftw_plan before filling fn. With FFTW_ESTIMATE this is technically not
+        // necessary but still good practice.
+        fftw_rank = 1; // We compute 1d transforms
+        fftw_n = 2*N-1; // Each transform is over 2*N-1
+        fftw_howmany = fn_n_stride; // We need L*(2*L-1) of these transforms
 
-    // We want to transform columns
-    fftw_idist = fftw_odist = 1; // The starts of the columns are contiguous in memory
-    fftw_istride = fftw_ostride = fn_n_stride; // Distance between two elements of the same column
+        // We want to transform columns
+        fftw_idist = fftw_odist = 1; // The starts of the columns are contiguous in memory
+        fftw_istride = fftw_ostride = fn_n_stride; // Distance between two elements of the same column
 
-    plan = fftw_plan_many_dft(
-            fftw_rank, &fftw_n, fftw_howmany,
-            fn, NULL, fftw_istride, fftw_idist,
-            f, NULL, fftw_ostride, fftw_odist,
-            FFTW_BACKWARD, FFTW_ESTIMATE
-    );
+        plan = fftw_plan_many_dft(
+                fftw_rank, &fftw_n, fftw_howmany,
+                fn, NULL, fftw_istride, fftw_idist,
+                f, NULL, fftw_ostride, fftw_odist,
+                FFTW_BACKWARD, FFTW_ESTIMATE
+        );
+    }
 
     flm = malloc(L*L * sizeof *flm);
     SO3_ERROR_MEM_ALLOC_CHECK(flm);
@@ -153,7 +160,7 @@ void so3_core_mw_inverse_via_ssht(
         }
 
         // The conditional applies the spatial transform, so that we store
-        // the results in n-order 0, 1, 2, -2, -1
+        // the results (fn) in n-order 0, 1, 2, -2, -1
         offset = (n < 0 ? n + 2*N-1 : n);
 
 
@@ -189,8 +196,64 @@ void so3_core_mw_inverse_via_ssht(
 
     free(flm);
 
-    fftw_execute(plan);
-    fftw_destroy_plan(plan);
+    if (use_dft)
+    {
+        int nalpha, nbeta, ngamma, a, b, g, i, n, offset;
+        complex double expfactor, currentexp;
+
+        switch (sampling)
+        {
+        case SO3_SAMPLING_MW:
+            nalpha = so3_sampling_mw_nalpha(L);
+            nbeta = so3_sampling_mw_nbeta(L);
+            ngamma = so3_sampling_mw_ngamma(N);
+            break;
+        case SO3_SAMPLING_MW_SS:
+            nalpha = so3_sampling_mw_ss_nalpha(L);
+            nbeta = so3_sampling_mw_ss_nbeta(L);
+            ngamma = so3_sampling_mw_ss_ngamma(N);
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid sampling scheme.");
+        }
+
+        for (a = 0; a < nalpha; ++a)
+        {
+            for (b = 0; b < nbeta; ++b)
+            {
+                for (g = 0; g < ngamma; ++g)
+                {
+                    i = a + nalpha*b + nalpha*nbeta*g;
+                    f[i] = 0.0;
+                    // No need to switch for the sampling mode, since gamma is always sampled
+                    // asymmetrically.
+                    expfactor = cexp(I * so3_sampling_mw_ss_g2gamma(g,N));
+                    currentexp = 1;
+                    for (offset = 0; offset < 2*N-1; ++offset)
+                    {
+                        // Reverse the spatial transform to check for n-modes.
+                        //n = (offset >= N ? offset - (2*N-1) : offset);
+
+                        /*if ((n_mode == SO3_N_MODE_EVEN && n % 2)
+                            || (n_mode == SO3_N_MODE_ODD && !(n % 2))
+                            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1)
+                        ) {
+                            currentexp *= expfactor;
+                            continue;
+                        }*/
+
+                        f[i] += fn[a + nalpha*b + nalpha*nbeta*offset] * currentexp;
+                        currentexp *= expfactor;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        fftw_execute(plan);
+        fftw_destroy_plan(plan);
+    }
 
     free(fn);
 
@@ -213,6 +276,9 @@ void so3_core_mw_inverse_via_ssht(
  * \param[in] n_mode Indicates which n are non-zero.
  * \param[in] dl_method Method to use when computing the Wigner functions.
  *                      See SSHT package for details.
+ * \param[in] use_dft Pass in a non-zero value to perform the Fourier transform
+ *                    in gamma/n as a DFT instead of an FFT. This can be faster
+ *                    if there is only a small set of n with non-zero flmn.
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
@@ -419,6 +485,9 @@ void so3_core_mw_forward_via_ssht(
  * \param[in] n_mode Indicates which n are non-zero.
  * \param[in] dl_method Method to use when computing the Wigner functions.
  *                      See SSHT package for details.
+ * \param[in] use_dft Pass in a non-zero value to perform the Fourier transform
+ *                    in gamma/n as a DFT instead of an FFT. This can be faster
+ *                    if there is only a small set of n with non-zero flmn.
  * \param[in] verbosity Verbosity flag in range [0,5].
  * \retval none
  *
@@ -432,6 +501,7 @@ void so3_core_mw_inverse_via_ssht_real(
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
+    int use_dft,
     int verbosity
 ) {
     // Iterator
@@ -475,22 +545,25 @@ void so3_core_mw_inverse_via_ssht_real(
     fn = calloc(N*fn_n_stride, sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
 
-    // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
-    // necessary but still good practice.
-    fftw_rank = 1; // We compute 1d transforms
-    fftw_n = 2*N-1; // Each transform is over 2*N-1 (logically; physically, fn for negative n will be omitted)
-    fftw_howmany = fn_n_stride; // We need L*(2*L-1) of these transforms
+    if (!use_dft)
+    {
+        // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
+        // necessary but still good practice.
+        fftw_rank = 1; // We compute 1d transforms
+        fftw_n = 2*N-1; // Each transform is over 2*N-1 (logically; physically, fn for negative n will be omitted)
+        fftw_howmany = fn_n_stride; // We need L*(2*L-1) of these transforms
 
-    // We want to transform columns
-    fftw_idist = fftw_odist = 1; // The starts of the columns are contiguous in memory
-    fftw_istride = fftw_ostride = fn_n_stride; // Distance between two elements of the same column
+        // We want to transform columns
+        fftw_idist = fftw_odist = 1; // The starts of the columns are contiguous in memory
+        fftw_istride = fftw_ostride = fn_n_stride; // Distance between two elements of the same column
 
-    plan = fftw_plan_many_dft_c2r(
-            fftw_rank, &fftw_n, fftw_howmany,
-            fn, NULL, fftw_istride, fftw_idist,
-            f, NULL, fftw_ostride, fftw_odist,
-            FFTW_ESTIMATE
-    );
+        plan = fftw_plan_many_dft_c2r(
+                fftw_rank, &fftw_n, fftw_howmany,
+                fn, NULL, fftw_istride, fftw_idist,
+                f, NULL, fftw_ostride, fftw_odist,
+                FFTW_ESTIMATE
+        );
+    }
 
     flm = malloc(L*L * sizeof *flm);
     SO3_ERROR_MEM_ALLOC_CHECK(flm);
@@ -566,8 +639,74 @@ void so3_core_mw_inverse_via_ssht_real(
 
     free(flm);
 
-    fftw_execute(plan);
-    fftw_destroy_plan(plan);
+    if (use_dft)
+    {
+        int nalpha, nbeta, ngamma, a, b, g, i, n;
+        complex double expfactor, currentexp;
+
+        switch (sampling)
+        {
+        case SO3_SAMPLING_MW:
+            nalpha = so3_sampling_mw_nalpha(L);
+            nbeta = so3_sampling_mw_nbeta(L);
+            ngamma = so3_sampling_mw_ngamma(N);
+            break;
+        case SO3_SAMPLING_MW_SS:
+            nalpha = so3_sampling_mw_ss_nalpha(L);
+            nbeta = so3_sampling_mw_ss_nbeta(L);
+            ngamma = so3_sampling_mw_ss_ngamma(N);
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid sampling scheme.");
+        }
+
+        for (a = 0; a < nalpha; ++a)
+        {
+            for (b = 0; b < nbeta; ++b)
+            {
+                for (g = 0; g < ngamma; ++g)
+                {
+                    i = a + nalpha*b + nalpha*nbeta*g;
+                    f[i] = 0.0;
+                    // No need to switch for the sampling mode, since gamma is always sampled
+                    // asymmetrically.
+                    expfactor = cexp(I * so3_sampling_mw_ss_g2gamma(g,N));
+                    currentexp = 1;
+                    for (n = 0; n < N; ++n)
+                    {
+                        if ((n_mode == SO3_N_MODE_EVEN && n % 2)
+                            || (n_mode == SO3_N_MODE_ODD && !(n % 2))
+                            || (n_mode == SO3_N_MODE_MAXIMUM && n < N-1)
+                        ) {
+                            currentexp *= expfactor;
+                            continue;
+                        }
+
+                        f[i] += fn[a + nalpha*b + nalpha*nbeta*n] * currentexp;
+                        currentexp *= expfactor;
+                    }
+                    for (n = -N+1; n < 0; ++n)
+                    {
+                        if ((n_mode == SO3_N_MODE_EVEN && n % 2)
+                            || (n_mode == SO3_N_MODE_ODD && !(n % 2))
+                            || (n_mode == SO3_N_MODE_MAXIMUM && -n < N-1)
+                        ) {
+                            currentexp *= expfactor;
+                            continue;
+                        }
+
+                        f[i] += conj(fn[a + nalpha*b + nalpha*nbeta*(-n)]) * currentexp;
+                        currentexp *= expfactor;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        fftw_execute(plan);
+        fftw_destroy_plan(plan);
+    }
 
     free(fn);
 

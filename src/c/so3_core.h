@@ -15,6 +15,7 @@ void so3_core_mw_inverse_via_ssht(
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
+    int use_dft,
     int verbosity
 );
 
@@ -35,6 +36,7 @@ void so3_core_mw_inverse_via_ssht_real(
     so3_storage_t storage,
     so3_n_mode_t n_mode,
     ssht_dl_method_t dl_method,
+    int use_dft,
     int verbosity
 );
 

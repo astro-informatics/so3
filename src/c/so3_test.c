@@ -119,7 +119,7 @@ int main(int argc, char **argv)
         {
             for (storage_mode = 0; storage_mode < SO3_STORE_SIZE; ++storage_mode)
             {
-                for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
+                for (n_mode = 3; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                 {
                     durations_inverse[sampling_scheme][storage_mode][n_mode][real] = 0.0;
                     durations_forward[sampling_scheme][storage_mode][n_mode][real] = 0.0;
@@ -147,8 +147,8 @@ int main(int argc, char **argv)
                         else      so3_test_gen_flmn_complex(flmn_orig, L0, L, N, storage_mode, n_mode, seed);
 
                         time_start = clock();
-                        if (real) so3_core_mw_inverse_via_ssht_real(f_real, flmn_orig, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, verbosity);
-                        else      so3_core_mw_inverse_via_ssht(f, flmn_orig, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, verbosity);
+                        if (real) so3_core_mw_inverse_via_ssht_real(f_real, flmn_orig, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, 0, verbosity);
+                        else      so3_core_mw_inverse_via_ssht(f, flmn_orig, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, 0, verbosity);
                         time_end = clock();
 
                         duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
             for (storage_mode = 0; storage_mode < SO3_STORE_SIZE; ++storage_mode)
             {
                 printf("    ...using %s...\n", storage_mode_str[storage_mode]);
-                for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
+                for (n_mode = 3; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                 {
                     printf("      ...and %s...\n", n_mode_str[n_mode]);
                     printf("        Minimum time for forward transform: %fs\n", durations_forward[sampling_scheme][storage_mode][n_mode][real]);
