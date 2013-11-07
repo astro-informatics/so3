@@ -14,6 +14,10 @@ function [flmn] = so3_forward(f, L, N, varargin)
 % Options consist of parameter type and value pairs.  Valid options
 % include:
 %
+%   'L0' = Non-negative integer (default 0). Indicates that only flmn
+%          with l >= L0 are non-zero. Currently there are no savings
+%          in storage but there are some in performance.
+%
 %   'Sampling' = { 'MW'           [McEwen & Wiaux sampling (default)],
 %                  'MWSS'         [McEwen & Wiaux symmetric sampling] }
 %
@@ -50,6 +54,7 @@ p = inputParser;
 p.addRequired('f', @isnumeric);
 p.addRequired('L', @isnumeric);
 p.addRequired('N', @isnumeric);
+p.addParamValue('L0', 0, @isnumeric);
 p.addParamValue('Sampling', 'MW', @ischar);
 p.addParamValue('Order', 'ZeroFirst', @ischar);
 p.addParamValue('Storage', 'Padded', @ischar);
@@ -61,4 +66,4 @@ args = p.Results;
 
 % Computing forward transform.
 [flmn] = ...
-    so3_forward_mex(f, L, N, args.Order, args.Storage, args.NMode, args.WignerMethod, args.Reality, args.Sampling);
+    so3_forward_mex(f, args.L0, L, N, args.Order, args.Storage, args.NMode, args.WignerMethod, args.Reality, args.Sampling);

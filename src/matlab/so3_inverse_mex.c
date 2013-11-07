@@ -14,7 +14,7 @@
  *
  * Usage:
  *   [f] = ...
- *     so3_inverse_mex(flmn, L, N, order, storage, n_mode, dl_method, reality);
+ *     so3_inverse_mex(flmn, L0, L, N, order, storage, n_mode, dl_method, reality, sampling_scheme);
  *
  * \author Martin Büttner
  * \author Jason McEwen
@@ -27,7 +27,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     int flmn_m, flmn_n, flmn_size;
     double *flmn_real, *flmn_imag;
     complex double *flmn;
-    int L, N;
+    int L0, L, N;
     int len;
     char order_str[SO3_STRING_LEN], storage_str[SO3_STRING_LEN], n_mode_str[SO3_STRING_LEN], dl_method_str[SO3_STRING_LEN], sampling_str[SO3_STRING_LEN];
 
@@ -46,15 +46,15 @@ void mexFunction( int nlhs, mxArray *plhs[],
     int nalpha, nbeta, ngamma;
 
     /* Check number of arguments. */
-    if (nrhs != 9)
+    if (nrhs != 10)
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:nrhs",
-                          "Require nine inputs.");
+                          "Require ten inputs.");
     if (nlhs != 1)
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidOutput:nlhs",
                           "Require one output.");
 
     /* Parse reality. */
-    iin = 7;
+    iin = 8;
     if( !mxIsLogicalScalar(prhs[iin]) )
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:reality",
                           "Reality flag must be logical.");
@@ -79,8 +79,25 @@ void mexFunction( int nlhs, mxArray *plhs[],
             flmn[i] += I * flmn_imag[i];
     }
 
-    /* Parse harmonic band-limit L. */
+    /* Parse lower harmonic band-limit L0. */
     iin = 1;
+    if (!mxIsDouble(prhs[iin]) ||
+        mxIsComplex(prhs[iin]) ||
+        mxGetNumberOfElements(prhs[iin])!=1)
+    {
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:lowerHarmonicBandLimit",
+                          "Lower harmonic band-limit must be integer.");
+    }
+    L0 = (int)mxGetScalar(prhs[iin]);
+    if (mxGetScalar(prhs[iin]) > (double)L0 ||
+        L0 < 0)
+    {
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:lowerHarmonicBandLimitNonInt",
+                          "Lower harmonic band-limit must be non-negative integer.");
+    }
+
+    /* Parse harmonic band-limit L. */
+    iin = 2;
     if (!mxIsDouble(prhs[iin]) ||
         mxIsComplex(prhs[iin]) ||
         mxGetNumberOfElements(prhs[iin])!=1)
@@ -97,7 +114,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
 
     /* Parse orientational band-limit N. */
-    iin = 2;
+    iin = 3;
     if (!mxIsDouble(prhs[iin]) ||
         mxIsComplex(prhs[iin]) ||
         mxGetNumberOfElements(prhs[iin])!=1)
@@ -114,7 +131,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
 
     /* Parse storage order. */
-    iin = 3;
+    iin = 4;
     if( !mxIsChar(prhs[iin]) ) {
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:orderChar",
                           "Storage order must be string.");
@@ -126,7 +143,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxGetString(prhs[iin], order_str, len);
 
     /* Parse storage type. */
-    iin = 4;
+    iin = 5;
     if( !mxIsChar(prhs[iin]) ) {
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:storageChar",
                           "Storage type must be string.");
@@ -173,7 +190,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Invalid storage type.");
 
     /* Parse n-mode. */
-    iin = 5;
+    iin = 6;
     if( !mxIsChar(prhs[iin]) ) {
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:nModeChar",
                           "Storage type must be string.");
@@ -197,7 +214,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Invalid n-mode.");
 
     /* Parse Wigner recursion method. */
-    iin = 6;
+    iin = 7;
     if( !mxIsChar(prhs[iin]) ) {
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:dlMethodChar",
                           "Wigner recursion method must be string.");
@@ -217,7 +234,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Invalid Wigner recursion method.");
 
     /* Parse sampling scheme method. */
-    iin = 8;
+    iin = 9;
     if( !mxIsChar(prhs[iin]) ) {
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:samplingSchemeChar",
                           "Sampling scheme must be string.");
@@ -253,7 +270,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         fr = malloc(nalpha * nbeta * ngamma * sizeof(*fr));
         so3_core_mw_inverse_via_ssht_real(
             fr, flmn,
-            0, L, N,
+            L0, L, N,
             sampling_scheme,
             storage_method,
             n_mode,
@@ -266,7 +283,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         f = malloc(nalpha * nbeta * ngamma * sizeof(*f));
         so3_core_mw_inverse_via_ssht(
             f, flmn,
-            0, L, N,
+            L0, L, N,
             sampling_scheme,
             storage_method,
             n_mode,

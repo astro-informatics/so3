@@ -2,7 +2,6 @@
 // Copyright (C) 2013 Martin Büttner and Jason McEwen
 // See LICENSE.txt for license details
 
-
 #include "ssht.h"
 #include <so3.h>
 #include "so3_mex.h"
@@ -15,7 +14,7 @@
  *
  * Usage:
  *   [flmn] = ...
- *     so3_forward_mex(f, L, N, order, storage, n_mode, dl_method, reality, sampling_scheme);
+ *     so3_forward_mex(f, L0, L, N, order, storage, n_mode, dl_method, reality, sampling_scheme);
  *
  * \author Martin Büttner
  * \author Jason McEwen
@@ -30,7 +29,7 @@
     double *f_real, *f_imag;
     complex double *f;
     double *fr;
-    int L, N;
+    int L0, L, N;
     int len;
     char order_str[SO3_STRING_LEN], storage_str[SO3_STRING_LEN], n_mode_str[SO3_STRING_LEN], dl_method_str[SO3_STRING_LEN], sampling_str[SO3_STRING_LEN];
     int nalpha, nbeta, ngamma;
@@ -47,15 +46,15 @@
     double *flmn_real, *flmn_imag;
 
     /* Check number of arguments. */
-    if (nrhs != 9)
+    if (nrhs != 10)
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:nrhs",
-                          "Require nine inputs.");
+                          "Require ten inputs.");
     if (nlhs != 1)
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidOutput:nlhs",
                           "Require one output.");
 
     /* Parse reality. */
-    iin = 7;
+    iin = 8;
     if( !mxIsLogicalScalar(prhs[iin]) )
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:reality",
                           "Reality flag must be logical.");
@@ -99,8 +98,26 @@
         mexWarnMsgTxt("Running complex transform on real signal (set reality flag to improve performance).");
 
 
-    /* Parse harmonic band-limit L. */
+
+    /* Parse lower harmonic band-limit L0. */
     iin = 1;
+    if (!mxIsDouble(prhs[iin]) ||
+        mxIsComplex(prhs[iin]) ||
+        mxGetNumberOfElements(prhs[iin])!=1)
+    {
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:lowerHarmonicBandLimit",
+                          "Lower harmonic band-limit must be integer.");
+    }
+    L0 = (int)mxGetScalar(prhs[iin]);
+    if (mxGetScalar(prhs[iin]) > (double)L0 ||
+        L0 < 0)
+    {
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:lowerHarmonicBandLimitNonInt",
+                          "Lower harmonic band-limit must be non-negative integer.");
+    }
+
+    /* Parse harmonic band-limit L. */
+    iin = 2;
     if (!mxIsDouble(prhs[iin]) ||
         mxIsComplex(prhs[iin]) ||
         mxGetNumberOfElements(prhs[iin])!=1)
@@ -116,8 +133,12 @@
                           "Harmonic band-limit must be positive integer.");
     }
 
+    if (L0 >= L)
+        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:bandLimitOrder",
+                          "Lower harmonic band-limit L0 must be less than upper harmonic band-limit L.");
+
     /* Parse orientational band-limit N. */
-    iin = 2;
+    iin = 3;
     if (!mxIsDouble(prhs[iin]) ||
         mxIsComplex(prhs[iin]) ||
         mxGetNumberOfElements(prhs[iin])!=1)
@@ -134,7 +155,7 @@
     }
 
     /* Parse storage order. */
-    iin = 3;
+    iin = 4;
     if( !mxIsChar(prhs[iin]) ) {
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:orderChar",
                           "Storage order must be string.");
@@ -146,7 +167,7 @@
     mxGetString(prhs[iin], order_str, len);
 
     /* Parse storage type. */
-    iin = 4;
+    iin = 5;
     if( !mxIsChar(prhs[iin]) ) {
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:storageChar",
                           "Storage type must be string.");
@@ -191,7 +212,7 @@
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:storage",
                           "Invalid storage type.");
     /* Parse n-mode. */
-    iin = 5;
+    iin = 6;
     if( !mxIsChar(prhs[iin]) ) {
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:nModeChar",
                           "Storage type must be string.");
@@ -215,7 +236,7 @@
                           "Invalid n-mode.");
 
     /* Parse Wigner recursion method. */
-    iin = 6;
+    iin = 7;
     if( !mxIsChar(prhs[iin]) ) {
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:dlMethodChar",
                           "Wigner recursion method must be string.");
@@ -235,7 +256,7 @@
                           "Invalid Wigner recursion method.");
 
     /* Parse sampling scheme method. */
-    iin = 8;
+    iin = 9;
     if( !mxIsChar(prhs[iin]) ) {
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:samplingSchemeChar",
                           "Sampling scheme must be string.");
@@ -278,7 +299,7 @@
     {
         so3_core_mw_forward_via_ssht_real(
             flmn, fr,
-            0, L, N,
+            L0, L, N,
             sampling_scheme,
             storage_method,
             n_mode,
@@ -290,7 +311,7 @@
     {
         so3_core_mw_forward_via_ssht(
             flmn, f,
-            0, L, N,
+            L0, L, N,
             sampling_scheme,
             storage_method,
             n_mode,
