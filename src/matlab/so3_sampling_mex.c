@@ -92,6 +92,25 @@ void mexFunction( int nlhs, mxArray *plhs[],
         nalpha = so3_sampling_mw_nalpha(L);
         nbeta = so3_sampling_mw_nbeta(L);
         ngamma = so3_sampling_mw_ngamma(N);
+
+        /* Compute sample positions. */
+        plhs[iout++] = mxCreateDoubleScalar(n);
+        plhs[iout++] = mxCreateDoubleScalar(nalpha);
+        plhs[iout++] = mxCreateDoubleScalar(nbeta);
+        plhs[iout++] = mxCreateDoubleScalar(ngamma);
+
+        plhs[iout] = mxCreateDoubleMatrix(nalpha, 1, mxREAL);
+        alphas = mxGetPr(plhs[iout++]);
+        for (a = 0; a < nalpha; a++)
+            alphas[a] = so3_sampling_mw_a2alpha(a, L);
+        plhs[iout] = mxCreateDoubleMatrix(nbeta, 1, mxREAL);
+        betas = mxGetPr(plhs[iout++]);
+        for (b = 0; b < nbeta; b++)
+            betas[b] = so3_sampling_mw_b2beta(b, L);
+        plhs[iout] = mxCreateDoubleMatrix(ngamma, 1, mxREAL);
+        gammas = mxGetPr(plhs[iout++]);
+        for (g = 0; g < ngamma; g++)
+            gammas[g] = so3_sampling_mw_g2gamma(g, N);
     }
     else if (strcmp(sampling_str, SO3_SAMPLING_MW_SS_STR) == 0)
     {
@@ -99,28 +118,28 @@ void mexFunction( int nlhs, mxArray *plhs[],
         nalpha = so3_sampling_mw_ss_nalpha(L);
         nbeta = so3_sampling_mw_ss_nbeta(L);
         ngamma = so3_sampling_mw_ss_ngamma(N);
+
+
+        /* Compute sample positions. */
+        plhs[iout++] = mxCreateDoubleScalar(n);
+        plhs[iout++] = mxCreateDoubleScalar(nalpha);
+        plhs[iout++] = mxCreateDoubleScalar(nbeta);
+        plhs[iout++] = mxCreateDoubleScalar(ngamma);
+
+        plhs[iout] = mxCreateDoubleMatrix(nalpha, 1, mxREAL);
+        alphas = mxGetPr(plhs[iout++]);
+        for (a = 0; a < nalpha; a++)
+            alphas[a] = so3_sampling_mw_ss_a2alpha(a, L);
+        plhs[iout] = mxCreateDoubleMatrix(nbeta, 1, mxREAL);
+        betas = mxGetPr(plhs[iout++]);
+        for (b = 0; b < nbeta; b++)
+            betas[b] = so3_sampling_mw_ss_b2beta(b, L);
+        plhs[iout] = mxCreateDoubleMatrix(ngamma, 1, mxREAL);
+        gammas = mxGetPr(plhs[iout++]);
+        for (g = 0; g < ngamma; g++)
+            gammas[g] = so3_sampling_mw_ss_g2gamma(g, N);
     }
     else
         mexErrMsgIdAndTxt("so3_sampling_mex:InvalidInput:samplingScheme",
                           "Invalid sampling scheme.");
-
-    /* Compute sample positions. */
-    plhs[iout++] = mxCreateDoubleScalar(n);
-    plhs[iout++] = mxCreateDoubleScalar(nalpha);
-    plhs[iout++] = mxCreateDoubleScalar(nbeta);
-    plhs[iout++] = mxCreateDoubleScalar(ngamma);
-
-    plhs[iout] = mxCreateDoubleMatrix(nalpha, 1, mxREAL);
-    alphas = mxGetPr(plhs[iout++]);
-    for (a = 0; a < nalpha; a++)
-        alphas[a] = so3_sampling_mw_a2alpha(a, L);
-    plhs[iout] = mxCreateDoubleMatrix(nbeta, 1, mxREAL);
-    betas = mxGetPr(plhs[iout++]);
-    for (b = 0; b < nbeta; b++)
-        betas[b] = so3_sampling_mw_b2beta(b, L);
-    plhs[iout] = mxCreateDoubleMatrix(ngamma, 1, mxREAL);
-    gammas = mxGetPr(plhs[iout++]);
-    for (g = 0; g < ngamma; g++)
-        gammas[g] = so3_sampling_mw_g2gamma(g, N);
-
 }
