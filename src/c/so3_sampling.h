@@ -7,14 +7,14 @@
 
 #include "so3_types.h"
 
-int so3_sampling_mw_n(int L, int N);
-int so3_sampling_mw_nalpha(int L);
-int so3_sampling_mw_nbeta(int L);
-int so3_sampling_mw_ngamma(int N);
+int so3_sampling_mw_n(so3_parameters_t *parameters);
+int so3_sampling_mw_nalpha(so3_parameters_t *parameters);
+int so3_sampling_mw_nbeta(so3_parameters_t *parameters);
+int so3_sampling_mw_ngamma(so3_parameters_t *parameters);
 
-double so3_sampling_mw_a2alpha(int a, int L);
-double so3_sampling_mw_b2beta(int b, int L);
-double so3_sampling_mw_g2gamma(int g, int N);
+double so3_sampling_mw_a2alpha(int a, so3_parameters_t *parameters);
+double so3_sampling_mw_b2beta(int b, so3_parameters_t *parameters);
+double so3_sampling_mw_g2gamma(int g, so3_parameters_t *parameters);
 
 int so3_sampling_mw_ss_n(int L, int N);
 int so3_sampling_mw_ss_nalpha(int L);

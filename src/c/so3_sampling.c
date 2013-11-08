@@ -25,8 +25,11 @@
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-int so3_sampling_mw_n(int L, int N)
+int so3_sampling_mw_n(so3_parameters_t *parameters)
 {
+    int L, N;
+    L = parameters->L;
+    N = parameters->N;
     // Is this actually correct?
     return (2*L-1)*(L-1)*(2*N-1) + 1;
 }
@@ -41,9 +44,11 @@ int so3_sampling_mw_n(int L, int N)
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-int so3_sampling_mw_nalpha(int L)
+int so3_sampling_mw_nalpha(so3_parameters_t *parameters)
 {
-    return 2*L-1;
+    int L;
+    L = parameters->L;
+    return 2*L - 1;
 }
 
 
@@ -59,9 +64,9 @@ int so3_sampling_mw_nalpha(int L)
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-int so3_sampling_mw_nbeta(int L)
+int so3_sampling_mw_nbeta(so3_parameters_t *parameters)
 {
-    return L;
+    return parameters->L;
 }
 
 
@@ -74,8 +79,10 @@ int so3_sampling_mw_nbeta(int L)
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-int so3_sampling_mw_ngamma(int N)
+int so3_sampling_mw_ngamma(so3_parameters_t *parameters)
 {
+    int N;
+    N = parameters->N;
     return 2*N-1;
 }
 
@@ -93,8 +100,10 @@ int so3_sampling_mw_ngamma(int N)
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-double so3_sampling_mw_a2alpha(int a, int L)
+double so3_sampling_mw_a2alpha(int a, so3_parameters_t *parameters)
 {
+    int L;
+    L = parameters->L;
     return 2.0 * a * SO3_PI / (2.0*L - 1.0);
 }
 
@@ -112,8 +121,10 @@ double so3_sampling_mw_a2alpha(int a, int L)
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-double so3_sampling_mw_b2beta(int b, int L)
+double so3_sampling_mw_b2beta(int b, so3_parameters_t *parameters)
 {
+    int L;
+    L = parameters->L;
     return (2.0*b + 1.0) * SO3_PI / (2.0*L - 1.0);
 }
 
@@ -131,8 +142,10 @@ double so3_sampling_mw_b2beta(int b, int L)
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-double so3_sampling_mw_g2gamma(int g, int N)
+double so3_sampling_mw_g2gamma(int g, so3_parameters_t *parameters)
 {
+    int N;
+    N = parameters->N;
     return 2.0 * g * SO3_PI / (2.0*N - 1.0);
 }
 
