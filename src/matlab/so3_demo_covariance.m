@@ -59,26 +59,31 @@ var_flmn = 1; % Should we use the actual variance var(flmn) of each
 %
 % sigma^2 Sum(l,m) (((2*l+1)/(8pi^2))^2 dlmm(0)
 
-covar_f_theory = 0; %zeros(1, L);
+% This version computes the covariance directly, using beta = 0. This
+% implementation actually works for N < L, as well.
+%
+%covar_f_theory = 0;
+%dl = zeros(2*L-1, 2*L-1);
+%for l = 0:L-1,
+%    scale = ((2*l+1)/(8*pi^2))^2;
+%    dl = ssht_dl(dl, L, l, 0);
+%    for m = -l:l,
+%        maxn = min(N-1,l);
+%        for n = -maxn:maxn,
+%            covar_f_theory = covar_f_theory + scale*abs(dl(m,n))^2;
+%        end
+%        covar_f_theory = covar_f_theory + scale*dl(L+m,L+m);
+%    end
+%end
+%
+%covar_f_theory = covar_f_theory .* var_flmn
+
+covar_f_theory = 0;
 dl = zeros(2*L-1, 2*L-1);
 for l = 0:L-1,
     scale = ((2*l+1)/(8*pi^2))^2;
     dl = ssht_dl(dl, L, l, 0);
     for m = -l:l,
-        %maxn = min(N-1,l);
-        %for n = -maxn:maxn,
-            %for b = 0:L-1,
-                %dlmn = 0;
-                %for mp = -l:l, % m'
-                   % We leave out the exponential contributions in alpha
-                   % and gamma to Dlmn, because we are only interested in
-                   % the squared modulus of Dlmn.
-                   % Similarly we leave out the phase of the dlmn.
-                   %dlmn = dlmn + dl(L+mp,L+m)*dl(L+mp,L+n)*exp(1i*mp*pi*(2*b+1)/(2*L-1));
-                %end
-                %covar_f_theory(b+1) = covar_f_theory(b+1) + scale*abs(dlmn)^2;
-            %end
-        %end
         covar_f_theory = covar_f_theory + scale*dl(L+m,L+m);
     end
 end
