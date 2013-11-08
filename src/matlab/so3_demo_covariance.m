@@ -21,15 +21,14 @@ clear all;
 
 % Define parameters
 L = 16;
-N = 16; % Necessary for simplification of the covariance calculation. See
+N = L;  % Necessary for simplification of the covariance calculation. See
         % proof further down.
 
 var_flmn = 1; % Should we use the actual variance var(flmn) of each
               % realization here instead?
 
 % Compute theoretical covariance of signal.
-% The covariance <f(rho)f*(rho')> is 0 when rho != rho' and given by the
-% following expression otherwise:
+% The covariance <f(rho)f*(rho)> is given by the following expression:
 % 
 % sigma^2 Sum(l,m,n) ((2*l+1)/(8pi^2))^2 |Dlmn(rho)|^2
 %
@@ -84,7 +83,7 @@ for l = 0:L-1,
     end
 end
 
-covar_f_theory = covar_f_theory .* var_flmn;
+covar_f_theory = covar_f_theory .* var_flmn
 
 runs = 100;
 covar_f_data = zeros(runs,1);
@@ -106,6 +105,6 @@ for i = 1:runs,
     %covar_f_data(i,:) = var(f)
     covar_f_data(i) = var(f(:));
 end
-mean_covar_f_data = mean(covar_f_data);
-std_covar_f_data = std(covar_f_data);
+mean_covar_f_data = mean(covar_f_data)
+std_covar_f_data = std(covar_f_data)
 error_in_std = abs(mean_covar_f_data - covar_f_theory)/std_covar_f_data

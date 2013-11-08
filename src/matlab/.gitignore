@@ -1,2 +1,3 @@
 # MATLAB: Compiled mex files
 *.mexa64
+*.mexmaci64
