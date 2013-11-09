@@ -9,272 +9,223 @@
 #include "so3_types.h"
 
 //============================================================================
-// Sampling relations for McEwen and Wiaux sampling
+// Sampling relations for all supported sampling schemes
 //============================================================================
 
 /*!
- * Compute total number of samples for McEwen and Wiaux sampling.
+ * Compute total number of samples for a given sampling scheme.
  *
  * /note Computes number of samples on rotation group, *not* over
  * extended domain.
  *
- * \param[in] L Harmonic band-limit.
- * \param[in] N Orientational harmonic band-limit.
+ * \param[in] parameters A parameters object with (at least) the following
+ *                       fields:
+ *                       L, N, sampling_scheme
  * \retval n Number of samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-int so3_sampling_mw_n(so3_parameters_t *parameters)
+int so3_sampling_n(const so3_parameters_t *parameters)
 {
     int L, N;
     L = parameters->L;
     N = parameters->N;
-    // Is this actually correct?
-    return (2*L-1)*(L-1)*(2*N-1) + 1;
+
+    // Are these actually correct?
+    switch (parameters->sampling_scheme)
+    {
+    case SO3_SAMPLING_MW:
+        return ((2*L-1)*(L-1) + 1)*(2*N-1);
+    case SO3_SAMPLING_MW_SS:
+        return ((2*L)*(L-1) + 2)*(2*N-1);
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 }
 
 
 /*!
- * Compute number of alpha samples for McEwen and Wiaux sampling.
+ * Compute number of alpha samples for a given sampling scheme.
  *
- * \param[in] L Harmonic band-limit.
+ * \param[in] parameters A parameters object with (at least) the following
+ *                       fields:
+ *                       L, sampling_scheme
  * \retval nalpha Number of alpha samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-int so3_sampling_mw_nalpha(so3_parameters_t *parameters)
+int so3_sampling_nalpha(const so3_parameters_t *parameters)
 {
     int L;
     L = parameters->L;
-    return 2*L - 1;
+
+    switch (parameters->sampling_scheme)
+    {
+    case SO3_SAMPLING_MW:
+        return 2*L - 1;
+    case SO3_SAMPLING_MW_SS:
+        return 2*L;
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 }
 
 
 /*!
- * Compute number of beta samples for McEwen and Wiaux sampling.
+ * Compute number of beta samples for a given sampling scheme.
  *
  * /note Computes number of samples in (0,pi], *not* over extended
  * domain.
  *
- * \param[in] L Harmonic band-limit.
+ * \param[in] parameters A parameters object with (at least) the following
+ *                       fields:
+ *                       L, sampling_scheme
  * \retval nbeta Number of beta samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-int so3_sampling_mw_nbeta(so3_parameters_t *parameters)
+int so3_sampling_nbeta(const so3_parameters_t *parameters)
 {
-    return parameters->L;
+    switch (parameters->sampling_scheme)
+    {
+    case SO3_SAMPLING_MW:
+        return parameters->L;
+    case SO3_SAMPLING_MW_SS:
+        return parameters->L + 1;
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 }
 
 
 /*!
- * Compute number of gamma samples for McEwen and Wiaux sampling.
+ * Compute number of gamma samples for a given sampling scheme.
  *
- * \param[in] N Orientational harmonic band-limit.
+ * \param[in] parameters A parameters object with (at least) the following
+ *                       fields:
+ *                       N, sampling_scheme
  * \retval ngamma Number of gamma samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-int so3_sampling_mw_ngamma(so3_parameters_t *parameters)
+int so3_sampling_ngamma(const so3_parameters_t *parameters)
 {
     int N;
     N = parameters->N;
-    return 2*N-1;
+
+    // As long as we don't introduce other sampling schemes with
+    // different ngamma, we could actually remove this switch
+    // statement.
+    switch (parameters->sampling_scheme)
+    {
+    case SO3_SAMPLING_MW:
+    case SO3_SAMPLING_MW_SS:
+        return 2*N-1;
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 }
 
 
 /*!
- * Convert alpha index to angle for McEwen and Wiaux sampling.
+ * Convert alpha index to angle for a given sampling scheme.
  *
  * \note
  *  - a ranges from [0 .. 2*L-2] => 2*L-1 points in [0,2*pi).
  *
  * \param[in] a Alpha index.
- * \param[in] L Harmonic band-limit.
+ * \param[in] parameters A parameters object with (at least) the following
+ *                       fields:
+ *                       L, sampling_scheme
  * \retval alpha Alpha angle.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-double so3_sampling_mw_a2alpha(int a, so3_parameters_t *parameters)
+double so3_sampling_a2alpha(int a, const so3_parameters_t *parameters)
 {
     int L;
     L = parameters->L;
-    return 2.0 * a * SO3_PI / (2.0*L - 1.0);
+
+    switch (parameters->sampling_scheme)
+    {
+    case SO3_SAMPLING_MW:
+        return 2.0 * a * SO3_PI / (2.0*L - 1.0);
+    case SO3_SAMPLING_MW_SS:
+        return 2.0 * a * SO3_PI / (2.0*L);
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 }
 
 
 /*!
- * Convert beta index to angle for McEwen and Wiaux sampling.
+ * Convert beta index to angle for a given sampling scheme.
  *
  * \note
  *  - b ranges from [0 .. 2*L-2] => 2*L-1 points in (0,2*pi).
  *
  * \param[in] b Beta index.
- * \param[in] L Harmonic band-limit.
+ * \param[in] parameters A parameters object with (at least) the following
+ *                       fields:
+ *                       L, sampling_scheme
  * \retval beta Beta angle.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-double so3_sampling_mw_b2beta(int b, so3_parameters_t *parameters)
+double so3_sampling_b2beta(int b, const so3_parameters_t *parameters)
 {
     int L;
     L = parameters->L;
-    return (2.0*b + 1.0) * SO3_PI / (2.0*L - 1.0);
+
+    switch (parameters->sampling_scheme)
+    {
+    case SO3_SAMPLING_MW:
+        return (2.0*b + 1.0) * SO3_PI / (2.0*L - 1.0);
+    case SO3_SAMPLING_MW_SS:
+        return 2.0 * b * SO3_PI / (2.0*L);
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 }
 
 
 /*!
- * Convert gamma index to angle for McEwen and Wiaux sampling.
+ * Convert gamma index to angle for a given sampling scheme.
  *
  * \note
  *  - g ranges from [0 .. 2*L-2] => 2*L-1 points in [0,2*pi).
  *
  * \param[in] g Gamma index.
- * \param[in] N Orientational harmonic band-limit.
+ * \param[in] parameters A parameters object with (at least) the following
+ *                       fields:
+ *                       N, sampling_scheme
  * \retval gamma Gamma angle.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-double so3_sampling_mw_g2gamma(int g, so3_parameters_t *parameters)
+double so3_sampling_g2gamma(int g, const so3_parameters_t *parameters)
 {
     int N;
     N = parameters->N;
-    return 2.0 * g * SO3_PI / (2.0*N - 1.0);
-}
 
-//============================================================================
-// Sampling relations for McEwen and Wiaux symmetric sampling
-//============================================================================
-
-/*!
- * Compute total number of samples for McEwen and Wiaux symmetric sampling.
- *
- * /note Computes number of samples on rotation group, *not* over
- * extended domain.
- *
- * \param[in] L Harmonic band-limit.
- * \param[in] N Orientational harmonic band-limit.
- * \retval n Number of samples.
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-int so3_sampling_mw_ss_n(int L, int N)
-{
-    // Is this actually correct?
-    return (2*L)*(L-1)*(2*N-1) + 2;
-}
-
-
-/*!
- * Compute number of alpha samples for McEwen and Wiaux symmetric sampling.
- *
- * \param[in] L Harmonic band-limit.
- * \retval nalpha Number of alpha samples.
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-int so3_sampling_mw_ss_nalpha(int L)
-{
-    return 2*L;
-}
-
-
-/*!
- * Compute number of beta samples for McEwen and Wiaux symmetric sampling.
- *
- * /note Computes number of samples in [0,pi], *not* over extended
- * domain.
- *
- * \param[in] L Harmonic band-limit.
- * \retval nbeta Number of beta samples.
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-int so3_sampling_mw_ss_nbeta(int L)
-{
-    return L+1;
-}
-
-
-/*!
- * Compute number of gamma samples for McEwen and Wiaux symmetric sampling.
- *
- * \param[in] N Orientational harmonic band-limit.
- * \retval ngamma Number of gamma samples.
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-int so3_sampling_mw_ss_ngamma(int N)
-{
-    return 2*N-1;
-}
-
-
-/*!
- * Convert alpha index to angle for McEwen and Wiaux symmetric sampling.
- *
- * \note
- *  - a ranges from [0 .. 2*L-1] => 2*L points in [0,2*pi).
- *
- * \param[in] a Alpha index.
- * \param[in] L Harmonic band-limit.
- * \retval alpha Alpha angle.
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-double so3_sampling_mw_ss_a2alpha(int a, int L)
-{
-    return 2.0 * a * SO3_PI / (2.0*L);
-}
-
-
-/*!
- * Convert beta index to angle for McEwen and Wiaux symmetric sampling.
- *
- * \note
- *  - b ranges from [0 .. 2*L-1] => 2*L points in [0,2*pi).
- *
- * \param[in] b Beta index.
- * \param[in] L Harmonic band-limit.
- * \retval beta Beta angle.
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-double so3_sampling_mw_ss_b2beta(int b, int L)
-{
-    return 2.0 * b * SO3_PI / (2.0*L);
-}
-
-
-/*!
- * Convert gamma index to angle for McEwen and Wiaux symmetric sampling.
- *
- * \note
- *  - g ranges from [0 .. 2*L-2] => 2*L-1 points in [0,2*pi).
- *
- * \param[in] g Gamma index.
- * \param[in] N Orientational harmonic band-limit.
- * \retval gamma Gamma angle.
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-double so3_sampling_mw_ss_g2gamma(int g, int N)
-{
-    return 2.0 * g * SO3_PI / (2.0*N - 1.0);
+    // As long as we don't introduce other sampling schemes with
+    // different gamma sampling, we could actually remove this switch
+    // statement.
+    switch (parameters->sampling_scheme)
+    {
+    case SO3_SAMPLING_MW:
+    case SO3_SAMPLING_MW_SS:
+        return 2.0 * g * SO3_PI / (2.0*N - 1.0);
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
 }
 
 //============================================================================

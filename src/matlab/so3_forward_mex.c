@@ -282,18 +282,18 @@
         sampling_scheme = SO3_SAMPLING_MW;
         parameters.sampling_scheme = sampling_scheme;
 
-        nalpha = so3_sampling_mw_nalpha(&parameters);
-        nbeta = so3_sampling_mw_nbeta(&parameters);
-        ngamma = so3_sampling_mw_ngamma(&parameters);
+        nalpha = so3_sampling_nalpha(&parameters);
+        nbeta = so3_sampling_nbeta(&parameters);
+        ngamma = so3_sampling_ngamma(&parameters);
     }
     else if (strcmp(sampling_str, SO3_SAMPLING_MW_SS_STR) == 0)
     {
         sampling_scheme = SO3_SAMPLING_MW_SS;
         parameters.sampling_scheme = sampling_scheme;
 
-        nalpha = so3_sampling_mw_ss_nalpha(L);
-        nbeta = so3_sampling_mw_ss_nbeta(L);
-        ngamma = so3_sampling_mw_ss_ngamma(N);
+        nalpha = so3_sampling_nalpha(&parameters);
+        nbeta = so3_sampling_nbeta(&parameters);
+        ngamma = so3_sampling_ngamma(&parameters);
     }
     else
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:samplingScheme",
