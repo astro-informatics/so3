@@ -99,7 +99,7 @@ for i = 1:runs,
     %stream = RandStream.getGlobalStream;
     %reset(stream);
     flmn = zeros((2*N-1)*(3*L^2-N*(N-1))/3, 1);
-    flmn = (randn(size(flmn)) + 1i*randn(size(flmn)))/sqrt(2);
+    flmn = (randn(size(flmn)) + 1i*randn(size(flmn)))/sqrt(2)*sqrt(var_flmn);
 
     % Compute inverse then forward transform.
     f = so3_inverse(flmn, L, N, 'Storage', 'Compact');
