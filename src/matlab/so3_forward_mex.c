@@ -39,6 +39,8 @@
     ssht_dl_method_t dl_method;
     so3_sampling_t sampling_scheme;
 
+    so3_parameters_t parameters = {};
+
     int reality;
 
     int flmn_size;
@@ -267,21 +269,31 @@
                           "Sampling scheme exceeds string length.");
     mxGetString(prhs[iin], sampling_str, len);
 
+    parameters.L0 = L0;
+    parameters.L = L;
+    parameters.N = N;
+    parameters.storage = storage_method;
+    parameters.n_mode = n_mode;
+    parameters.dl_method = dl_method;
+    parameters.verbosity = 0;
+
     if (strcmp(sampling_str, SO3_SAMPLING_MW_STR) == 0)
     {
         sampling_scheme = SO3_SAMPLING_MW;
+        parameters.sampling_scheme = sampling_scheme;
 
-        nalpha = so3_sampling_mw_nalpha(L);
-        nbeta = so3_sampling_mw_nbeta(L);
-        ngamma = so3_sampling_mw_ngamma(N);
+        nalpha = so3_sampling_nalpha(&parameters);
+        nbeta = so3_sampling_nbeta(&parameters);
+        ngamma = so3_sampling_ngamma(&parameters);
     }
     else if (strcmp(sampling_str, SO3_SAMPLING_MW_SS_STR) == 0)
     {
         sampling_scheme = SO3_SAMPLING_MW_SS;
+        parameters.sampling_scheme = sampling_scheme;
 
-        nalpha = so3_sampling_mw_ss_nalpha(L);
-        nbeta = so3_sampling_mw_ss_nbeta(L);
-        ngamma = so3_sampling_mw_ss_ngamma(N);
+        nalpha = so3_sampling_nalpha(&parameters);
+        nbeta = so3_sampling_nbeta(&parameters);
+        ngamma = so3_sampling_ngamma(&parameters);
     }
     else
         mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:samplingScheme",
@@ -297,26 +309,16 @@
 
     if (reality)
     {
-        so3_core_mw_forward_via_ssht_real(
+        so3_core_forward_via_ssht_real(
             flmn, fr,
-            L0, L, N,
-            sampling_scheme,
-            storage_method,
-            n_mode,
-            dl_method,
-            0
+            &parameters
         );
     }
     else
     {
-        so3_core_mw_forward_via_ssht(
+        so3_core_forward_via_ssht(
             flmn, f,
-            L0, L, N,
-            sampling_scheme,
-            storage_method,
-            n_mode,
-            dl_method,
-            0
+            &parameters
         );
     }
 

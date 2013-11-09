@@ -36,6 +36,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
     ssht_dl_method_t dl_method;
     so3_sampling_t sampling_scheme;
 
+    so3_parameters_t parameters = {};
+
     int reality;
 
     complex double *f;
@@ -245,19 +247,31 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Sampling scheme exceeds string length.");
     mxGetString(prhs[iin], sampling_str, len);
 
+    parameters.L0 = L0;
+    parameters.L = L;
+    parameters.N = N;
+    parameters.storage = storage_method;
+    parameters.n_mode = n_mode;
+    parameters.dl_method = dl_method;
+    parameters.verbosity = 0;
+
     if (strcmp(sampling_str, SO3_SAMPLING_MW_STR) == 0)
     {
         sampling_scheme = SO3_SAMPLING_MW;
-        nalpha = so3_sampling_mw_nalpha(L);
-        nbeta = so3_sampling_mw_nbeta(L);
-        ngamma = so3_sampling_mw_ngamma(N);
+        parameters.sampling_scheme = sampling_scheme;
+
+        nalpha = so3_sampling_nalpha(&parameters);
+        nbeta = so3_sampling_nbeta(&parameters);
+        ngamma = so3_sampling_ngamma(&parameters);
     }
     else if (strcmp(sampling_str, SO3_SAMPLING_MW_SS_STR) == 0)
     {
         sampling_scheme = SO3_SAMPLING_MW_SS;
-        nalpha = so3_sampling_mw_ss_nalpha(L);
-        nbeta = so3_sampling_mw_ss_nbeta(L);
-        ngamma = so3_sampling_mw_ss_ngamma(N);
+        parameters.sampling_scheme = sampling_scheme;
+
+        nalpha = so3_sampling_nalpha(&parameters);
+        nbeta = so3_sampling_nbeta(&parameters);
+        ngamma = so3_sampling_ngamma(&parameters);
     }
     else
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:samplingScheme",
@@ -268,27 +282,17 @@ void mexFunction( int nlhs, mxArray *plhs[],
     if (reality)
     {
         fr = malloc(nalpha * nbeta * ngamma * sizeof(*fr));
-        so3_core_mw_inverse_via_ssht_real(
+        so3_core_inverse_via_ssht_real(
             fr, flmn,
-            L0, L, N,
-            sampling_scheme,
-            storage_method,
-            n_mode,
-            dl_method,
-            0
+            &parameters
         );
     }
     else
     {
         f = malloc(nalpha * nbeta * ngamma * sizeof(*f));
-        so3_core_mw_inverse_via_ssht(
+        so3_core_inverse_via_ssht(
             f, flmn,
-            L0, L, N,
-            sampling_scheme,
-            storage_method,
-            n_mode,
-            dl_method,
-            0
+            &parameters
         );
     }
 

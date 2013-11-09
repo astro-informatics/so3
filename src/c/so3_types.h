@@ -25,6 +25,8 @@
 #ifndef SO3_TYPES
 #define SO3_TYPES
 
+#include "ssht.h"
+
 #define SO3_PI    3.141592653589793238462643383279502884197
 
 #define SO3_SQRT2 1.41421356237309504880168872420969807856967
@@ -80,5 +82,17 @@ typedef enum {
     // useful in loops, for instance.
     SO3_SAMPLING_SIZE
 } so3_sampling_t;
+
+typedef struct {
+    int L0; // Lower harmonic band-limit
+    int L;  // Upper harmonic band-limit
+    int N;  // Upper orientational band-limit
+    so3_sampling_t sampling_scheme; // Sampling scheme to use
+    so3_storage_t storage;   // Storage type to use
+    so3_n_mode_t n_mode;     // N-mode to use
+    ssht_dl_method_t dl_method; // Recursion method to use for Wigner functions
+    int reality; // A non-zero value indicates that the signal f is real
+    int verbosity; // Detail level for console output in range [0,5]
+} so3_parameters_t;
 
 #endif
