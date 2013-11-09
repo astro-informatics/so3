@@ -25,8 +25,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
     int el, m, n, L, N, ind;
     int len, iin, iout = 0;
     char order[SO3_STRING_LEN], storage[SO3_STRING_LEN];
-    so3_storage_t method;
     int reality;
+
+    so3_parameters_t parameters = {};
 
     /* Check number of arguments */
     if (nrhs != 8)
@@ -171,12 +172,15 @@ void mexFunction( int nlhs, mxArray *plhs[],
         mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:negativeNForRealSignal",
                           "For a real signal, negative n are not stored.");
 
+    parameters.L = L;
+    parameters.N = N;
+
     if (strcmp(storage, SO3_STORAGE_PADDED) == 0)
     {
         if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
-            method = SO3_STORE_ZERO_FIRST_PAD;
+            parameters.storage = SO3_STORE_ZERO_FIRST_PAD;
         else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
-            method = SO3_STORE_NEG_FIRST_PAD;
+            parameters.storage = SO3_STORE_NEG_FIRST_PAD;
         else
             mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:order",
                               "Invalid storage order.");
@@ -188,9 +192,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
                               "The requested index is not available in compact storage.");
 
         if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
-            method = SO3_STORE_ZERO_FIRST_COMPACT;
+            parameters.storage = SO3_STORE_ZERO_FIRST_COMPACT;
         else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
-            method = SO3_STORE_NEG_FIRST_COMPACT;
+            parameters.storage = SO3_STORE_NEG_FIRST_COMPACT;
         else
             mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:order",
                               "Invalid storage order.");
@@ -200,9 +204,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Invalid storage type.");
 
     if (reality)
-        so3_sampling_elmn2ind_real(&ind, el, m, n, L, N, method);
+        so3_sampling_elmn2ind_real(&ind, el, m, n, &parameters);
     else
-        so3_sampling_elmn2ind(&ind, el, m, n, L, N, method);
+        so3_sampling_elmn2ind(&ind, el, m, n, &parameters);
 
     ++ind; // Adjust index from C-style 0-based to MATLAB-style 1-based
     plhs[iout] = mxCreateDoubleScalar(ind);

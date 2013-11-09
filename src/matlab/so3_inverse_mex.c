@@ -282,27 +282,17 @@ void mexFunction( int nlhs, mxArray *plhs[],
     if (reality)
     {
         fr = malloc(nalpha * nbeta * ngamma * sizeof(*fr));
-        so3_core_mw_inverse_via_ssht_real(
+        so3_core_inverse_via_ssht_real(
             fr, flmn,
-            L0, L, N,
-            sampling_scheme,
-            storage_method,
-            n_mode,
-            dl_method,
-            0
+            &parameters
         );
     }
     else
     {
         f = malloc(nalpha * nbeta * ngamma * sizeof(*f));
-        so3_core_mw_inverse_via_ssht(
+        so3_core_inverse_via_ssht(
             f, flmn,
-            L0, L, N,
-            sampling_scheme,
-            storage_method,
-            n_mode,
-            dl_method,
-            0
+            &parameters
         );
     }
 

@@ -25,8 +25,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
     int el, m, n, L, N, ind;
     int len, iin, iout = 0;
     char order[SO3_STRING_LEN], storage[SO3_STRING_LEN];
-    so3_storage_t method;
     int reality;
+
+    so3_parameters_t parameters = {};
 
     /* Check number of arguments */
     if (nrhs != 6)
@@ -118,6 +119,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Reality flag must be logical.");
     reality = mxIsLogicalScalarTrue(prhs[iin]);
 
+    parameters.L = L;
+    parameters.N = N;
+
     if (strcmp(storage, SO3_STORAGE_PADDED) == 0)
     {
         if (reality && ind > N*L*L)
@@ -128,9 +132,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
                               "The array index must lie between 1 and (2*N-1)*L*L.");
 
         if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
-            method = SO3_STORE_ZERO_FIRST_PAD;
+            parameters.storage = SO3_STORE_ZERO_FIRST_PAD;
         else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
-            method = SO3_STORE_NEG_FIRST_PAD;
+            parameters.storage = SO3_STORE_NEG_FIRST_PAD;
         else
             mexErrMsgIdAndTxt("so3_ind2elmn_mex:InvalidInput:order",
                               "Invalid storage order.");
@@ -145,9 +149,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
                               "The array index must lie between 1 and (2*N-1)*(3*L*L-N*(N-1))/3.");
 
         if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
-            method = SO3_STORE_ZERO_FIRST_COMPACT;
+            parameters.storage = SO3_STORE_ZERO_FIRST_COMPACT;
         else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
-            method = SO3_STORE_NEG_FIRST_COMPACT;
+            parameters.storage = SO3_STORE_NEG_FIRST_COMPACT;
         else
             mexErrMsgIdAndTxt("so3_ind2elmn_mex:InvalidInput:order",
                               "Invalid storage order.");
@@ -158,9 +162,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     --ind; // Adjust index from MATLAB-style 1-based to C-style 0-based
     if (reality)
-        so3_sampling_ind2elmn_real(&el, &m, &n, ind, L, N, method);
+        so3_sampling_ind2elmn_real(&el, &m, &n, ind, &parameters);
     else
-        so3_sampling_ind2elmn(&el, &m, &n, ind, L, N, method);
+        so3_sampling_ind2elmn(&el, &m, &n, ind, &parameters);
 
     plhs[iout++] = mxCreateDoubleScalar(el);
     plhs[iout++] = mxCreateDoubleScalar(m);

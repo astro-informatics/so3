@@ -91,7 +91,8 @@ typedef struct {
     so3_storage_t storage;   // Storage type to use
     so3_n_mode_t n_mode;     // N-mode to use
     ssht_dl_method_t dl_method; // Recursion method to use for Wigner functions
-    int verbosity; // Detail level for console output
+    int reality; // A non-zero value indicates that the signal f is real
+    int verbosity; // Detail level for console output in range [0,5]
 } so3_parameters_t;
 
 #endif

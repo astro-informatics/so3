@@ -31,16 +31,16 @@
 
 double get_max_error(complex double *expected, complex double *actual, int n);
 double ran2_dp(int idum);
-void so3_test_gen_flmn_complex(complex double *flmn, int L0, int L, int N, so3_storage_t storage, so3_n_mode_t n_mode, int seed);
-void so3_test_gen_flmn_real(complex double *flmn, int L0, int L, int N, so3_storage_t storage, so3_n_mode_t n_mode, int seed);
+void so3_test_gen_flmn_complex(complex double *flmn, const so3_parameters_t *parameters, int seed);
+void so3_test_gen_flmn_real(complex double *flmn, const so3_parameters_t *parameters, int seed);
 
 int main(int argc, char **argv)
 {
+    so3_parameters_t parameters = {};
     int L, N, L0;
     complex double *flmn_orig, *flmn_syn;
     complex double *f;
     double *f_real;
-    int verbosity = 0;
     int seed;
     clock_t time_start, time_end;
     int i, sampling_scheme, storage_mode, n_mode, real;
@@ -92,6 +92,11 @@ int main(int argc, char **argv)
     if (argc > 4)
         seed = atoi(argv[4]);
 
+    parameters.L0 = L0;
+    parameters.L = L;
+    parameters.N = N;
+    parameters.verbosity = 0;
+
     // (2*N-1)*L*L is the largest number of flmn ever needed. For more
     // compact storage modes, only part of the memory will be used.
     flmn_orig = malloc((2*N-1)*L*L * sizeof *flmn_orig);
@@ -115,12 +120,20 @@ int main(int argc, char **argv)
     // real == 1 --> real signal
     for (real = 0; real < 2; ++real)
     {
+        parameters.reality = real;
+
         for (sampling_scheme = 0; sampling_scheme < SO3_SAMPLING_SIZE; ++sampling_scheme)
         {
+            parameters.sampling_scheme = sampling_scheme;
+
             for (storage_mode = 0; storage_mode < SO3_STORE_SIZE; ++storage_mode)
             {
+                parameters.storage = storage_mode;
+
                 for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                 {
+                    parameters.n_mode = n_mode;
+
                     durations_inverse[sampling_scheme][storage_mode][n_mode][real] = 0.0;
                     durations_forward[sampling_scheme][storage_mode][n_mode][real] = 0.0;
                     errors[sampling_scheme][storage_mode][n_mode][real] = 0.0;
@@ -137,18 +150,16 @@ int main(int argc, char **argv)
                         int j;
                         double duration;
 
-
-
                         // Reset output array
                         for (j = 0; j < (2*N-1)*L*L; ++j)
                             flmn_syn[j] = 0.0;
 
-                        if (real) so3_test_gen_flmn_real(flmn_orig, L0, L, N, storage_mode, n_mode, seed);
-                        else      so3_test_gen_flmn_complex(flmn_orig, L0, L, N, storage_mode, n_mode, seed);
+                        if (real) so3_test_gen_flmn_real(flmn_orig, &parameters, seed);
+                        else      so3_test_gen_flmn_complex(flmn_orig, &parameters, seed);
 
                         time_start = clock();
-                        if (real) so3_core_mw_inverse_via_ssht_real(f_real, flmn_orig, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, verbosity);
-                        else      so3_core_mw_inverse_via_ssht(f, flmn_orig, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, verbosity);
+                        if (real) so3_core_inverse_via_ssht_real(f_real, flmn_orig, &parameters);
+                        else      so3_core_inverse_via_ssht(f, flmn_orig, &parameters);
                         time_end = clock();
 
                         duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
@@ -156,15 +167,15 @@ int main(int argc, char **argv)
                             durations_inverse[sampling_scheme][storage_mode][n_mode][real] = duration;
 
                         time_start = clock();
-                        if (real) so3_core_mw_forward_via_ssht_real(flmn_syn, f_real, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, verbosity);
-                        else      so3_core_mw_forward_via_ssht(flmn_syn, f, L0, L, N, sampling_scheme, storage_mode, n_mode, SSHT_DL_TRAPANI, verbosity);
+                        if (real) so3_core_forward_via_ssht_real(flmn_syn, f_real, &parameters);
+                        else      so3_core_forward_via_ssht(flmn_syn, f, &parameters);
                         time_end = clock();
 
                         duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
                         if (!i || duration < durations_forward[sampling_scheme][storage_mode][n_mode][real])
                             durations_forward[sampling_scheme][storage_mode][n_mode][real] = duration;
 
-                        flmn_size = so3_sampling_flmn_size(L, N, storage_mode, real);
+                        flmn_size = so3_sampling_flmn_size(&parameters);
                         errors[sampling_scheme][storage_mode][n_mode][real] += get_max_error(flmn_orig, flmn_syn, flmn_size)/NREPEAT;
 
                         printf(".");
@@ -237,11 +248,10 @@ double get_max_error(complex double *expected, complex double *actual, int n)
  * \param[out] flmn Random spherical harmonic coefficients generated. Provide
  *                  enough memory for fully padded storage, i.e. (2*N-1)*L*L
  *                  elements. Unused trailing elements will be set to zero.
- * \param[in] L0 Lower harmonic band-limit.
- * \param[in] L Upper harmonic band-limit.
- * \param[in] N Orientational band-limit.
- * \param[in] storage Indicates how flm blocks are stored.
- * \param[in] n_mode Indicates which n are non-zero.
+ * \param[in]  parameters A parameters object with (at least) the following fields:
+ *                        L0, L, N, storage, n_mode
+ *                        The reality flag is ignored. Use so3_test_gen_flmn_real
+ *                        instead for real signals.
  * \param[in] seed Integer seed required for random number generator.
  * \retval none
  *
@@ -250,17 +260,20 @@ double get_max_error(complex double *expected, complex double *actual, int n)
  */
 void so3_test_gen_flmn_complex(
     complex double *flmn,
-    int L0, int L, int N,
-    so3_storage_t storage,
-    so3_n_mode_t n_mode,
+    const so3_parameters_t *parameters,
     int seed)
 {
+    int L0, L, N;
     int i, el, m, n, n_start, n_stop, n_inc, ind;
+
+    L0 = parameters->L0;
+    L = parameters->L;
+    N = parameters->N;
 
     for (i = 0; i < (2*N-1)*L*L; ++i)
         flmn[i] = 0.0;
 
-    switch (n_mode)
+    switch (parameters->n_mode)
     {
     case SO3_N_MODE_ALL:
         n_start = -N+1;
@@ -292,7 +305,7 @@ void so3_test_gen_flmn_complex(
         {
             for (m = -el; m <= el; ++m)
             {
-                so3_sampling_elmn2ind(&ind, el, m, n, L, N, storage);
+                so3_sampling_elmn2ind(&ind, el, m, n, parameters);
                 flmn[ind] = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
             }
         }
@@ -308,11 +321,10 @@ void so3_test_gen_flmn_complex(
  *                  enough memory for fully padded, complex (!) storage, i.e.
  *                  (2*N-1)*L*L elements. Unused trailing elements will be set to
  *                  zero.
- * \param[in] L0 Lower harmonic band-limit.
- * \param[in] L Upper harmonic band-limit.
- * \param[in] N Orientational band-limit.
- * \param[in] storage Indicates how flm blocks are stored.
- * \param[in] n_mode Indicates which n are non-zero.
+ * \param[in]  parameters A parameters object with (at least) the following fields:
+ *                        L0, L, N, storage, n_mode
+ *                        The reality flag is ignored. Use so3_test_gen_flmn_complex
+ *                        instead for complex signals.
  * \param[in] seed Integer seed required for random number generator.
  * \retval none
  *
@@ -321,18 +333,21 @@ void so3_test_gen_flmn_complex(
  */
 void so3_test_gen_flmn_real(
     complex double *flmn,
-    int L0, int L, int N,
-    so3_storage_t storage,
-    so3_n_mode_t n_mode,
+    const so3_parameters_t *parameters,
     int seed)
 {
+    int L0, L, N;
     int i, el, m, n, n_start, n_stop, n_inc, ind;
     double real, imag;
+
+    L0 = parameters->L0;
+    L = parameters->L;
+    N = parameters->N;
 
     for (i = 0; i < (2*N-1)*L*L; ++i)
         flmn[i] = 0.0;
 
-    switch (n_mode)
+    switch (parameters->n_mode)
     {
     case SO3_N_MODE_ALL:
         n_start = 0;
@@ -365,7 +380,7 @@ void so3_test_gen_flmn_real(
             // Fill fl00 with random real values
             for (el = L0; el < L; ++el)
             {
-                so3_sampling_elmn2ind_real(&ind, el, 0, 0, L, N, storage);
+                so3_sampling_elmn2ind_real(&ind, el, 0, 0, parameters);
                 flmn[ind] = (2.0*ran2_dp(seed) - 1.0);
             }
 
@@ -377,9 +392,9 @@ void so3_test_gen_flmn_real(
                 {
                     real = (2.0*ran2_dp(seed) - 1.0);
                     imag = (2.0*ran2_dp(seed) - 1.0);
-                    so3_sampling_elmn2ind_real(&ind, el, m, 0, L, N, storage);
+                    so3_sampling_elmn2ind_real(&ind, el, m, 0, parameters);
                     flmn[ind] = real + imag * I;
-                    so3_sampling_elmn2ind_real(&ind, el, -m, 0, L, N, storage);
+                    so3_sampling_elmn2ind_real(&ind, el, -m, 0, parameters);
                     flmn[ind] = real - imag * I;
                     if (m % 2)
                         flmn[ind] = - real + imag * I;
@@ -395,7 +410,7 @@ void so3_test_gen_flmn_real(
                 for (m = -el; m <= el; ++m)
                 {
 
-                    so3_sampling_elmn2ind_real(&ind, el, m, n, L, N, storage);
+                    so3_sampling_elmn2ind_real(&ind, el, m, n, parameters);
                     flmn[ind] = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
                 }
             }

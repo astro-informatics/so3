@@ -309,26 +309,16 @@
 
     if (reality)
     {
-        so3_core_mw_forward_via_ssht_real(
+        so3_core_forward_via_ssht_real(
             flmn, fr,
-            L0, L, N,
-            sampling_scheme,
-            storage_method,
-            n_mode,
-            dl_method,
-            0
+            &parameters
         );
     }
     else
     {
-        so3_core_mw_forward_via_ssht(
+        so3_core_forward_via_ssht(
             flmn, f,
-            L0, L, N,
-            sampling_scheme,
-            storage_method,
-            n_mode,
-            dl_method,
-            0
+            &parameters
         );
     }
 
