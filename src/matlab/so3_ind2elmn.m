@@ -24,7 +24,7 @@ function [el, em, en] = so3_ind2elmn(ind, L, N, varargin)
 %  'Reality' = { false            [do not assume f real (default)],
 %                true             [assume f real; in this case, the Order
 %                                  parameter will be ignored] }
-
+%
 % Authors: Martin Büttner (m.buettner.d@gmail.com)
 %          Jason McEwen (www.jasonmcewen.org)
 
