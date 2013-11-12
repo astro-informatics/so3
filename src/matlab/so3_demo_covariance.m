@@ -62,21 +62,20 @@ var_flmn = 1; % Should we use the actual variance var(flmn) of each
 % This version computes the covariance directly, using beta = 0. This
 % implementation actually works for N < L, as well.
 %
-%covar_f_theory = 0;
-%dl = zeros(2*L-1, 2*L-1);
-%for l = 0:L-1,
+% covar_f_theory = 0;
+% dl = zeros(2*L-1, 2*L-1);
+% for l = 0:L-1,
 %    scale = ((2*l+1)/(8*pi^2))^2;
 %    dl = ssht_dl(dl, L, l, 0);
 %    for m = -l:l,
 %        maxn = min(N-1,l);
 %        for n = -maxn:maxn,
-%            covar_f_theory = covar_f_theory + scale*abs(dl(m,n))^2;
-%        end
-%        covar_f_theory = covar_f_theory + scale*dl(L+m,L+m);
+%            covar_f_theory = covar_f_theory + scale*abs(dl(L+m,L+n))^2;
+%        end      
 %    end
-%end
-%
-%covar_f_theory = covar_f_theory .* var_flmn
+% end
+% 
+% covar_f_theory = covar_f_theory .* var_flmn
 
 covar_f_theory = 0;
 dl = zeros(2*L-1, 2*L-1);
