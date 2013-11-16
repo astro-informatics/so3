@@ -43,18 +43,20 @@ int main(int argc, char **argv)
     double *f_real;
     int seed;
     clock_t time_start, time_end;
-    int i, sampling_scheme, storage_mode, n_mode, real;
+    int i, sampling_scheme, n_order, storage_mode, n_mode, real;
     int flmn_size;
 
-    const char *storage_mode_str[SO3_STORE_SIZE];
+    const char *n_order_str[SO3_N_ORDER_SIZE];
+    const char *storage_mode_str[SO3_STORAGE_SIZE];
     const char *n_mode_str[SO3_N_MODE_SIZE];
     const char *reality_str[2];
     const char *sampling_str[2];
 
-    storage_mode_str[SO3_STORE_ZERO_FIRST_PAD] = "padded storage with n = 0 first";
-    storage_mode_str[SO3_STORE_NEG_FIRST_PAD] = "padded storage with n = -N+1 first";
-    storage_mode_str[SO3_STORE_ZERO_FIRST_COMPACT] = "compact storage with n = 0 first";
-    storage_mode_str[SO3_STORE_NEG_FIRST_COMPACT] = "compact storage with n = -N+1 first";
+    n_order_str[SO3_N_ORDER_ZERO_FIRST] = "n = 0 first";
+    n_order_str[SO3_N_ORDER_NEGATIVE_FIRST] = "n = -N+1 first";
+
+    storage_mode_str[SO3_STORAGE_PADDED] = "padded storage";
+    storage_mode_str[SO3_STORAGE_COMPACT] = "compact storage";
 
     n_mode_str[SO3_N_MODE_ALL] = "all n";
     n_mode_str[SO3_N_MODE_EVEN] = "only even n";
@@ -69,9 +71,9 @@ int main(int argc, char **argv)
 
     // one element for each combination of sampling scheme, storage mode, n-mode and
     // real or complex signal.
-    double errors[SO3_SAMPLING_SIZE][SO3_STORE_SIZE][SO3_N_MODE_SIZE][2];
-    double durations_forward[SO3_SAMPLING_SIZE][SO3_STORE_SIZE][SO3_N_MODE_SIZE][2];
-    double durations_inverse[SO3_SAMPLING_SIZE][SO3_STORE_SIZE][SO3_N_MODE_SIZE][2];
+    double errors[SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
+    double durations_forward[SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
+    double durations_inverse[SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
 
     // Parse command line arguments
     L = N = 16;
@@ -126,61 +128,69 @@ int main(int argc, char **argv)
         {
             parameters.sampling_scheme = sampling_scheme;
 
-            for (storage_mode = 0; storage_mode < SO3_STORE_SIZE; ++storage_mode)
+            // For real signals, the n_order does not matter, so skip the second option
+            // in that case.
+            for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
             {
-                parameters.storage = storage_mode;
+                parameters.n_order = n_order;
 
-                for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
+                for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
                 {
-                    parameters.n_mode = n_mode;
+                    parameters.storage = storage_mode;
 
-                    durations_inverse[sampling_scheme][storage_mode][n_mode][real] = 0.0;
-                    durations_forward[sampling_scheme][storage_mode][n_mode][real] = 0.0;
-                    errors[sampling_scheme][storage_mode][n_mode][real] = 0.0;
-
-                    printf("Testing a %s signal with %s sampling using %s. N-Mode: %s. Running %d times: ",
-                               reality_str[real],
-                               sampling_str[sampling_scheme],
-                               storage_mode_str[storage_mode],
-                               n_mode_str[n_mode],
-                               NREPEAT);
-
-                    for (i = 0; i <NREPEAT; ++i)
+                    for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                     {
-                        int j;
-                        double duration;
+                        parameters.n_mode = n_mode;
 
-                        // Reset output array
-                        for (j = 0; j < (2*N-1)*L*L; ++j)
-                            flmn_syn[j] = 0.0;
+                        durations_inverse[sampling_scheme][n_order][storage_mode][n_mode][real] = 0.0;
+                        durations_forward[sampling_scheme][n_order][storage_mode][n_mode][real] = 0.0;
+                        errors[sampling_scheme][n_order][storage_mode][n_mode][real] = 0.0;
 
-                        if (real) so3_test_gen_flmn_real(flmn_orig, &parameters, seed);
-                        else      so3_test_gen_flmn_complex(flmn_orig, &parameters, seed);
+                        printf("Testing a %s signal with %s sampling using %s with %s. N-Mode: %s. Running %d times: ",
+                                   reality_str[real],
+                                   sampling_str[sampling_scheme],
+                                   storage_mode_str[storage_mode],
+                                   n_order_str[n_order],
+                                   n_mode_str[n_mode],
+                                   NREPEAT);
 
-                        time_start = clock();
-                        if (real) so3_core_inverse_via_ssht_real(f_real, flmn_orig, &parameters);
-                        else      so3_core_inverse_via_ssht(f, flmn_orig, &parameters);
-                        time_end = clock();
+                        for (i = 0; i <NREPEAT; ++i)
+                        {
+                            int j;
+                            double duration;
 
-                        duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
-                        if (!i || duration < durations_inverse[sampling_scheme][storage_mode][n_mode][real])
-                            durations_inverse[sampling_scheme][storage_mode][n_mode][real] = duration;
+                            // Reset output array
+                            for (j = 0; j < (2*N-1)*L*L; ++j)
+                                flmn_syn[j] = 0.0;
 
-                        time_start = clock();
-                        if (real) so3_core_forward_via_ssht_real(flmn_syn, f_real, &parameters);
-                        else      so3_core_forward_via_ssht(flmn_syn, f, &parameters);
-                        time_end = clock();
+                            if (real) so3_test_gen_flmn_real(flmn_orig, &parameters, seed);
+                            else      so3_test_gen_flmn_complex(flmn_orig, &parameters, seed);
 
-                        duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
-                        if (!i || duration < durations_forward[sampling_scheme][storage_mode][n_mode][real])
-                            durations_forward[sampling_scheme][storage_mode][n_mode][real] = duration;
+                            time_start = clock();
+                            if (real) so3_core_inverse_via_ssht_real(f_real, flmn_orig, &parameters);
+                            else      so3_core_inverse_via_ssht(f, flmn_orig, &parameters);
+                            time_end = clock();
 
-                        flmn_size = so3_sampling_flmn_size(&parameters);
-                        errors[sampling_scheme][storage_mode][n_mode][real] += get_max_error(flmn_orig, flmn_syn, flmn_size)/NREPEAT;
+                            duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
+                            if (!i || duration < durations_inverse[sampling_scheme][n_order][storage_mode][n_mode][real])
+                                durations_inverse[sampling_scheme][n_order][storage_mode][n_mode][real] = duration;
 
-                        printf(".");
+                            time_start = clock();
+                            if (real) so3_core_forward_via_ssht_real(flmn_syn, f_real, &parameters);
+                            else      so3_core_forward_via_ssht(flmn_syn, f, &parameters);
+                            time_end = clock();
+
+                            duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
+                            if (!i || duration < durations_forward[sampling_scheme][n_order][storage_mode][n_mode][real])
+                                durations_forward[sampling_scheme][n_order][storage_mode][n_mode][real] = duration;
+
+                            flmn_size = so3_sampling_flmn_size(&parameters);
+                            errors[sampling_scheme][n_order][storage_mode][n_mode][real] += get_max_error(flmn_orig, flmn_syn, flmn_size)/NREPEAT;
+
+                            printf(".");
+                        }
+                        printf("\n");
                     }
-                    printf("\n");
                 }
             }
         }
@@ -209,19 +219,26 @@ int main(int argc, char **argv)
         printf("Results for %s signals...\n", reality_str[real]);
         for (sampling_scheme = 0; sampling_scheme < SO3_SAMPLING_SIZE; ++sampling_scheme)
         {
-            printf("  ..using %s sampling...\n", sampling_str[sampling_scheme]);
-            for (storage_mode = 0; storage_mode < SO3_STORE_SIZE; ++storage_mode)
+            printf("  ...using %s sampling...\n", sampling_str[sampling_scheme]);
+            for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
             {
-                printf("    ...using %s...\n", storage_mode_str[storage_mode]);
-                for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
+                printf("      ...with %s...\n", storage_mode_str[storage_mode]);
+
+                // For real signals, the n_order does not matter, so skip the second option
+                // in that case.
+                for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
                 {
-                    printf("      ...and %s...\n", n_mode_str[n_mode]);
-                    printf("        Minimum time for forward transform: %fs\n", durations_forward[sampling_scheme][storage_mode][n_mode][real]);
-                    printf("        Minimum time for inverse transform: %fs\n", durations_inverse[sampling_scheme][storage_mode][n_mode][real]);
-                    printf("        Average max errors for round-trip:  %e\n", errors[sampling_scheme][storage_mode][n_mode][real]);
+                    printf("    ...using %s...\n", n_order_str[n_order]);
+                    for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
+                    {
+                        printf("        ...and %s...\n", n_mode_str[n_mode]);
+                        printf("          Minimum time for forward transform: %fs\n", durations_forward[sampling_scheme][n_order][storage_mode][n_mode][real]);
+                        printf("          Minimum time for inverse transform: %fs\n", durations_inverse[sampling_scheme][n_order][storage_mode][n_mode][real]);
+                        printf("          Average max errors for round-trip:  %e\n", errors[sampling_scheme][n_order][storage_mode][n_mode][real]);
+                    }
                 }
+                printf("\n");
             }
-            printf("\n");
         }
     }
 

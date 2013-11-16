@@ -118,47 +118,30 @@ void mexFunction( int nlhs, mxArray *plhs[],
         mexErrMsgIdAndTxt("so3_ind2elmn_mex:InvalidInput:reality",
                           "Reality flag must be logical.");
     reality = mxIsLogicalScalarTrue(prhs[iin]);
+    parameters.reality = reality;
 
     parameters.L = L;
     parameters.N = N;
 
-    if (strcmp(storage, SO3_STORAGE_PADDED) == 0)
-    {
-        if (reality && ind > N*L*L)
-            mexErrMsgIdAndTxt("so3_ind2elmn:InvalidInput:indOutOfRange",
-                              "The array index must lie between 1 and N*L*L.");
-        if (!reality && ind > (2*N-1)*L*L)
-            mexErrMsgIdAndTxt("so3_ind2elmn:InvalidInput:indOutOfRange",
-                              "The array index must lie between 1 and (2*N-1)*L*L.");
-
-        if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
-            parameters.storage = SO3_STORE_ZERO_FIRST_PAD;
-        else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
-            parameters.storage = SO3_STORE_NEG_FIRST_PAD;
-        else
-            mexErrMsgIdAndTxt("so3_ind2elmn_mex:InvalidInput:order",
-                              "Invalid storage order.");
-    }
-    else if (strcmp(storage, SO3_STORAGE_COMPACT) == 0)
-    {
-        if (reality && ind > N*(6*L*L-(N-1)*(2*N-1))/6)
-            mexErrMsgIdAndTxt("so3_ind2elmn:InvalidInput:indOutOfRange",
-                              "The array index must lie between 1 and N*(6*L*L-(N-1)*(2*N-1))/6.");
-        if (!reality && ind > (2*N-1)*(3*L*L-N*(N-1))/3)
-            mexErrMsgIdAndTxt("so3_ind2elmn:InvalidInput:indOutOfRange",
-                              "The array index must lie between 1 and (2*N-1)*(3*L*L-N*(N-1))/3.");
-
-        if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
-            parameters.storage = SO3_STORE_ZERO_FIRST_COMPACT;
-        else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
-            parameters.storage = SO3_STORE_NEG_FIRST_COMPACT;
-        else
-            mexErrMsgIdAndTxt("so3_ind2elmn_mex:InvalidInput:order",
-                              "Invalid storage order.");
-    }
+    if (strcmp(storage, SO3_STORAGE_PADDED_STR) == 0)
+        parameters.storage = SO3_STORAGE_PADDED;
+    else if (strcmp(storage, SO3_STORAGE_COMPACT_STR) == 0)
+        parameters.storage = SO3_STORAGE_COMPACT;
     else
         mexErrMsgIdAndTxt("so3_ind2elmn_mex:InvalidInput:storage",
                           "Invalid storage type.");
+
+    if (strcmp(order, SO3_N_ORDER_ZERO_FIRST_STR) == 0)
+        parameters.n_order = SO3_N_ORDER_ZERO_FIRST;
+    else if (strcmp(order, SO3_N_ORDER_NEGATIVE_FIRST_STR) == 0)
+        parameters.n_order = SO3_N_ORDER_NEGATIVE_FIRST;
+    else
+        mexErrMsgIdAndTxt("so3_ind2elmn_mex:InvalidInput:order",
+                          "Invalid storage order.");
+
+    if (ind > so3_sampling_flmn_size(&parameters))
+        mexErrMsgIdAndTxt("so3_ind2elmn:InvalidInput:indOutOfRange",
+                          "The given array index is too big for the given parameters.");
 
     --ind; // Adjust index from MATLAB-style 1-based to C-style 0-based
     if (reality)

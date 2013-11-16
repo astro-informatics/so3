@@ -31,6 +31,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     int len;
     char order_str[SO3_STRING_LEN], storage_str[SO3_STRING_LEN], n_mode_str[SO3_STRING_LEN], dl_method_str[SO3_STRING_LEN], sampling_str[SO3_STRING_LEN];
 
+    so3_n_order_t n_order;
     so3_storage_t storage_method;
     so3_n_mode_t n_mode;
     ssht_dl_method_t dl_method;
@@ -156,40 +157,35 @@ void mexFunction( int nlhs, mxArray *plhs[],
                           "Storage type exceeds string length.");
     mxGetString(prhs[iin], storage_str, len);
 
-    if (strcmp(storage_str, SO3_STORAGE_PADDED) == 0)
+    if (strcmp(storage_str, SO3_STORAGE_PADDED_STR) == 0)
     {
+        storage_method = SO3_STORAGE_PADDED;
 
         if ((reality && flmn_size != N*L*L)
             || (!reality && flmn_size != (2*N-1)*L*L))
             mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:flmnSize",
                               "Invalid number of harmonic coefficients.");
-
-        if (strcmp(order_str, SO3_ORDER_ZEROFIRST) == 0)
-            storage_method = SO3_STORE_ZERO_FIRST_PAD;
-        else if (strcmp(order_str, SO3_ORDER_NEGFIRST) == 0)
-            storage_method = SO3_STORE_NEG_FIRST_PAD;
-        else
-            mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:order",
-                              "Invalid storage order.");
     }
-    else if (strcmp(storage_str, SO3_STORAGE_COMPACT) == 0)
+    else if (strcmp(storage_str, SO3_STORAGE_COMPACT_STR) == 0)
     {
+        storage_method = SO3_STORAGE_COMPACT;
+
         if ((reality && flmn_size != N*(6*L*L-(N-1)*(2*N-1))/6)
             || (!reality && flmn_size != (2*N-1)*(3*L*L-N*(N-1))/3))
             mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:flmnSize",
                               "Invalid number of harmonic coefficients.");
-
-        if (strcmp(order_str, SO3_ORDER_ZEROFIRST) == 0)
-            storage_method = SO3_STORE_ZERO_FIRST_COMPACT;
-        else if (strcmp(order_str, SO3_ORDER_NEGFIRST) == 0)
-            storage_method = SO3_STORE_NEG_FIRST_COMPACT;
-        else
-            mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:order_str",
-                              "Invalid storage order.");
     }
     else
         mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:storage",
                           "Invalid storage type.");
+
+    if (strcmp(order_str, SO3_N_ORDER_ZERO_FIRST_STR) == 0)
+        n_order = SO3_N_ORDER_ZERO_FIRST;
+    else if (strcmp(order_str, SO3_N_ORDER_NEGATIVE_FIRST_STR) == 0)
+        n_order = SO3_N_ORDER_NEGATIVE_FIRST;
+    else
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:order",
+                          "Invalid storage order.");
 
     /* Parse n-mode. */
     iin = 6;
@@ -250,10 +246,16 @@ void mexFunction( int nlhs, mxArray *plhs[],
     parameters.L0 = L0;
     parameters.L = L;
     parameters.N = N;
+    parameters.n_order = n_order;
     parameters.storage = storage_method;
     parameters.n_mode = n_mode;
     parameters.dl_method = dl_method;
     parameters.verbosity = 0;
+    parameters.reality = reality;
+
+    if (flmn_size != so3_sampling_flmn_size(&parameters))
+        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:flmnSize",
+                          "Invalid number of harmonic coefficients.");
 
     if (strcmp(sampling_str, SO3_SAMPLING_MW_STR) == 0)
     {

@@ -175,33 +175,30 @@ void mexFunction( int nlhs, mxArray *plhs[],
     parameters.L = L;
     parameters.N = N;
 
-    if (strcmp(storage, SO3_STORAGE_PADDED) == 0)
+    if (strcmp(storage, SO3_STORAGE_PADDED_STR) == 0)
     {
-        if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
-            parameters.storage = SO3_STORE_ZERO_FIRST_PAD;
-        else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
-            parameters.storage = SO3_STORE_NEG_FIRST_PAD;
-        else
-            mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:order",
-                              "Invalid storage order.");
+        parameters.storage = SO3_STORAGE_PADDED;
     }
-    else if (strcmp(storage, SO3_STORAGE_COMPACT) == 0)
+    else if (strcmp(storage, SO3_STORAGE_COMPACT_STR) == 0)
     {
         if (el < abs(n))
             mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:omittedIndex",
                               "The requested index is not available in compact storage.");
 
-        if (strcmp(order, SO3_ORDER_ZEROFIRST) == 0)
-            parameters.storage = SO3_STORE_ZERO_FIRST_COMPACT;
-        else if (strcmp(order, SO3_ORDER_NEGFIRST) == 0)
-            parameters.storage = SO3_STORE_NEG_FIRST_COMPACT;
-        else
-            mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:order",
-                              "Invalid storage order.");
+        parameters.storage = SO3_STORAGE_COMPACT;
     }
     else
         mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:storage",
                           "Invalid storage type.");
+
+
+    if (strcmp(order, SO3_N_ORDER_ZERO_FIRST_STR) == 0)
+        parameters.n_order = SO3_N_ORDER_ZERO_FIRST;
+    else if (strcmp(order, SO3_N_ORDER_NEGATIVE_FIRST_STR) == 0)
+        parameters.n_order = SO3_N_ORDER_NEGATIVE_FIRST;
+    else
+        mexErrMsgIdAndTxt("so3_elmn2ind_mex:InvalidInput:order",
+                          "Invalid storage order.");
 
     if (reality)
         so3_sampling_elmn2ind_real(&ind, el, m, n, &parameters);

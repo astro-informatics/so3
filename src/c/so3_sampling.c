@@ -243,14 +243,14 @@ inline int so3_sampling_flmn_size(
     N = parameters->N;
     switch (parameters->storage)
     {
-    case SO3_STORE_ZERO_FIRST_PAD:
-    case SO3_STORE_NEG_FIRST_PAD:
+    case SO3_STORAGE_PADDED:
         if (parameters->reality)
             return N*L*L;
         else
             return (2*N-1)*L*L;
-    case SO3_STORE_ZERO_FIRST_COMPACT:
-    case SO3_STORE_NEG_FIRST_COMPACT:
+    case SO3_STORAGE_COMPACT:
+        // Both of these are based on the fact that the sum
+        // over n*n from 1 to N-1 is (N-1)*N*(2*N-1)/6.
         if (parameters->reality)
             return N*(6*L*L-(N-1)*(2*N-1))/6;
         else
@@ -276,7 +276,7 @@ inline int so3_sampling_flmn_size(
  * \param[in]  m   Azimuthal harmonic index [input].
  * \param[in]  n   Orientational harmonic index [input].
  * \param[in]  parameters A parameters object with (at least) the following fields:
- *                        L, N, storage
+ *                        L, N, storage, n_order
  *                        The reality flag is ignored. Use so3_sampling_elmn2ind_real
  *                        instead.
  * \retval none
@@ -292,40 +292,52 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, const so3_para
 
     // Most of the formulae here are based on the fact that the sum
     // over n*n from 1 to N-1 is (N-1)*N*(2*N-1)/6.
-    switch(parameters->storage)
+    switch (parameters->storage)
     {
-    case SO3_STORE_ZERO_FIRST_PAD:
-        offset = ((n < 0) ? -2*n - 1 : 2*n) * L*L;
-        *ind = offset + el*el + el + m;
-        return;
-    case SO3_STORE_ZERO_FIRST_COMPACT:
-        absn = abs(n);
-        if (absn > el)
-            SO3_ERROR_GENERIC("Tried to access component with n > l in compact storage.");
-        // Initialize offset to the total storage that would be needed if N == n
-        offset = (2*absn-1)*(3*L*L - absn*(absn-1))/3;
-        // Advance positive n by another lm-chunk
-        if (n >= 0)
-            offset += L*L - n*n;
-        *ind = offset + el*el - n*n + el + m;
-        return;
-    case SO3_STORE_NEG_FIRST_PAD:
-        offset = (N-1 + n) * L*L;
-        *ind = offset + el*el + el + m;
-        return;
-    case SO3_STORE_NEG_FIRST_COMPACT:
-        absn = abs(n);
-        if (absn > el)
-            SO3_ERROR_GENERIC("Tried to access component with n > l in compact storage.");
-        // Initialize offset as for padded storage, minus the correction necessary for n = 0
-        offset = (N-1 + n) * L*L - (2*N - 1)*(N-1)*N/6;
-        // Now correct the offset for other n due to missing padding
-        if (n <= 0)
-            offset += absn*(2*absn+1)*(absn+1)/6;
-        else
-            offset -= absn*(2*absn-1)*(absn-1)/6;
-        *ind = offset + el*el - n*n + el + m;
-        return;
+    case SO3_STORAGE_PADDED:
+        switch (parameters->n_order)
+        {
+        case SO3_N_ORDER_ZERO_FIRST:
+            offset = ((n < 0) ? -2*n - 1 : 2*n) * L*L;
+            *ind = offset + el*el + el + m;
+            return;
+        case SO3_N_ORDER_NEGATIVE_FIRST:
+            offset = (N-1 + n) * L*L;
+            *ind = offset + el*el + el + m;
+            return;
+        default:
+            SO3_ERROR_GENERIC("Invalid n-order.");
+        }
+    case SO3_STORAGE_COMPACT:
+        switch (parameters->n_order)
+        {
+        case SO3_N_ORDER_ZERO_FIRST:
+            absn = abs(n);
+            if (absn > el)
+                SO3_ERROR_GENERIC("Tried to access component with n > l in compact storage.");
+            // Initialize offset to the total storage that would be needed if N == n
+            offset = (2*absn-1)*(3*L*L - absn*(absn-1))/3;
+            // Advance positive n by another lm-chunk
+            if (n >= 0)
+                offset += L*L - n*n;
+            *ind = offset + el*el - n*n + el + m;
+            return;
+        case SO3_N_ORDER_NEGATIVE_FIRST:
+            absn = abs(n);
+            if (absn > el)
+                SO3_ERROR_GENERIC("Tried to access component with n > l in compact storage.");
+            // Initialize offset as for padded storage, minus the correction necessary for n = 0
+            offset = (N-1 + n) * L*L - (2*N - 1)*(N-1)*N/6;
+            // Now correct the offset for other n due to missing padding
+            if (n <= 0)
+                offset += absn*(2*absn+1)*(absn+1)/6;
+            else
+                offset -= absn*(2*absn-1)*(absn-1)/6;
+            *ind = offset + el*el - n*n + el + m;
+            return;
+        default:
+            SO3_ERROR_GENERIC("Invalid n-order.");
+        }
     default:
         SO3_ERROR_GENERIC("Invalid storage method.");
     }
@@ -363,70 +375,82 @@ inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, const so3_pa
 
     switch (parameters->storage)
     {
-    case SO3_STORE_ZERO_FIRST_PAD:
-        *n = ind/(L*L);
-
-        if(*n % 2)
-            *n = -(*n+1)/2;
-        else
-            *n /= 2;
-
-        ind %= L*L;
-
-        *el = sqrt(ind);
-        *m = ind - (*el)*(*el) - *el;
-        return;
-    case SO3_STORE_ZERO_FIRST_COMPACT:
-        offset = 0;
-        *n = 0;
-        // Can this loop be replaced by an analytical function
-        // (or two - one for positive and one for negative *n)
-        while(ind + offset >= L*L)
+    case SO3_STORAGE_PADDED:
+        switch (parameters->n_order)
         {
-            ind -= L*L - offset;
+        case SO3_N_ORDER_ZERO_FIRST:
+            *n = ind/(L*L);
 
-            if (*n >= 0)
+            if(*n % 2)
+                *n = -(*n+1)/2;
+            else
+                *n /= 2;
+
+            ind %= L*L;
+
+            *el = sqrt(ind);
+            *m = ind - (*el)*(*el) - *el;
+            return;
+        case SO3_N_ORDER_NEGATIVE_FIRST:
+            *n = ind/(L*L) - (N-1);
+
+            ind %= L*L;
+
+            *el = sqrt(ind);
+            *m = ind - (*el)*(*el) - *el;
+            return;
+        default:
+            SO3_ERROR_GENERIC("Invalid n-order.");
+        }
+    case SO3_STORAGE_COMPACT:
+        switch (parameters->n_order)
+        {
+        case SO3_N_ORDER_ZERO_FIRST:
+            offset = 0;
+            *n = 0;
+            // TODO: Can this loop be replaced by an analytical function
+            // (or two - one for positive and one for negative *n)
+            while(ind + offset >= L*L)
             {
-                *n = -(*n+1);
+                ind -= L*L - offset;
+
+                if (*n >= 0)
+                {
+                    *n = -(*n+1);
+                    offset = (*n)*(*n);
+                }
+                else
+                {
+                    *n = -(*n);
+                }
+            }
+
+            ind += offset;
+
+            *el = sqrt(ind);
+            *m = ind - (*el)*(*el) - *el;
+            return;
+        case SO3_N_ORDER_NEGATIVE_FIRST:
+            *n = -N+1;
+            offset = (*n)*(*n);
+            // TODO: Can this loop be replaced by an analytical function
+            // (or two - one for positive and one for negative *n)
+            while(ind + offset >= L*L)
+            {
+                ind -= L*L - offset;
+
+                (*n)++;
                 offset = (*n)*(*n);
             }
-            else
-            {
-                *n = -(*n);
-            }
+
+            ind += offset;
+
+            *el = sqrt(ind);
+            *m = ind - (*el)*(*el) - *el;
+            return;
+        default:
+            SO3_ERROR_GENERIC("Invalid n-order.");
         }
-
-        ind += offset;
-
-        *el = sqrt(ind);
-        *m = ind - (*el)*(*el) - *el;
-        return;
-    case SO3_STORE_NEG_FIRST_PAD:
-        *n = ind/(L*L) - (N-1);
-
-        ind %= L*L;
-
-        *el = sqrt(ind);
-        *m = ind - (*el)*(*el) - *el;
-        return;
-    case SO3_STORE_NEG_FIRST_COMPACT:
-        *n = -N+1;
-        offset = (*n)*(*n);
-        // Can this loop be replaced by an analytical function
-        // (or two - one for positive and one for negative *n)
-        while(ind + offset >= L*L)
-        {
-            ind -= L*L - offset;
-
-            (*n)++;
-            offset = (*n)*(*n);
-        }
-
-        ind += offset;
-
-        *el = sqrt(ind);
-        *m = ind - (*el)*(*el) - *el;
-        return;
     default:
         SO3_ERROR_GENERIC("Invalid storage method.");
     }
@@ -462,22 +486,19 @@ inline void so3_sampling_elmn2ind_real(int *ind, int el, int m, int n, const so3
     so3_parameters_t temp_params;
 
     // Need to make a copy, because subroutines always use
-    // NEG_FIRST storage.
+    // NEGATIVE_FIRST storage order.
     temp_params = *parameters;
+    temp_params.n_order = SO3_N_ORDER_NEGATIVE_FIRST;
 
     // TODO: Could be optimized by computing the indices directly.
     switch(parameters->storage)
     {
-    case SO3_STORE_ZERO_FIRST_PAD:
-    case SO3_STORE_NEG_FIRST_PAD:
-        temp_params.storage = SO3_STORE_NEG_FIRST_PAD;
+    case SO3_STORAGE_PADDED:
         so3_sampling_elmn2ind(&base_ind, 0, 0, 0, &temp_params);
         so3_sampling_elmn2ind(ind, el, m, n, &temp_params);
         (*ind) -= base_ind;
         return;
-    case SO3_STORE_ZERO_FIRST_COMPACT:
-    case SO3_STORE_NEG_FIRST_COMPACT:
-        temp_params.storage = SO3_STORE_NEG_FIRST_COMPACT;
+    case SO3_STORAGE_COMPACT:
         so3_sampling_elmn2ind(&base_ind, 0, 0, 0, &temp_params);
         so3_sampling_elmn2ind(ind, el, m, n, &temp_params);
         (*ind) -= base_ind;
@@ -519,19 +540,16 @@ inline void so3_sampling_ind2elmn_real(int *el, int *m, int *n, int ind, const s
     // Need to make a copy, because subroutines always use
     // NEG_FIRST storage.
     temp_params = *parameters;
+    temp_params.n_order = SO3_N_ORDER_NEGATIVE_FIRST;
 
     // TODO: Could be optimized by computing the indices directly.
     switch(parameters->storage)
     {
-    case SO3_STORE_ZERO_FIRST_PAD:
-    case SO3_STORE_NEG_FIRST_PAD:
-        temp_params.storage = SO3_STORE_NEG_FIRST_PAD;
+    case SO3_STORAGE_PADDED:
         so3_sampling_elmn2ind(&base_ind, 0, 0, 0, &temp_params);
         so3_sampling_ind2elmn(el, m, n, base_ind + ind, &temp_params);
         return;
-    case SO3_STORE_ZERO_FIRST_COMPACT:
-    case SO3_STORE_NEG_FIRST_COMPACT:
-        temp_params.storage = SO3_STORE_NEG_FIRST_COMPACT;
+    case SO3_STORAGE_COMPACT:
         so3_sampling_elmn2ind(&base_ind, 0, 0, 0, &temp_params);
         so3_sampling_ind2elmn(el, m, n, base_ind + ind, &temp_params);
         return;

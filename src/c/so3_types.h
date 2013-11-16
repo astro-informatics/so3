@@ -31,26 +31,26 @@
 
 #define SO3_SQRT2 1.41421356237309504880168872420969807856967
 
-
-
 #define SO3_PROMPT "[so3] "
 
 typedef enum {
-    // order of n in storage is 0, -1, 1, -2, 2, ...
-    // for each n, left-pad each lm-array with 0s to L^2 values
-    SO3_STORE_ZERO_FIRST_PAD,
-    // order of n in storage is 0, -1, 1, -2, 2, ...
-    // do not store lm for l < |n|
-    SO3_STORE_ZERO_FIRST_COMPACT,
-    // order of n in storage is -2, -1, 0, 1, 2, ...
-    // for each n, left-pad each lm-array with 0s to L^2 values
-    SO3_STORE_NEG_FIRST_PAD,
-    // order of n in storage is -2, -1, 0, 1, 2, ...
-    // do not store lm for l < |n|
-    SO3_STORE_NEG_FIRST_COMPACT,
+    // order of flm-blocks in terms of n in storage is 0, -1, 1, -2, 2, ...
+    SO3_N_ORDER_ZERO_FIRST,
+    // order of flm-blocks in terms of n in storage is ... -2, -1, 0, 1, 2, ...
+    SO3_N_ORDER_NEGATIVE_FIRST,
     // "guard" value that equals the number of usable enum values.
     // useful in loops, for instance.
-    SO3_STORE_SIZE
+    SO3_N_ORDER_SIZE
+} so3_n_order_t;
+
+typedef enum {
+    // left-pad each flm-array with 0s to L^2 values
+    SO3_STORAGE_PADDED,
+    // do not store lm for l < |n|
+    SO3_STORAGE_COMPACT,
+    // "guard" value that equals the number of usable enum values.
+    // useful in loops, for instance.
+    SO3_STORAGE_SIZE
 } so3_storage_t;
 
 typedef enum {
@@ -83,16 +83,86 @@ typedef enum {
     SO3_SAMPLING_SIZE
 } so3_sampling_t;
 
+/*!
+ * A struct with all parameters that are common to several
+ * functions of the API. In general only one struct needs to
+ * be created and a const pointer to it is passed around.
+ * IMPORTANT: Make sure that to use an initializer upon
+ *            declaration, even if it is left empty. This
+ *            ensures that all fields are initialized to
+ *            zero (even if in non-static storage). This way,
+ *            your code will remain backwards compatible if
+ *            more fields are added to this struct in the
+ *            future:
+ *
+ *            so3_parameters_t parameters = {};
+ */
 typedef struct {
-    int L0; // Lower harmonic band-limit
-    int L;  // Upper harmonic band-limit
-    int N;  // Upper orientational band-limit
-    so3_sampling_t sampling_scheme; // Sampling scheme to use
-    so3_storage_t storage;   // Storage type to use
-    so3_n_mode_t n_mode;     // N-mode to use
-    ssht_dl_method_t dl_method; // Recursion method to use for Wigner functions
-    int reality; // A non-zero value indicates that the signal f is real
-    int verbosity; // Detail level for console output in range [0,5]
+    /*!
+     * Detail level for diagnostic console output in range [0,5].
+     * \var int verbosity
+     */
+    int verbosity;
+
+    /*!
+     * A non-zero value indicates that the signal f is real. Not
+     * all functions respect this value - instead there may be
+     * separate complex and real functions. See the documentation
+     * of each function for details.
+     */
+    int reality;
+
+    /*!
+     * Lower harmonic band-limit. flmn with l < L0 will be zero.
+     * \var int L0
+     */
+    int L0;
+
+    /*!
+     * Upper harmonic band-limit. Only flmn with l < L will be stored
+     * and considered.
+     * \var int L
+     */
+    int L;
+
+    /*!
+     * Upper orientational band-limit. Only flmn with n < N will
+     * be stored.
+     * \var int N
+     */
+    int N;
+
+    /*!
+     * Sampling scheme to use for samples of the signal f.
+     * \var so3_sampling_t sampling_scheme
+     */
+    so3_sampling_t sampling_scheme;
+
+    /*!
+     * Indicates the order of n-values by which individual flm-blocks
+     * are stored.
+     * \var so3_n_order_t n_order
+     */
+    so3_n_order_t n_order;
+
+    /*!
+     * Type of storage (padded or compact).
+     * \var so3_storage_t storage
+     */
+    so3_storage_t storage;
+
+    /*!
+     * Indicates if entire blocks of flm for certain values of n are
+     * zero.
+     * \var so3_n_mode_t n_mode
+     */
+    so3_n_mode_t n_mode;
+
+    /*!
+     * Recursion method to use for computing Wigner functions.
+     * \var ssht_dl_method_t dl_method
+     */
+    ssht_dl_method_t dl_method;
 } so3_parameters_t;
 
 #endif

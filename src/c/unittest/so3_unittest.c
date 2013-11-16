@@ -40,7 +40,8 @@ void test_sampling_elmn2ind()
 
     parameters.L = 3;
     parameters.N = -1;
-    parameters.storage = SO3_STORE_ZERO_FIRST_PAD;
+    parameters.n_order = SO3_N_ORDER_ZERO_FIRST;
+    parameters.storage = SO3_STORAGE_PADDED;
 
     so3_sampling_elmn2ind(&ind, 0, 0, 0, &parameters);
     assert( ind == 0 &&
@@ -71,7 +72,8 @@ void test_sampling_elmn2ind()
 
     parameters.L = 3;
     parameters.N = -1;
-    parameters.storage = SO3_STORE_ZERO_FIRST_COMPACT;
+    parameters.n_order = SO3_N_ORDER_ZERO_FIRST;
+    parameters.storage = SO3_STORAGE_COMPACT;
 
     so3_sampling_elmn2ind(&ind, 0, 0, 0, &parameters);
     assert( ind == 0 &&
@@ -110,7 +112,8 @@ void test_sampling_elmn2ind()
 
     parameters.L = 3;
     parameters.N = 3;
-    parameters.storage = SO3_STORE_NEG_FIRST_PAD;
+    parameters.n_order = SO3_N_ORDER_NEGATIVE_FIRST;
+    parameters.storage = SO3_STORAGE_PADDED;
 
     so3_sampling_elmn2ind(&ind, 0, 0, 0, &parameters);
     assert( ind == 18 &&
@@ -142,7 +145,8 @@ void test_sampling_elmn2ind()
 
     parameters.L = 3;
     parameters.N = 3;
-    parameters.storage = SO3_STORE_NEG_FIRST_COMPACT;
+    parameters.n_order = SO3_N_ORDER_NEGATIVE_FIRST;
+    parameters.storage = SO3_STORAGE_COMPACT;
 
     so3_sampling_elmn2ind(&ind, 0, 0, 0, &parameters);
     assert( ind == 13 &&
@@ -194,7 +198,8 @@ void test_sampling_ind2elmn()
 
     parameters.L = 3;
     parameters.N = -1;
-    parameters.storage = SO3_STORE_ZERO_FIRST_PAD;
+    parameters.n_order = SO3_N_ORDER_ZERO_FIRST;
+    parameters.storage = SO3_STORAGE_PADDED;
 
     so3_sampling_ind2elmn(&el, &m, &n, 0, &parameters);
     assert( el == 0 && m == 0 && n == 0 &&
@@ -225,7 +230,8 @@ void test_sampling_ind2elmn()
 
     parameters.L = 3;
     parameters.N = -1;
-    parameters.storage = SO3_STORE_ZERO_FIRST_COMPACT;
+    parameters.n_order = SO3_N_ORDER_ZERO_FIRST;
+    parameters.storage = SO3_STORAGE_COMPACT;
 
     so3_sampling_ind2elmn(&el, &m, &n, 0, &parameters);
     assert( el == 0 && m == 0 && n == 0 &&
@@ -264,7 +270,8 @@ void test_sampling_ind2elmn()
 
     parameters.L = 3;
     parameters.N = 3;
-    parameters.storage = SO3_STORE_NEG_FIRST_PAD;
+    parameters.n_order = SO3_N_ORDER_NEGATIVE_FIRST;
+    parameters.storage = SO3_STORAGE_PADDED;
 
     so3_sampling_ind2elmn(&el, &m, &n, 18, &parameters);
     assert( el == 0 && m == 0 && n == 0 &&
@@ -296,7 +303,8 @@ void test_sampling_ind2elmn()
 
     parameters.L = 3;
     parameters.N = 3;
-    parameters.storage = SO3_STORE_NEG_FIRST_COMPACT;
+    parameters.n_order = SO3_N_ORDER_NEGATIVE_FIRST;
+    parameters.storage = SO3_STORAGE_COMPACT;
 
     so3_sampling_ind2elmn(&el, &m, &n, 13, &parameters);
     assert( el == 0 && m == 0 && n == 0 &&
@@ -345,7 +353,7 @@ void test_sampling_elmn2ind_real()
 
     parameters.L = 3;
     parameters.N = 3;
-    parameters.storage = SO3_STORE_ZERO_FIRST_PAD;
+    parameters.storage = SO3_STORAGE_PADDED;
 
     so3_sampling_elmn2ind_real(&ind, 0, 0, 0, &parameters);
     assert( ind == 0 &&
@@ -369,7 +377,7 @@ void test_sampling_elmn2ind_real()
 
     parameters.L = 3;
     parameters.N = 3;
-    parameters.storage = SO3_STORE_ZERO_FIRST_COMPACT;
+    parameters.storage = SO3_STORAGE_COMPACT;
 
     so3_sampling_elmn2ind_real(&ind, 0, 0, 0, &parameters);
     assert( ind == 0 &&
@@ -409,7 +417,7 @@ void test_sampling_ind2elmn_real()
 
     parameters.L = 3;
     parameters.N = 3;
-    parameters.storage = SO3_STORE_ZERO_FIRST_PAD;
+    parameters.storage = SO3_STORAGE_PADDED;
 
     so3_sampling_ind2elmn_real(&el, &m, &n, 0, &parameters);
     assert( el == 0 && m == 0 && n == 0 &&
@@ -436,7 +444,7 @@ void test_sampling_ind2elmn_real()
 
     parameters.L = 3;
     parameters.N = 3;
-    parameters.storage = SO3_STORE_ZERO_FIRST_COMPACT;
+    parameters.storage = SO3_STORAGE_COMPACT;
 
     so3_sampling_ind2elmn_real(&el, &m, &n, 0, &parameters);
     assert( el == 0 && m == 0 && n == 0 &&

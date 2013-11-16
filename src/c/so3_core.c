@@ -132,13 +132,11 @@ void so3_core_inverse_via_ssht(
 
         switch (storage)
         {
-        case SO3_STORE_ZERO_FIRST_PAD:
-        case SO3_STORE_NEG_FIRST_PAD:
+        case SO3_STORAGE_PADDED:
             so3_sampling_elmn2ind(&ind, 0, 0, n, parameters);
             memcpy(flm, flmn + ind, L*L * sizeof(complex double));
             break;
-        case SO3_STORE_ZERO_FIRST_COMPACT:
-        case SO3_STORE_NEG_FIRST_COMPACT:
+        case SO3_STORAGE_COMPACT:
             so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, parameters);
             memcpy(flm + n*n, flmn + ind, (L*L - n*n) * sizeof(complex double));
             for(i = 0; i < n*n; ++i)
@@ -307,7 +305,7 @@ void so3_core_forward_via_ssht(
     for(i = 0; i < (2*N-1)*fn_n_stride; ++i)
         fn[i] *= 2*SO3_PI/(double)(2*N-1);
 
-    if (storage == SO3_STORE_ZERO_FIRST_COMPACT || storage == SO3_STORE_NEG_FIRST_COMPACT)
+    if (storage == SO3_STORAGE_COMPACT)
         flm = malloc(L*L * sizeof *flm);
 
     for(n = -N+1; n <= N-1; ++n)
@@ -327,8 +325,7 @@ void so3_core_forward_via_ssht(
 
         switch (storage)
         {
-        case SO3_STORE_ZERO_FIRST_PAD:
-        case SO3_STORE_NEG_FIRST_PAD:
+        case SO3_STORAGE_PADDED:
             so3_sampling_elmn2ind(&ind, 0, 0, n, parameters);
             switch (sampling)
             {
@@ -355,8 +352,7 @@ void so3_core_forward_via_ssht(
             i = offset = L0*L0;
             el = L0;
             break;
-        case SO3_STORE_ZERO_FIRST_COMPACT:
-        case SO3_STORE_NEG_FIRST_COMPACT:
+        case SO3_STORAGE_COMPACT:
             switch (sampling)
             {
             case SO3_SAMPLING_MW:
@@ -406,7 +402,7 @@ void so3_core_forward_via_ssht(
             printf("\n");
     }
 
-    if (storage == SO3_STORE_ZERO_FIRST_COMPACT || storage == SO3_STORE_NEG_FIRST_COMPACT)
+    if (storage == SO3_STORAGE_COMPACT)
         free(flm);
 
     free(fn);
@@ -524,13 +520,11 @@ void so3_core_inverse_via_ssht_real(
 
         switch (storage)
         {
-        case SO3_STORE_ZERO_FIRST_PAD:
-        case SO3_STORE_NEG_FIRST_PAD:
+        case SO3_STORAGE_PADDED:
             so3_sampling_elmn2ind_real(&ind, 0, 0, n, parameters); //L, N, SO3_STORE_NEG_FIRST_PAD);
             memcpy(flm, flmn + ind, L*L * sizeof(complex double));
             break;
-        case SO3_STORE_ZERO_FIRST_COMPACT:
-        case SO3_STORE_NEG_FIRST_COMPACT:
+        case SO3_STORAGE_COMPACT:
             so3_sampling_elmn2ind_real(&ind, n, -n, n, parameters); //L, N, SO3_STORE_NEG_FIRST_COMPACT);
             memcpy(flm + n*n, flmn + ind, (L*L - n*n) * sizeof(complex double));
             for(i = 0; i < n*n; ++i)
@@ -695,7 +689,7 @@ void so3_core_forward_via_ssht_real(
     for(i = 0; i < N*fn_n_stride; ++i)
         fn[i] *= 2*SO3_PI/(double)(2*N-1);
 
-    if (storage == SO3_STORE_ZERO_FIRST_COMPACT || storage == SO3_STORE_NEG_FIRST_COMPACT)
+    if (storage == SO3_STORAGE_COMPACT)
         flm = malloc(L*L * sizeof *flm);
 
     for(n = 0; n <= N-1; ++n)
@@ -711,8 +705,7 @@ void so3_core_forward_via_ssht_real(
 
         switch (storage)
         {
-        case SO3_STORE_ZERO_FIRST_PAD:
-        case SO3_STORE_NEG_FIRST_PAD:
+        case SO3_STORAGE_PADDED:
             so3_sampling_elmn2ind_real(&ind, 0, 0, n, parameters);
             switch (sampling)
             {
@@ -739,8 +732,7 @@ void so3_core_forward_via_ssht_real(
             i = offset = L0*L0;
             el = L0;
             break;
-        case SO3_STORE_ZERO_FIRST_COMPACT:
-        case SO3_STORE_NEG_FIRST_COMPACT:
+        case SO3_STORAGE_COMPACT:
             switch (sampling)
             {
             case SO3_SAMPLING_MW:
@@ -789,7 +781,7 @@ void so3_core_forward_via_ssht_real(
             printf("\n");
     }
 
-    if (storage == SO3_STORE_ZERO_FIRST_COMPACT || storage == SO3_STORE_NEG_FIRST_COMPACT)
+    if (storage == SO3_STORAGE_COMPACT)
         free(flm);
 
     free(fn);

@@ -91,7 +91,8 @@ legend('O(L^4)', ...
 set(gca, 'XTick', (1:maxPower));
 set(gca, 'XTickLabel', 2.^(1:maxPower));
 
-clear L N maxPower
+clear L N maxPower Lpower
 clear flmn f result
+clear x
 clear so3_NL_error so3_NL_time_forward so3_NL_time_inverse
 clear so3_N3_error so3_N3_time_forward so3_N3_time_inverse

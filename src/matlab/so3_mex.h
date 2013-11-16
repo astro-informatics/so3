@@ -3,11 +3,11 @@
 // Copyright (C) 2013 Martin Büttner and Jason McEwen
 // See LICENSE.txt for license details
 
-#define SO3_ORDER_ZEROFIRST "ZeroFirst"
-#define SO3_ORDER_NEGFIRST "NegativeFirst"
+#define SO3_N_ORDER_ZERO_FIRST_STR "ZeroFirst"
+#define SO3_N_ORDER_NEGATIVE_FIRST_STR "NegativeFirst"
 
-#define SO3_STORAGE_PADDED "Padded"
-#define SO3_STORAGE_COMPACT "Compact"
+#define SO3_STORAGE_PADDED_STR "Padded"
+#define SO3_STORAGE_COMPACT_STR "Compact"
 
 #define SO3_N_MODE_ALL_STR "All"
 #define SO3_N_MODE_EVEN_STR "Even"
