@@ -26,13 +26,14 @@
 #define MAX(a,b) ((a > b) ? (a) : (b))
 
 /*!
- * Compute inverse transform for MW method via SSHT.
+ * Compute inverse Wigner transform for a complex signal via SSHT.
  *
  * \param[out] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
  * \param[in]  flmn Harmonic coefficients.
- * \param[in]  parameters A fully populated parameters object. The reality flag
- *                        is ignored. Use so3_core_inverse_via_ssht_real instead
- *                        for real signals.
+ * \param[in]  parameters A fully populated parameters object. The \link
+ *                        so3_parameter_t::reality reality\endlink flag
+ *                        is ignored. Use \link so3_core_inverse_via_ssht_real
+ *                        \endlink instead for real signals.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -204,14 +205,16 @@ void so3_core_inverse_via_ssht(
 
 
 /*!
- * Compute forward transform for MW method via SSHT.
+ * Compute forward Wigner transform for a complex signal via SSHT.
  *
- * \param[out] flmn Harmonic coefficients. If n_mode is different from SO3_N_MODE_ALL,
+ * \param[out] flmn Harmonic coefficients. If \link so3_parameters_t::n_mode n_mode
+ *                  \endlink is different from \link SO3_N_MODE_ALL \endlink,
  *                  this array has to be nulled before being past to the function.
  * \param[in] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
- * \param[in]  parameters A fully populated parameters object. The reality flag
- *                        is ignored. Use so3_core_forward_via_ssht_real instead
- *                        for real signals.
+ * \param[in]  parameters A fully populated parameters object. The \link
+ *                        so3_parameters_t::reality reality\endlink flag
+ *                        is ignored. Use \link so3_core_forward_via_ssht_real
+ *                        \endlink instead for real signals.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -413,14 +416,15 @@ void so3_core_forward_via_ssht(
 }
 
 /*!
- * Compute inverse transform for MW method via SSHT for a real signal.
+ * Compute inverse Wigner transform for a real signal via SSHT.
  *
  * \param[out] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
  * \param[in] flmn Harmonic coefficients for n >= 0. Note that for n = 0, these have to
  *                 respect the symmetry flm0* = (-1)^(m+n)*fl-m0, and hence fl00 has to be real.
- * \param[in]  parameters A fully populated parameters object. The reality flag
- *                        is ignored. Use so3_core_inverse_via_ssht instead
- *                        for complex signals.
+ * \param[in]  parameters A fully populated parameters object. The \link
+ *                        so3_parameters_t::reality reality\endlink flag
+ *                        is ignored. Use \link so3_core_inverse_via_ssht
+ *                        \endlink instead for complex signals.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -586,14 +590,16 @@ void so3_core_inverse_via_ssht_real(
 }
 
 /*!
- * Compute forward transform for MW method via SSHT for a real signal.
+ * Compute forward Wigner transform for a real signal via SSHT.
  *
- * \param[out] flmn Harmonic coefficients. If n_mode is different from SO3_N_MODE_ALL,
+ * \param[out] flmn Harmonic coefficients. If \link so3_parameters_t::n_mode n_mode
+ *                  \endlink is different from \link SO3_N_MODE_ALL \endlink,
  *                  this array has to be nulled before being past to the function.
  * \param[in] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
- * \param[in]  parameters A fully populated parameters object. The reality flag
- *                        is ignored. Use so3_core_forward_via_ssht instead
- *                        for complex signals.
+ * \param[in]  parameters A fully populated parameters object. The \link
+ *                        so3_parameters_t::reality reality \endlink flag
+ *                        is ignored. Use \link so3_core_forward_via_ssht
+ *                        \endlink instead for complex signals.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>

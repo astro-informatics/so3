@@ -148,7 +148,6 @@ int so3_sampling_nbeta(const so3_parameters_t *parameters)
     }
 }
 
-
 /*!
  * Compute number of gamma samples for a given sampling scheme.
  *
@@ -187,7 +186,8 @@ int so3_sampling_ngamma(const so3_parameters_t *parameters)
  *
  * \param[in] a Alpha index.
  * \param[in] parameters A parameters object with (at least) the following fields:
- *                       L, sampling_scheme
+ *                       \link so3_parameters_t::L L\endlink,
+ *                       \link so3_parameters_t::sampling_scheme sampling_scheme\endlink
  * \retval alpha Alpha angle.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -338,7 +338,8 @@ inline int so3_sampling_flmn_size(
  *                        \link so3_parameters_t::storage storage\endlink,
  *                        \link so3_parameters_t::n_order n_order\endlink
  *                        <br>The \link so3_parameters_t::reality reality\endlink
- *                        flag is ignored. Use so3_sampling_elmn2ind_real instead.
+ *                        flag is ignored. Use \link so3_sampling_elmn2ind_real\endlink
+ *                        instead.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -423,7 +424,8 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, const so3_para
  *                        \link so3_parameters_t::N N\endlink,
  *                        \link so3_parameters_t::storage storage\endlink
  *                        <br>The \link so3_parameters_t::reality reality\endlink
- *                        flag is ignored. Use so3_sampling_elmn2ind_real instead.
+ *                        flag is ignored. Use \link so3_sampling_elmn2ind_real \endlink
+ *                        instead.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -538,7 +540,8 @@ inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, const so3_pa
  *                        \link so3_parameters_t::N N\endlink,
  *                        \link so3_parameters_t::storage storage\endlink
  *                        <br>The \link so3_parameters_t::reality reality\endlink
- *                        flag is ignored. Use so3_sampling_elmn2ind_real instead.
+ *                        flag is ignored. Use \link so3_sampling_elmn2ind_real \endlink
+ *                        instead.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -592,7 +595,8 @@ inline void so3_sampling_elmn2ind_real(int *ind, int el, int m, int n, const so3
  *                        \link so3_parameters_t::N N\endlink,
  *                        \link so3_parameters_t::storage storage\endlink
  *                        <br>The \link so3_parameters_t::reality reality\endlink
- *                        flag is ignored. Use so3_sampling_elmn2ind_real instead.
+ *                        flag is ignored. Use \link so3_sampling_elmn2ind_real
+ *                        \link instead.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
