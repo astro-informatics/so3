@@ -13,13 +13,62 @@
 //============================================================================
 
 /*!
- * Compute total number of samples for a given sampling scheme.
+ * Compute size of the signal buffer f to be passed to the forward
+ * and returned from the inverse transform function for a given
+ * sampling scheme.
  *
- * /note Computes number of samples on rotation group, *not* over
- * extended domain.
+ * \note
+ *   Computes number of samples on rotation group, *not* over
+ *   extended domain.
+ * \note
+ *   This includes degenerate samples on the poles which are
+ *   the same for each value of phi. To get the logical number
+ *   of samples (i.e. ignoring without degeneracy) use
+ *   \link so3_sampling_n so3_sampling_n\endlink, instead.
  *
  * \param[in] parameters A parameters object with (at least) the following fields:
- *                       L, N, sampling_scheme
+ *                       \link so3_parameters_t::L L\endlink,
+ *                       \link so3_parameters_t::N N\endlink,
+ *                       \link so3_parameters_t::sampling_scheme sampling_scheme\endlink
+ * \retval n Number of samples stored in the signal buffers.
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+int so3_sampling_f_size(const so3_parameters_t *parameters)
+{
+    int L, N;
+    L = parameters->L;
+    N = parameters->N;
+
+    // Are these actually correct?
+    switch (parameters->sampling_scheme)
+    {
+    case SO3_SAMPLING_MW:
+        return (2*L-1)*(L)*(2*N-1);
+    case SO3_SAMPLING_MW_SS:
+        return (2*L)*(L+1)*(2*N-1);
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
+}
+
+/*!
+ * Compute total number of samples for a given sampling scheme.
+ *
+ * \note
+ *   Computes number of samples on rotation group, *not* over
+ *   extended domain.
+ * \note
+ *   This returns the logical number of samples (without degeneracy),
+ *   and *not* the size of the signal buffer used in the transform
+ *   functions. Use \link so3_sampling_f_size so3_sampling_f_size\endlink
+ *   to get the actual size of the signal buffer.
+ *
+ * \param[in] parameters A parameters object with (at least) the following fields:
+ *                       \link so3_parameters_t::L L\endlink,
+ *                       \link so3_parameters_t::N N\endlink,
+ *                       \link so3_parameters_t::sampling_scheme sampling_scheme\endlink
  * \retval n Number of samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -48,7 +97,8 @@ int so3_sampling_n(const so3_parameters_t *parameters)
  * Compute number of alpha samples for a given sampling scheme.
  *
  * \param[in] parameters A parameters object with (at least) the following fields:
- *                       L, sampling_scheme
+ *                       \link so3_parameters_t::L L\endlink,
+ *                       \link so3_parameters_t::sampling_scheme sampling_scheme\endlink
  * \retval nalpha Number of alpha samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -74,11 +124,12 @@ int so3_sampling_nalpha(const so3_parameters_t *parameters)
 /*!
  * Compute number of beta samples for a given sampling scheme.
  *
- * /note Computes number of samples in (0,pi], *not* over extended
+ * \note Computes number of samples in (0,pi], *not* over extended
  * domain.
  *
  * \param[in] parameters A parameters object with (at least) the following fields:
- *                       L, sampling_scheme
+ *                       \link so3_parameters_t::L L\endlink,
+ *                       \link so3_parameters_t::sampling_scheme sampling_scheme\endlink
  * \retval nbeta Number of beta samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -102,7 +153,8 @@ int so3_sampling_nbeta(const so3_parameters_t *parameters)
  * Compute number of gamma samples for a given sampling scheme.
  *
  * \param[in] parameters A parameters object with (at least) the following fields:
- *                       N, sampling_scheme
+ *                       \link so3_parameters_t::N B\endlink,
+ *                       \link so3_parameters_t::sampling_scheme sampling_scheme\endlink
  * \retval ngamma Number of gamma samples.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -166,7 +218,8 @@ double so3_sampling_a2alpha(int a, const so3_parameters_t *parameters)
  *
  * \param[in] b Beta index.
  * \param[in] parameters A parameters object with (at least) the following fields:
- *                       L, sampling_scheme
+ *                       \link so3_parameters_t::L L\endlink,
+ *                       \link so3_parameters_t::sampling_scheme sampling_scheme\endlink
  * \retval beta Beta angle.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -197,7 +250,8 @@ double so3_sampling_b2beta(int b, const so3_parameters_t *parameters)
  *
  * \param[in] g Gamma index.
  * \param[in] parameters A parameters object with (at least) the following fields:
- *                       N, sampling_scheme
+ *                       \link so3_parameters_t::N N\endlink,
+ *                       \link so3_parameters_t::sampling_scheme sampling_scheme\endlink
  * \retval gamma Gamma angle.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -229,7 +283,10 @@ double so3_sampling_g2gamma(int g, const so3_parameters_t *parameters)
  * Get storage size of flmn array for different storage methods.
  *
  * \param[in] parameters A parameters object with (at least) the following fields:
- *                       L, N, storage, reality
+ *                       \link so3_parameters_t::L L\endlink,
+ *                       \link so3_parameters_t::N N\endlink,
+ *                       \link so3_parameters_t::storage storage\endlink,
+ *                       \link so3_parameters_t::reality reality\endlink
  * \retval Number of coefficients to be stored.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -271,14 +328,17 @@ inline int so3_sampling_flmn_size(
  *  - ind ranges from [0 .. (2*N)(L**2-N(N-1)/3)-1] for compact storage methods
              and from [0 .. (2*N-1)*L**2-1] for 0-padded storage methods.
  *
- * \param[out] ind 1D index to access flmn array [output].
- * \param[in]  el  Harmonic index [input].
- * \param[in]  m   Azimuthal harmonic index [input].
- * \param[in]  n   Orientational harmonic index [input].
+ * \param[out] ind 1D index to access flmn array.
+ * \param[in]  el  Harmonic index.
+ * \param[in]  m   Azimuthal harmonic index.
+ * \param[in]  n   Orientational harmonic index.
  * \param[in]  parameters A parameters object with (at least) the following fields:
- *                        L, N, storage, n_order
- *                        The reality flag is ignored. Use so3_sampling_elmn2ind_real
- *                        instead.
+ *                        \link so3_parameters_t::L L\endlink,
+ *                        \link so3_parameters_t::N N\endlink,
+ *                        \link so3_parameters_t::storage storage\endlink,
+ *                        \link so3_parameters_t::n_order n_order\endlink
+ *                        <br>The \link so3_parameters_t::reality reality\endlink
+ *                        flag is ignored. Use so3_sampling_elmn2ind_real instead.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -354,14 +414,16 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, const so3_para
  *  - ind ranges from [0 .. (2*N)(L**2-N(N-1)/3)-1] for compact storage methods
              and from [0 .. (2*N-1)*L**2-1] for 0-padded storage methods.
  *
- * \param[out] el  Harmonic index [input].
- * \param[out] m   Azimuthal harmonic index [input].
- * \param[out] n   Orientational harmonic index [input].
- * \param[in]  ind 1D index to access flm array [output].
+ * \param[out] el  Harmonic index.
+ * \param[out] m   Azimuthal harmonic index.
+ * \param[out] n   Orientational harmonic index.
+ * \param[in]  ind 1D index to access flm array.
  * \param[in]  parameters A parameters object with (at least) the following fields:
- *                        L, N, storage
- *                        The reality flag is ignored. Use so3_sampling_ind2elmn_real
- *                        instead.
+ *                        \link so3_parameters_t::L L\endlink,
+ *                        \link so3_parameters_t::N N\endlink,
+ *                        \link so3_parameters_t::storage storage\endlink
+ *                        <br>The \link so3_parameters_t::reality reality\endlink
+ *                        flag is ignored. Use so3_sampling_elmn2ind_real instead.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -467,14 +529,16 @@ inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, const so3_pa
  *  - ind ranges from [0 .. N*(L*L-(N-1)*(2*N-1)/6)-1] for compact storage methods
              and from [0 .. N*L*L-1] for 0-padded storage methods.
  *
- * \param[out] ind 1D index to access flmn array [output].
- * \param[in]  el  Harmonic index [input].
- * \param[in]  m   Azimuthal harmonic index [input].
- * \param[in]  n   Orientational harmonic index [input].
+ * \param[out] ind 1D index to access flmn array.
+ * \param[in]  el  Harmonic index
+ * \param[in]  m   Azimuthal harmonic index.
+ * \param[in]  n   Orientational harmonic index.
  * \param[in]  parameters A parameters object with (at least) the following fields:
- *                        L, N, storage
- *                        The reality flag is ignored. Use so3_sampling_elmn2ind
- *                        instead for complex signals.
+ *                        \link so3_parameters_t::L L\endlink,
+ *                        \link so3_parameters_t::N N\endlink,
+ *                        \link so3_parameters_t::storage storage\endlink
+ *                        <br>The \link so3_parameters_t::reality reality\endlink
+ *                        flag is ignored. Use so3_sampling_elmn2ind_real instead.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
@@ -519,14 +583,16 @@ inline void so3_sampling_elmn2ind_real(int *ind, int el, int m, int n, const so3
  *  - ind ranges from [0 .. N*(L*L-(N-1)*(2*N-1)/6)-1] for compact storage methods
              and from [0 .. N*L*L-1] for 0-padded storage methods.
  *
- * \param[out] el  Harmonic index [input].
- * \param[out] m   Azimuthal harmonic index [input].
- * \param[out] n   Orientational harmonic index [input].
- * \param[in]  ind 1D index to access flm array [output].
+ * \param[out] el  Harmonic index.
+ * \param[out] m   Azimuthal harmonic index.
+ * \param[out] n   Orientational harmonic index.
+ * \param[in]  ind 1D index to access flm array.
  * \param[in]  parameters A parameters object with (at least) the following fields:
- *                        L, N, storage
- *                        The reality flag is ignored. Use so3_sampling_ind2elmn
- *                        instead for complex signals.
+ *                        \link so3_parameters_t::L L\endlink,
+ *                        \link so3_parameters_t::N N\endlink,
+ *                        \link so3_parameters_t::storage storage\endlink
+ *                        <br>The \link so3_parameters_t::reality reality\endlink
+ *                        flag is ignored. Use so3_sampling_elmn2ind_real instead.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>

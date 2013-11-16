@@ -9,6 +9,8 @@
  * For installation instructions, see the general SSHT
  * documentation available
  * <a href="../../index.html">here</a>.
+ * Make sure to check out the documentation of so3_parameters_t, as
+ * it is used across the entire API.
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
@@ -34,52 +36,64 @@
 #define SO3_PROMPT "[so3] "
 
 typedef enum {
-    // order of flm-blocks in terms of n in storage is 0, -1, 1, -2, 2, ...
+    /*! order of flm-blocks in terms of n in storage is 0, -1, 1, -2, 2, ... */
     SO3_N_ORDER_ZERO_FIRST,
-    // order of flm-blocks in terms of n in storage is ... -2, -1, 0, 1, 2, ...
+    /*! order of flm-blocks in terms of n in storage is ... -2, -1, 0, 1, 2, ... */
     SO3_N_ORDER_NEGATIVE_FIRST,
-    // "guard" value that equals the number of usable enum values.
-    // useful in loops, for instance.
+    /*!
+     * "guard" value that equals the number of usable enum values.
+     * useful in loops, for instance.
+     */
     SO3_N_ORDER_SIZE
 } so3_n_order_t;
 
 typedef enum {
-    // left-pad each flm-array with 0s to L^2 values
+    /*! left-pad each flm-array with 0s to L^2 values */
     SO3_STORAGE_PADDED,
-    // do not store lm for l < |n|
+    /*! do not store lm for l < |n| */
     SO3_STORAGE_COMPACT,
-    // "guard" value that equals the number of usable enum values.
-    // useful in loops, for instance.
+    /*!
+     * "guard" value that equals the number of usable enum values.
+     * useful in loops, for instance.
+     */
     SO3_STORAGE_SIZE
 } so3_storage_t;
 
 typedef enum {
-    // flmn are potentially non-zero for all values of n
+    /*! flmn are potentially non-zero for all values of n */
     SO3_N_MODE_ALL,
-    // flmn are only non-zero for even n
+    /*! flmn are only non-zero for even n */
     SO3_N_MODE_EVEN,
-    // flmn are only non-zero for odd n
+    /*! flmn are only non-zero for odd n */
     SO3_N_MODE_ODD,
-    // flmn are only non-zero for |n| = N-1
+    /*! flmn are only non-zero for |n| = N-1 */
     SO3_N_MODE_MAXIMUM,
-    // "guard" value that equals the number of usable enum values.
-    // useful in loops, for instance.
+    /*!
+     * "guard" value that equals the number of usable enum values.
+     * useful in loops, for instance.
+     */
     SO3_N_MODE_SIZE
 } so3_n_mode_t;
 
 typedef enum {
-    // McEwen and Wiaux sampling:
-    // 2*L-1 samples in alpha, in [0, 2pi).
-    // L samples in beta, in (0, pi].
-    // 2*N-1 samples in gamma, in [0, 2pi).
+    /*!
+     * McEwen and Wiaux sampling:
+     * 2*L-1 samples in alpha, in [0, 2pi).
+     * L samples in beta, in (0, pi].
+     * 2*N-1 samples in gamma, in [0, 2pi).
+     */
     SO3_SAMPLING_MW,
-    // McEwen and Wiaux symmetric sampling:
-    // 2*L samples in alpha, in [0, 2pi).
-    // L+1 samples in beta, in [0, pi].
-    // 2*N-1 samples in gamma, in [0, 2pi).
+    /*!
+     * McEwen and Wiaux symmetric sampling:
+     * 2*L samples in alpha, in [0, 2pi).
+     * L+1 samples in beta, in [0, pi].
+     * 2*N-1 samples in gamma, in [0, 2pi).
+     */
     SO3_SAMPLING_MW_SS,
-    // "guard" value that equals the number of usable enum values.
-    // useful in loops, for instance.
+    /*!
+     * "guard" value that equals the number of usable enum values.
+     * useful in loops, for instance.
+     */
     SO3_SAMPLING_SIZE
 } so3_sampling_t;
 
@@ -87,15 +101,17 @@ typedef enum {
  * A struct with all parameters that are common to several
  * functions of the API. In general only one struct needs to
  * be created and a const pointer to it is passed around.
- * IMPORTANT: Make sure that to use an initializer upon
- *            declaration, even if it is left empty. This
- *            ensures that all fields are initialized to
- *            zero (even if in non-static storage). This way,
- *            your code will remain backwards compatible if
- *            more fields are added to this struct in the
- *            future:
- *
- *            so3_parameters_t parameters = {};
+ * \attention
+ *   Make sure to use an initializer upon
+ *   declaration, even if it is left empty. This
+ *   ensures that all fields are initialized to
+ *   zero (even if in non-static storage). This way,
+ *   your code will remain backwards compatible if
+ *   more fields are added to this struct in the
+ *   future:
+ *   \code{.c}
+ *   so3_parameters_t parameters = {};
+ *   \endcode
  */
 typedef struct {
     /*!

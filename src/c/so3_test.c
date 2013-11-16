@@ -8,11 +8,17 @@
  * transforms (respectively) to check that the original
  * signal is reconstructed exactly (to numerical precision). Test is
  * performed on a random signal with harmonic coefficients uniformly
- * sampled from (-1,1).
+ * sampled from (-1,1), using a variety of options.
  *
- * Usage: so3_test [L [N [L0 [seed]]], e.g. so3_test 64 4 32 314
- *
- * Defaults: L = 16, N = L, L0 = 0, seed = 1
+ * \par Usage
+ *   \code{.sh}
+ *   so3_test [L [N [L0 [seed]]]]
+ *   \endcode
+ *   e.g.
+ *   \code{.sh}
+ *   so3_test 64 4 32 314
+ *   \endcode
+ *   Defaults: L = 16, N = L, L0 = 0, seed = 1
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>

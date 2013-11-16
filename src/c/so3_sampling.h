@@ -7,6 +7,7 @@
 
 #include "so3_types.h"
 
+int so3_sampling_f_size(const so3_parameters_t *parameters);
 int so3_sampling_n(const so3_parameters_t *parameters);
 int so3_sampling_nalpha(const so3_parameters_t *parameters);
 int so3_sampling_nbeta(const so3_parameters_t *parameters);

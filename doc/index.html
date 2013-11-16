@@ -113,7 +113,7 @@ Message
   You may alternatively build the individual components of <strong>SO3</strong>. To build the library only run:
   </p>
   <pre> >> make lib</pre>
-  <p> To biuld the unit tests run: </p>
+  <p> To build the unit tests run: </p>
   <pre> >> make unittest</pre>
   <p> To build the test program run: </p>
   <pre> >> make test</pre>
@@ -132,8 +132,8 @@ Message
   </p>
 
   <p>Alternatively, you may run the test program directly by running:</p>
-  <pre> >> ./bin/c/so3_test &lt;L&gt; &lt;N&gt;</pre>
-  <p>where <code>&lt;L&gt;</code> and <code>&lt;M&gt;</code> are the harmonic and orientational band-limit, respectively, of your test.
+  <pre> >> ./bin/c/so3_test &lt;L&gt; &lt;N&gt; &lt;L0&gt;</pre>
+  <p>where <code>&lt;L&gt;</code> and <code>&lt;N&gt;</code> are the harmonic and orientational band-limit, respectively, and <code>&lt;L0&gt;</code> is the lower harmonic band-limit of your test.
 
   <p>To check the version and build numbers of your version run:</p>
   <pre> >> ./bin/c/so3_about </pre>
@@ -206,30 +206,49 @@ Message
   <h4>Demos</h4>
 
   <p>
-  A number of demos are provided to illustrate the use of the Matlab interface. The demos start extremely simple and progressively become more complicated/flexible.
+  A number of demos are provided to illustrate the use of the Matlab interface:
   </p>
   <pre>
-  <a href="../src/matlab/so3_demo0.m">so3_demo0</a>
+  <a href="../src/matlab/so3_demo_error_timing.m">so3_demo_error_timing</a>
   Create timing and error plots of round-trip transform.
 
-  <a href="../src/matlab/so3_demo1.m">so3_demo1</a>
-  Plot Wigner functions on the sphere.
+  <a href="../src/matlab/so3_demo_plot_wigner.m">so3_demo_plot_wigner</a>
+  Use SO3 to plot Wigner functions on SO(3).
 
-  <a href="../src/matlab/so3_demo2.m">so3_demo2</a>
+  <a href="../src/matlab/so3_demo_basic.m">so3_demo_basic</a>
   Simple demo to compute inverse and forward transform of complex
   scalar function, using simplest interface with default options.
 
-  <a href="../src/matlab/so3_demo3.m">so3_demo3</a>
+  <a href="../src/matlab/so3_demo_real_signal.m">so3_demo_real_signal</a>
   Simple demo to compute inverse and forward transform of real
   scalar function, using simplest interface with default options.
 
-  <a href="../src/matlab/so3_demo4.m">so3_demo4</a>
-  Simple demo to compute inverse and forward transform of complex
+  <a href="../src/matlab/so3_demo_compact_storage.m">so3_demo_compact_storage</a>
+  Demo to compute inverse and forward transform of complex
   scalar function, using compact storage.
 
-  <a href="../src/matlab/so3_demo5.m">so3_demo5</a>
-  Simple demo to compute inverse and forward transform of complex
+  <a href="../src/matlab/so3_demo_storage_order.m">so3_demo_storage_order</a>
+  Demo to compute inverse and forward transform of complex
   function, storing the flmn for n = -N+1 first.
+
+  <a href="../src/matlab/so3_demo_lower_band_limit.m">so3_demo_lower_band_limit</a>
+  Demo to compute inverse and forward transform of complex
+  function, using a non-zero lower harmonic band-limit - i.e. only
+  harmonic coefficients with L greater than or equal to some L0
+  are non-zero.
+
+  <a href="../src/matlab/so3_demo_even_n.m">so3_demo_even_n</a>
+  Demo to compute inverse and forward transform of complex
+  function, using only harmonic coefficients with even n.
+
+  <a href="../src/matlab/so3_demo_symmetric_sampling.m">so3_demo_symmetric_sampling</a>
+  Demo to compute inverse and forward transform of complex
+  function, using a symmetrically sampled signal.
+
+  <a href="../src/matlab/so3_demo_covariance.m">so3_demo_covariance</a>
+  This demo runs a series of forward transforms from random coefficients
+  and compares the transformed signal's covariance with the theoretical
+  prediction.
   </pre>
 
   <p>
