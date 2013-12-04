@@ -6,9 +6,8 @@
  *
  * We document the C source code here.  For an example of usage,
  * see the so3_test.c program.
- * For installation instructions, see the general SSHT
- * documentation available
- * <a href="../../index.html">here</a>.
+ * For installation instructions, see the general SO3
+ * documentation available <a href="../../index.html">here</a>.
  * Make sure to check out the documentation of so3_parameters_t, as
  * it is used across the entire API.
  *
