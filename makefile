@@ -133,6 +133,11 @@ test: $(SO3BIN)/so3_test about
 $(SO3BIN)/so3_test: $(SO3OBJ)/so3_test.o $(SO3LIB)/lib$(SO3LIBNM).a
 	$(CC) $(OPT) $< -o $(SO3BIN)/so3_test $(LDFLAGS)
 
+.PHONY: test_csv
+test_csv: $(SO3BIN)/so3_test_csv about
+$(SO3BIN)/so3_test_csv: $(SO3OBJ)/so3_test_csv.o $(SO3LIB)/lib$(SO3LIBNM).a
+	$(CC) $(OPT) $< -o $(SO3BIN)/so3_test_csv $(LDFLAGS)
+
 .PHONY: about
 about: $(SO3BIN)/so3_about
 $(SO3BIN)/so3_about: $(SO3OBJ)/so3_about.o
@@ -143,7 +148,7 @@ runtest: test
 	$(SO3BIN)/so3_test
 
 .PHONY: all
-all: lib unittest test about matlab
+all: lib unittest test test_csv about matlab
 
 
 # Library
