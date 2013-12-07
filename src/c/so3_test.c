@@ -228,13 +228,13 @@ int main(int argc, char **argv)
             printf("  ...using %s sampling...\n", sampling_str[sampling_scheme]);
             for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
             {
-                printf("      ...with %s...\n", storage_mode_str[storage_mode]);
+                printf("    ...with %s...\n", storage_mode_str[storage_mode]);
 
                 // For real signals, the n_order does not matter, so skip the second option
                 // in that case.
                 for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
                 {
-                    printf("    ...using %s...\n", n_order_str[n_order]);
+                    printf("      ...using %s...\n", n_order_str[n_order]);
                     for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                     {
                         printf("        ...and %s...\n", n_mode_str[n_mode]);
