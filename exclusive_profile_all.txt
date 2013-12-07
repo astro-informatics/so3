@@ -1,0 +1,123 @@
+--------------------------------------------------------------------------------
+Profile data file 'callgrind.out.45123' (creator: callgrind-3.8.1)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 1050787417
+Trigger: Program termination
+Profiled target:  bin/c/so3_test (PID 45123, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  off
+
+--------------------------------------------------------------------------------
+           Ir 
+--------------------------------------------------------------------------------
+9,867,918,117  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+           Ir  file:function
+--------------------------------------------------------------------------------
+1,275,456,294  ???:apply'2 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+1,090,980,744  ???:apply [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+1,056,678,588  ???:fftw_md5putc [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+  635,240,832  ???:t1_12 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+  609,030,800  ???:ssht_dl_beta_risbo_eighth_table [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+  414,433,440  ???:__muldc3 [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+  392,869,110  ???:ssht_core_mw_lb_forward_sov_conv_sym [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+  377,612,810  ???:ssht_core_mw_lb_forward_sov_conv_sym_ss [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+  364,357,208  ???:n1_5 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+  266,814,953  /build/buildd/eglibc-2.17/malloc/malloc.c:_int_malloc [/lib/x86_64-linux-gnu/libc-2.17.so]
+  216,010,480  /build/buildd/eglibc-2.17/math/../sysdeps/ieee754/dbl-64/dosincos.c:__dubsin [/lib/x86_64-linux-gnu/libm-2.17.so]
+  194,210,240  /build/buildd/eglibc-2.17/malloc/malloc.c:_int_free [/lib/x86_64-linux-gnu/libc-2.17.so]
+  184,134,092  ???:t1_5 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+  177,400,248  ???:n1_32 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+  161,662,470  ???:ssht_core_mw_lb_inverse_sov_sym [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+  146,401,280  ???:ssht_core_mw_lb_inverse_sov_sym_ss [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+  141,471,672  ???:n1_12 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+  138,294,730  /build/buildd/eglibc-2.17/math/../sysdeps/ieee754/dbl-64/s_sin.c:__sin_avx [/lib/x86_64-linux-gnu/libm-2.17.so]
+  131,482,440  ???:fftw_md5putb [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+  124,278,090  /build/buildd/eglibc-2.17/math/../sysdeps/ieee754/dbl-64/s_sin.c:__cos_avx [/lib/x86_64-linux-gnu/libm-2.17.so]
+  115,525,000  ???:ssht_dl_beta_risbo_fill_eighth2quarter_table [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+  115,315,200  ???:apply_hc2r'2 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+  114,025,600  ???:apply_r2hc'2 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   90,500,738  /build/buildd/eglibc-2.17/malloc/malloc.c:malloc [/lib/x86_64-linux-gnu/libc-2.17.so]
+   85,230,802  ???:mkplan'2 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   73,964,634  /build/buildd/eglibc-2.17/math/../sysdeps/ieee754/dbl-64/e_hypot.c:__hypot_finite [/lib/x86_64-linux-gnu/libm-2.17.so]
+   59,377,635  ???:ran2_dp [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+   59,173,410  ???:cexpl_sincos [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   56,352,756  ???:fftw_power_mod'2 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   47,973,814  /build/buildd/eglibc-2.17/string/../sysdeps/x86_64/multiarch/../memset.S:__GI_memset [/lib/x86_64-linux-gnu/libc-2.17.so]
+   39,328,653  ???:fftw_md5end [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   38,218,080  /build/buildd/eglibc-2.17/math/../sysdeps/ieee754/dbl-64/s_sincos.c:sincos [/lib/x86_64-linux-gnu/libm-2.17.so]
+   36,554,585  /build/buildd/eglibc-2.17/malloc/malloc.c:free [/lib/x86_64-linux-gnu/libc-2.17.so]
+   32,935,601  /build/buildd/eglibc-2.17/string/../sysdeps/x86_64/multiarch/memcpy-ssse3-back.S:__memcpy_ssse3_back [/lib/x86_64-linux-gnu/libc-2.17.so]
+   31,388,088  ???:htab_insert [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   29,566,040  ???:so3_core_forward_via_ssht [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+   28,663,560  /build/buildd/eglibc-2.17/math/../sysdeps/i386/fpu/fenv_private.h:__sin_avx
+   28,663,560  /build/buildd/eglibc-2.17/math/../sysdeps/i386/fpu/fenv_private.h:__cos_avx
+   27,501,602  ???:fftw_tensor_compress [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   25,764,336  ???:fftw_twiddle_awake [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   25,535,710  ???:fftw_mkstride [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   21,324,178  /build/buildd/eglibc-2.17/malloc/malloc.c:malloc_consolidate [/lib/x86_64-linux-gnu/libc-2.17.so]
+   19,858,428  ???:fftw_malloc_plain [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   18,897,200  ???:get_max_error [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+   17,985,960  ???:so3_test_gen_flmn_complex [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+   17,542,720  /build/buildd/eglibc-2.17/math/w_hypot.c:hypot [/lib/x86_64-linux-gnu/libm-2.17.so]
+   17,488,440  /build/buildd/eglibc-2.17/math/../sysdeps/ieee754/dbl-64/s_sin.c:csloww [/lib/x86_64-linux-gnu/libm-2.17.so]
+   17,208,100  ???:so3_sampling_elmn2ind [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+   16,380,877  ???:search0'2 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   14,731,262  ???:fftw_tensor_compress_contiguous [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   14,402,680  ???:so3_core_inverse_via_ssht [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+   14,191,416  /build/buildd/eglibc-2.17/stdlib/msort.c:msort_with_tmp.part.0 [/lib/x86_64-linux-gnu/libc-2.17.so]
+   13,742,027  ???:hgrow [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   13,543,928  /build/buildd/eglibc-2.17/malloc/malloc.c:calloc [/lib/x86_64-linux-gnu/libc-2.17.so]
+   12,958,745  ???:fftw_mktensor [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   12,926,690  /build/buildd/eglibc-2.17/math/s_cexp.c:cexp [/lib/x86_64-linux-gnu/libm-2.17.so]
+   12,544,200  ???:fftw_mapflags [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   11,810,960  /build/buildd/eglibc-2.17/math/../sysdeps/ieee754/dbl-64/s_fpclassify.c:__fpclassify [/lib/x86_64-linux-gnu/libm-2.17.so]
+   11,564,800  ???:apply_r2hc [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   11,398,400  ???:apply_hc2r [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+   10,391,867  ???:fftw_tensor_md5 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    9,542,914  ???:main [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+    8,835,750  ???:fftw_md5int [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    8,363,640  ???:hash [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    8,157,366  /build/buildd/eglibc-2.17/stdlib/msort.c:qsort_r [/lib/x86_64-linux-gnu/libc-2.17.so]
+    7,917,705  /build/buildd/eglibc-2.17/string/../sysdeps/x86_64/multiarch/../memcpy.S:__GI_memcpy [/lib/x86_64-linux-gnu/libc-2.17.so]
+    7,913,839  ???:mkcldw [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    7,878,601  ???:fftw_dimcmp [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    7,825,207  ???:apply_dit [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    7,662,060  ???:so3_core_forward_via_ssht_real [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+    7,618,646  ???:fftw_md5INT [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    7,453,344  ???:fftw_tensor_copy [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    7,359,168  ???:n1_15 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    6,638,030  /build/buildd/eglibc-2.17/math/../sysdeps/ieee754/dbl-64/e_exp.c:__ieee754_exp_avx [/lib/x86_64-linux-gnu/libm-2.17.so]
+    6,210,260  ???:so3_test_gen_flmn_real [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+    6,161,607  ???:fftw_mkproblem_dft [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    6,146,784  ???:fftw_tensor_sz [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    6,028,491  ???:fftw_md5puts [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    5,907,267  ???:fftw_tensor_append [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    5,664,837  ???:fftw_ct_applicable [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    5,404,564  ???:awake [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    5,349,440  ???:so3_sampling_elmn2ind_real [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+    5,261,525  ???:fftw_tensor_copy_inplace [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    5,003,608  ???:fftw_cpy2d [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    4,891,180  /build/buildd/eglibc-2.17/math/../sysdeps/i386/fpu/fenv_private.h:__ieee754_exp_avx
+    4,432,152  ???:fftw_iabs [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    4,121,600  ???:ssht_sampling_elm2ind [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+    4,048,320  /build/buildd/eglibc-2.17/math/../sysdeps/ieee754/dbl-64/wordsize-64/math_private.h:hypot
+    3,754,201  ???:fftw_tensor_inplace_locations [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    3,712,660  ???:fftw_execute_dft [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    3,679,890  ???:so3_core_inverse_via_ssht_real [/home/mbue/Development/UCLCosmologyGroup/repos/so3/bin/c/so3_test]
+    3,622,318  ???:t1_2 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    3,609,627  ???:fftw_mkplan [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    3,410,689  ???:q1_2 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    3,392,724  ???:fftw_ops_madd [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    3,232,153  ???:fftw_choose_radix [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+    2,841,120  ???:fftw_tensor_destroy2 [/home/mbue/Development/UCLCosmologyGroup/repos/fftw-3.2.2_fPIC/.libs/libfftw3.so.3.2.4]
+
