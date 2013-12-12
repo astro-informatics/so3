@@ -59,227 +59,227 @@ N      =                                       32
 
 Results for complex signals...
   ...using MW sampling...
-      ...with padded storage...
-    ...using n = 0 first...
+    ...with padded storage...
+      ...using n = 0 first...
         ...and all n...
-          Minimum time for forward transform: 0.050496s
-          Minimum time for inverse transform: 0.027659s
-          Average max errors for round-trip:  8.752931e-15
+          Minimum time for forward transform: 0.050066s
+          Minimum time for inverse transform: 0.027116s
+          Average max errors for round-trip:  8.752087e-15
         ...and only even n...
-          Minimum time for forward transform: 0.025881s
-          Minimum time for inverse transform: 0.014443s
+          Minimum time for forward transform: 0.025705s
+          Minimum time for inverse transform: 0.014171s
           Average max errors for round-trip:  7.748226e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.026401s
-          Minimum time for inverse transform: 0.014640s
-          Average max errors for round-trip:  5.600657e-15
+          Minimum time for forward transform: 0.026311s
+          Minimum time for inverse transform: 0.014581s
+          Average max errors for round-trip:  5.605655e-15
         ...and only |n| = N-1...
-          Minimum time for forward transform: 0.002950s
-          Minimum time for inverse transform: 0.002005s
-          Average max errors for round-trip:  4.931106e-15
-    ...using n = -N+1 first...
+          Minimum time for forward transform: 0.002855s
+          Minimum time for inverse transform: 0.001957s
+          Average max errors for round-trip:  4.911195e-15
+      ...using n = -N+1 first...
         ...and all n...
-          Minimum time for forward transform: 0.050365s
-          Minimum time for inverse transform: 0.027657s
-          Average max errors for round-trip:  8.369532e-15
+          Minimum time for forward transform: 0.050267s
+          Minimum time for inverse transform: 0.027056s
+          Average max errors for round-trip:  8.454624e-15
         ...and only even n...
-          Minimum time for forward transform: 0.025840s
-          Minimum time for inverse transform: 0.014382s
-          Average max errors for round-trip:  8.084875e-15
+          Minimum time for forward transform: 0.025692s
+          Minimum time for inverse transform: 0.014158s
+          Average max errors for round-trip:  8.080108e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.026291s
-          Minimum time for inverse transform: 0.014695s
-          Average max errors for round-trip:  5.876533e-15
+          Minimum time for forward transform: 0.026268s
+          Minimum time for inverse transform: 0.014532s
+          Average max errors for round-trip:  5.842064e-15
         ...and only |n| = N-1...
-          Minimum time for forward transform: 0.002847s
-          Minimum time for inverse transform: 0.001981s
+          Minimum time for forward transform: 0.002876s
+          Minimum time for inverse transform: 0.001951s
           Average max errors for round-trip:  5.604085e-15
 
-      ...with compact storage...
-    ...using n = 0 first...
+    ...with compact storage...
+      ...using n = 0 first...
         ...and all n...
-          Minimum time for forward transform: 0.050858s
-          Minimum time for inverse transform: 0.027670s
-          Average max errors for round-trip:  7.392688e-15
+          Minimum time for forward transform: 0.050503s
+          Minimum time for inverse transform: 0.027027s
+          Average max errors for round-trip:  7.437193e-15
         ...and only even n...
-          Minimum time for forward transform: 0.025809s
-          Minimum time for inverse transform: 0.014336s
+          Minimum time for forward transform: 0.025815s
+          Minimum time for inverse transform: 0.014145s
           Average max errors for round-trip:  6.676528e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.026475s
-          Minimum time for inverse transform: 0.014761s
-          Average max errors for round-trip:  7.403062e-15
+          Minimum time for forward transform: 0.026532s
+          Minimum time for inverse transform: 0.014411s
+          Average max errors for round-trip:  7.472620e-15
         ...and only |n| = N-1...
-          Minimum time for forward transform: 0.002892s
-          Minimum time for inverse transform: 0.001975s
+          Minimum time for forward transform: 0.002851s
+          Minimum time for inverse transform: 0.001941s
           Average max errors for round-trip:  5.334474e-15
-    ...using n = -N+1 first...
+      ...using n = -N+1 first...
         ...and all n...
-          Minimum time for forward transform: 0.050005s
-          Minimum time for inverse transform: 0.027526s
-          Average max errors for round-trip:  8.332846e-15
+          Minimum time for forward transform: 0.050610s
+          Minimum time for inverse transform: 0.027261s
+          Average max errors for round-trip:  8.360504e-15
         ...and only even n...
-          Minimum time for forward transform: 0.025623s
-          Minimum time for inverse transform: 0.014250s
+          Minimum time for forward transform: 0.025784s
+          Minimum time for inverse transform: 0.014081s
           Average max errors for round-trip:  6.840060e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.026246s
-          Minimum time for inverse transform: 0.014583s
-          Average max errors for round-trip:  5.186714e-15
+          Minimum time for forward transform: 0.026381s
+          Minimum time for inverse transform: 0.014444s
+          Average max errors for round-trip:  5.208473e-15
         ...and only |n| = N-1...
-          Minimum time for forward transform: 0.002825s
-          Minimum time for inverse transform: 0.001925s
-          Average max errors for round-trip:  5.078443e-15
+          Minimum time for forward transform: 0.002892s
+          Minimum time for inverse transform: 0.001953s
+          Average max errors for round-trip:  5.074764e-15
 
   ...using MWSS sampling...
-      ...with padded storage...
-    ...using n = 0 first...
+    ...with padded storage...
+      ...using n = 0 first...
         ...and all n...
-          Minimum time for forward transform: 0.046746s
-          Minimum time for inverse transform: 0.024842s
-          Average max errors for round-trip:  9.086235e-15
+          Minimum time for forward transform: 0.045833s
+          Minimum time for inverse transform: 0.024509s
+          Average max errors for round-trip:  9.157299e-15
         ...and only even n...
-          Minimum time for forward transform: 0.024021s
-          Minimum time for inverse transform: 0.013152s
-          Average max errors for round-trip:  9.135280e-15
+          Minimum time for forward transform: 0.023595s
+          Minimum time for inverse transform: 0.012941s
+          Average max errors for round-trip:  9.096399e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.024694s
-          Minimum time for inverse transform: 0.013396s
-          Average max errors for round-trip:  5.232528e-15
+          Minimum time for forward transform: 0.024215s
+          Minimum time for inverse transform: 0.013169s
+          Average max errors for round-trip:  5.235859e-15
         ...and only |n| = N-1...
-          Minimum time for forward transform: 0.002944s
-          Minimum time for inverse transform: 0.002077s
-          Average max errors for round-trip:  4.794504e-15
-    ...using n = -N+1 first...
+          Minimum time for forward transform: 0.002887s
+          Minimum time for inverse transform: 0.002028s
+          Average max errors for round-trip:  4.808640e-15
+      ...using n = -N+1 first...
         ...and all n...
-          Minimum time for forward transform: 0.046775s
-          Minimum time for inverse transform: 0.024775s
-          Average max errors for round-trip:  6.141440e-15
+          Minimum time for forward transform: 0.046074s
+          Minimum time for inverse transform: 0.024593s
+          Average max errors for round-trip:  6.092826e-15
         ...and only even n...
-          Minimum time for forward transform: 0.024285s
-          Minimum time for inverse transform: 0.013212s
-          Average max errors for round-trip:  5.652370e-15
+          Minimum time for forward transform: 0.023592s
+          Minimum time for inverse transform: 0.012889s
+          Average max errors for round-trip:  5.760119e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.024526s
-          Minimum time for inverse transform: 0.013350s
-          Average max errors for round-trip:  5.446186e-15
+          Minimum time for forward transform: 0.024170s
+          Minimum time for inverse transform: 0.013221s
+          Average max errors for round-trip:  5.480016e-15
         ...and only |n| = N-1...
-          Minimum time for forward transform: 0.002917s
-          Minimum time for inverse transform: 0.002020s
-          Average max errors for round-trip:  5.089160e-15
+          Minimum time for forward transform: 0.002927s
+          Minimum time for inverse transform: 0.002042s
+          Average max errors for round-trip:  5.121052e-15
 
-      ...with compact storage...
-    ...using n = 0 first...
+    ...with compact storage...
+      ...using n = 0 first...
         ...and all n...
-          Minimum time for forward transform: 0.047539s
-          Minimum time for inverse transform: 0.024738s
-          Average max errors for round-trip:  7.684351e-15
+          Minimum time for forward transform: 0.046754s
+          Minimum time for inverse transform: 0.024509s
+          Average max errors for round-trip:  7.660150e-15
         ...and only even n...
-          Minimum time for forward transform: 0.024241s
-          Minimum time for inverse transform: 0.013022s
-          Average max errors for round-trip:  7.042480e-15
+          Minimum time for forward transform: 0.023945s
+          Minimum time for inverse transform: 0.012907s
+          Average max errors for round-trip:  7.106595e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.024886s
-          Minimum time for inverse transform: 0.013329s
-          Average max errors for round-trip:  5.595584e-15
+          Minimum time for forward transform: 0.024603s
+          Minimum time for inverse transform: 0.013153s
+          Average max errors for round-trip:  5.615139e-15
         ...and only |n| = N-1...
-          Minimum time for forward transform: 0.002906s
-          Minimum time for inverse transform: 0.002005s
-          Average max errors for round-trip:  4.958324e-15
-    ...using n = -N+1 first...
+          Minimum time for forward transform: 0.002890s
+          Minimum time for inverse transform: 0.002000s
+          Average max errors for round-trip:  4.957155e-15
+      ...using n = -N+1 first...
         ...and all n...
-          Minimum time for forward transform: 0.047081s
-          Minimum time for inverse transform: 0.024737s
-          Average max errors for round-trip:  6.791698e-15
+          Minimum time for forward transform: 0.046742s
+          Minimum time for inverse transform: 0.024451s
+          Average max errors for round-trip:  6.803705e-15
         ...and only even n...
-          Minimum time for forward transform: 0.024282s
-          Minimum time for inverse transform: 0.013104s
-          Average max errors for round-trip:  5.951952e-15
+          Minimum time for forward transform: 0.023899s
+          Minimum time for inverse transform: 0.012852s
+          Average max errors for round-trip:  5.940662e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.024744s
-          Minimum time for inverse transform: 0.013295s
-          Average max errors for round-trip:  5.482839e-15
+          Minimum time for forward transform: 0.024508s
+          Minimum time for inverse transform: 0.013198s
+          Average max errors for round-trip:  5.494086e-15
         ...and only |n| = N-1...
-          Minimum time for forward transform: 0.002875s
-          Minimum time for inverse transform: 0.001983s
+          Minimum time for forward transform: 0.002929s
+          Minimum time for inverse transform: 0.001992s
           Average max errors for round-trip:  4.914957e-15
 
 Results for real signals...
   ...using MW sampling...
-      ...with padded storage...
-    ...using n = 0 first...
+    ...with padded storage...
+      ...using n = 0 first...
         ...and all n...
-          Minimum time for forward transform: 0.025822s
-          Minimum time for inverse transform: 0.014086s
-          Average max errors for round-trip:  6.552914e-15
+          Minimum time for forward transform: 0.025559s
+          Minimum time for inverse transform: 0.013972s
+          Average max errors for round-trip:  6.560091e-15
         ...and only even n...
-          Minimum time for forward transform: 0.013382s
-          Minimum time for inverse transform: 0.007553s
-          Average max errors for round-trip:  5.736010e-15
+          Minimum time for forward transform: 0.013398s
+          Minimum time for inverse transform: 0.007519s
+          Average max errors for round-trip:  5.690100e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.013349s
-          Minimum time for inverse transform: 0.007465s
-          Average max errors for round-trip:  5.279200e-15
+          Minimum time for forward transform: 0.013249s
+          Minimum time for inverse transform: 0.007397s
+          Average max errors for round-trip:  5.250132e-15
+        ...and only |n| = N-1...
+          Minimum time for forward transform: 0.001597s
+          Minimum time for inverse transform: 0.001161s
+          Average max errors for round-trip:  4.219391e-15
+
+    ...with compact storage...
+      ...using n = 0 first...
+        ...and all n...
+          Minimum time for forward transform: 0.025705s
+          Minimum time for inverse transform: 0.014015s
+          Average max errors for round-trip:  5.664931e-15
+        ...and only even n...
+          Minimum time for forward transform: 0.013371s
+          Minimum time for inverse transform: 0.007482s
+          Average max errors for round-trip:  5.870165e-15
+        ...and only odd n...
+          Minimum time for forward transform: 0.013292s
+          Minimum time for inverse transform: 0.007432s
+          Average max errors for round-trip:  6.395467e-15
         ...and only |n| = N-1...
           Minimum time for forward transform: 0.001592s
-          Minimum time for inverse transform: 0.001139s
-          Average max errors for round-trip:  4.159273e-15
-
-      ...with compact storage...
-    ...using n = 0 first...
-        ...and all n...
-          Minimum time for forward transform: 0.025548s
-          Minimum time for inverse transform: 0.014123s
-          Average max errors for round-trip:  5.641448e-15
-        ...and only even n...
-          Minimum time for forward transform: 0.013438s
-          Minimum time for inverse transform: 0.007518s
-          Average max errors for round-trip:  5.885496e-15
-        ...and only odd n...
-          Minimum time for forward transform: 0.013239s
-          Minimum time for inverse transform: 0.007454s
-          Average max errors for round-trip:  6.424359e-15
-        ...and only |n| = N-1...
-          Minimum time for forward transform: 0.001593s
-          Minimum time for inverse transform: 0.001136s
-          Average max errors for round-trip:  4.666882e-15
+          Minimum time for inverse transform: 0.001132s
+          Average max errors for round-trip:  4.677057e-15
 
   ...using MWSS sampling...
-      ...with padded storage...
-    ...using n = 0 first...
+    ...with padded storage...
+      ...using n = 0 first...
         ...and all n...
-          Minimum time for forward transform: 0.023957s
-          Minimum time for inverse transform: 0.012880s
-          Average max errors for round-trip:  7.533493e-15
+          Minimum time for forward transform: 0.023737s
+          Minimum time for inverse transform: 0.012756s
+          Average max errors for round-trip:  7.523118e-15
         ...and only even n...
-          Minimum time for forward transform: 0.012640s
-          Minimum time for inverse transform: 0.006885s
-          Average max errors for round-trip:  6.456680e-15
+          Minimum time for forward transform: 0.012566s
+          Minimum time for inverse transform: 0.006866s
+          Average max errors for round-trip:  6.457171e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.012411s
-          Minimum time for inverse transform: 0.006797s
-          Average max errors for round-trip:  5.173091e-15
+          Minimum time for forward transform: 0.012459s
+          Minimum time for inverse transform: 0.006825s
+          Average max errors for round-trip:  5.225245e-15
         ...and only |n| = N-1...
-          Minimum time for forward transform: 0.001664s
-          Minimum time for inverse transform: 0.001178s
-          Average max errors for round-trip:  4.550832e-15
+          Minimum time for forward transform: 0.001675s
+          Minimum time for inverse transform: 0.001201s
+          Average max errors for round-trip:  4.477796e-15
 
-      ...with compact storage...
-    ...using n = 0 first...
+    ...with compact storage...
+      ...using n = 0 first...
         ...and all n...
-          Minimum time for forward transform: 0.023753s
-          Minimum time for inverse transform: 0.012715s
-          Average max errors for round-trip:  7.665776e-15
+          Minimum time for forward transform: 0.023762s
+          Minimum time for inverse transform: 0.012634s
+          Average max errors for round-trip:  7.707028e-15
         ...and only even n...
-          Minimum time for forward transform: 0.012517s
-          Minimum time for inverse transform: 0.006877s
-          Average max errors for round-trip:  5.702188e-15
+          Minimum time for forward transform: 0.012528s
+          Minimum time for inverse transform: 0.006848s
+          Average max errors for round-trip:  5.697026e-15
         ...and only odd n...
-          Minimum time for forward transform: 0.012371s
-          Minimum time for inverse transform: 0.006818s
-          Average max errors for round-trip:  5.179487e-15
+          Minimum time for forward transform: 0.012435s
+          Minimum time for inverse transform: 0.006779s
+          Average max errors for round-trip:  5.256617e-15
         ...and only |n| = N-1...
-          Minimum time for forward transform: 0.001640s
-          Minimum time for inverse transform: 0.001172s
-          Average max errors for round-trip:  4.165075e-15
+          Minimum time for forward transform: 0.001673s
+          Minimum time for inverse transform: 0.001163s
+          Average max errors for round-trip:  4.122955e-15
 
