@@ -560,7 +560,7 @@ void so3_core_inverse_via_ssht_real(
             offset = i;
         }
 
-        if (n)
+        if (N > 1 || n)
         {
             switch (sampling)
             {
@@ -763,7 +763,7 @@ void so3_core_forward_via_ssht_real(
             continue;
         }
 
-        if (n)
+        if (N > 1 || n)
         {
             switch (storage)
             {
