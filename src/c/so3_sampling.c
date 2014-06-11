@@ -424,7 +424,7 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, const so3_para
  *                        \link so3_parameters_t::N N\endlink,
  *                        \link so3_parameters_t::storage storage\endlink
  *                        <br>The \link so3_parameters_t::reality reality\endlink
- *                        flag is ignored. Use \link so3_sampling_elmn2ind_real \endlink
+ *                        flag is ignored. Use \link so3_sampling_ind2elmn_real \endlink
  *                        instead.
  * \retval none
  *
@@ -540,7 +540,7 @@ inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, const so3_pa
  *                        \link so3_parameters_t::N N\endlink,
  *                        \link so3_parameters_t::storage storage\endlink
  *                        <br>The \link so3_parameters_t::reality reality\endlink
- *                        flag is ignored. Use \link so3_sampling_elmn2ind_real \endlink
+ *                        flag is ignored. Use \link so3_sampling_elmn2ind \endlink
  *                        instead.
  * \retval none
  *
@@ -595,8 +595,8 @@ inline void so3_sampling_elmn2ind_real(int *ind, int el, int m, int n, const so3
  *                        \link so3_parameters_t::N N\endlink,
  *                        \link so3_parameters_t::storage storage\endlink
  *                        <br>The \link so3_parameters_t::reality reality\endlink
- *                        flag is ignored. Use \link so3_sampling_elmn2ind_real
- *                        \link instead.
+ *                        flag is ignored. Use \link so3_sampling_ind2elmn
+ *                        \endlink instead.
  * \retval none
  *
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
