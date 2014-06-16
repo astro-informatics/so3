@@ -316,7 +316,10 @@ void so3_test_gen_flmn_complex(
     case SO3_N_MODE_MAXIMUM:
         n_start = -N+1;
         n_stop  =  N-1;
-        n_inc = 2*N - 2;
+        if (N > 1)
+            n_inc = 2*N - 2;
+        else
+            n_inc = 1;
         break;
     default:
         SO3_ERROR_GENERIC("Invalid n-mode.");

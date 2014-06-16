@@ -25,6 +25,11 @@
 
 #define MAX(a,b) ((a > b) ? (a) : (b))
 
+typedef void (*inverse_complex_ssht)(complex double *, const complex double *, int, int, int, ssht_dl_method_t, int);
+typedef void (*inverse_real_ssht)(double *, const complex double *, int, int, ssht_dl_method_t, int);
+typedef void (*forward_complex_ssht)(complex double *, const complex double *, int, int, int, ssht_dl_method_t, int);
+typedef void (*forward_real_ssht)(complex double *, const double *, int, int, ssht_dl_method_t, int);
+
 /*!
  * Compute inverse Wigner transform for a complex signal via SSHT.
  *
@@ -64,6 +69,8 @@ void so3_core_inverse_via_ssht(
     int fftw_n;
     fftw_plan plan;
 
+    inverse_complex_ssht ssht;
+
     L0 = parameters->L0;
     L = parameters->L;
     N = parameters->N;
@@ -83,19 +90,21 @@ void so3_core_inverse_via_ssht(
                     , storage);
     }
 
-    // Compute fn(a,b)
-
     switch (sampling)
     {
     case SO3_SAMPLING_MW:
         fn_n_stride = L * (2*L-1);
+        ssht = ssht_core_mw_lb_inverse_sov_sym;
         break;
     case SO3_SAMPLING_MW_SS:
         fn_n_stride = (L+1) * 2*L;
+        ssht = ssht_core_mw_lb_inverse_sov_sym_ss;
         break;
     default:
         SO3_ERROR_GENERIC("Invalid sampling scheme.");
     }
+
+    // Compute fn(a,b)
 
     fn = calloc((2*N-1)*fn_n_stride, sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
@@ -164,28 +173,12 @@ void so3_core_inverse_via_ssht(
         // the results in n-order 0, 1, 2, -2, -1
         offset = (n < 0 ? n + 2*N-1 : n);
 
-
-        switch (sampling)
-        {
-        case SO3_SAMPLING_MW:
-            ssht_core_mw_lb_inverse_sov_sym(
-                fn + offset*fn_n_stride, flm,
-                L0e, L, -n,
-                dl_method,
-                verbosity
-            );
-            break;
-        case SO3_SAMPLING_MW_SS:
-            ssht_core_mw_lb_inverse_sov_sym_ss(
-                fn + offset*fn_n_stride, flm,
-                L0e, L, -n,
-                dl_method,
-                verbosity
-            );
-            break;
-        default:
-            SO3_ERROR_GENERIC("Invalid sampling scheme.");
-        }
+        (*ssht)(
+            fn + offset*fn_n_stride, flm,
+            L0e, L, -n,
+            dl_method,
+            verbosity
+        );
 
         if(n % 2)
             for(i = 0; i < fn_n_stride; ++i)
@@ -232,6 +225,7 @@ void so3_core_forward_via_ssht(
     so3_storage_t storage;
     so3_n_mode_t n_mode;
     ssht_dl_method_t dl_method;
+    int steerable;
     int verbosity;
 
     // Iterator
@@ -247,6 +241,8 @@ void so3_core_forward_via_ssht(
     int fftw_n;
     fftw_plan plan;
 
+    forward_complex_ssht ssht;
+
     // for precomputation
     double factor;
 
@@ -258,6 +254,8 @@ void so3_core_forward_via_ssht(
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
     verbosity = parameters->verbosity;
+    //steerable = parameters->steerable;
+    steerable = 0;
 
     // Print messages depending on verbosity level.
     if (verbosity > 0) {
@@ -273,9 +271,11 @@ void so3_core_forward_via_ssht(
     {
     case SO3_SAMPLING_MW:
         fn_n_stride = L * (2*L-1);
+        ssht = ssht_core_mw_lb_forward_sov_conv_sym;
         break;
     case SO3_SAMPLING_MW_SS:
         fn_n_stride = (L+1) * 2*L;
+        ssht = ssht_core_mw_lb_forward_sov_conv_sym_ss;
         break;
     default:
         SO3_ERROR_GENERIC("Invalid sampling scheme.");
@@ -291,23 +291,30 @@ void so3_core_forward_via_ssht(
     fn = malloc((2*N-1)*fn_n_stride * sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
 
-    // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
-    // necessary but still good practice.
-    fftw_rank = 1;
-    fftw_n = 2*N-1;
-    fftw_howmany = fn_n_stride;
-    fftw_idist = fftw_odist = 1;
-    fftw_istride = fftw_ostride = fn_n_stride;
+    if (steerable)
+    {
+        // magic
+    }
+    else
+    {
+        // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
+        // necessary but still good practice.
+        fftw_rank = 1;
+        fftw_n = 2*N-1;
+        fftw_howmany = fn_n_stride;
+        fftw_idist = fftw_odist = 1;
+        fftw_istride = fftw_ostride = fn_n_stride;
 
-    plan = fftw_plan_many_dft(
-            fftw_rank, &fftw_n, fftw_howmany,
-            ftemp, NULL, fftw_istride, fftw_idist,
-            fn, NULL, fftw_ostride, fftw_odist,
-            FFTW_FORWARD, FFTW_ESTIMATE
-    );
+        plan = fftw_plan_many_dft(
+                fftw_rank, &fftw_n, fftw_howmany,
+                ftemp, NULL, fftw_istride, fftw_idist,
+                fn, NULL, fftw_ostride, fftw_odist,
+                FFTW_FORWARD, FFTW_ESTIMATE
+        );
 
-    fftw_execute(plan);
-    fftw_destroy_plan(plan);
+        fftw_execute(plan);
+        fftw_destroy_plan(plan);
+    }
 
     free(ftemp);
 
@@ -334,66 +341,36 @@ void so3_core_forward_via_ssht(
         // are stored in n-order 0, 1, 2, -2, -1
         offset = (n < 0 ? n + 2*N-1 : n);
 
+        complex double *flm_block;
+        complex double *fn_block = fn + offset*fn_n_stride;
+
+        el = L0e;
         switch (storage)
         {
         case SO3_STORAGE_PADDED:
             so3_sampling_elmn2ind(&ind, 0, 0, n, parameters);
-            switch (sampling)
-            {
-            case SO3_SAMPLING_MW:
-                ssht_core_mw_lb_forward_sov_conv_sym(
-                    flmn + ind, fn + offset*fn_n_stride,
-                    L0e, L, -n,
-                    dl_method,
-                    verbosity
-                );
-                break;
-            case SO3_SAMPLING_MW_SS:
-                ssht_core_mw_lb_forward_sov_conv_sym_ss(
-                    flmn + ind, fn + offset*fn_n_stride,
-                    L0e, L, -n,
-                    dl_method,
-                    verbosity
-                );
-                break;
-            default:
-                SO3_ERROR_GENERIC("Invalid sampling scheme.");
-            }
-
-            el = L0e;
+            flm_block = flmn + ind;
             i = offset = el*el;
             break;
         case SO3_STORAGE_COMPACT:
-            switch (sampling)
-            {
-            case SO3_SAMPLING_MW:
-                ssht_core_mw_lb_forward_sov_conv_sym(
-                    flm, fn + offset*fn_n_stride,
-                    L0e, L, -n,
-                    dl_method,
-                    verbosity
-                );
-                break;
-            case SO3_SAMPLING_MW_SS:
-                ssht_core_mw_lb_forward_sov_conv_sym_ss(
-                    flm, fn + offset*fn_n_stride,
-                    L0e, L, -n,
-                    dl_method,
-                    verbosity
-                );
-                break;
-            default:
-                SO3_ERROR_GENERIC("Invalid sampling scheme.");
-            }
-
-            so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, parameters);
-            memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
-
-            el = L0e;
+            flm_block = flm;
             i = offset = el*el-n*n;
             break;
         default:
             SO3_ERROR_GENERIC("Invalid storage method.");
+        }
+
+        (*ssht)(
+            flm_block, fn_block,
+            L0e, L, -n,
+            dl_method,
+            verbosity
+        );
+
+        if (storage == SO3_STORAGE_COMPACT)
+        {
+            so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, parameters);
+            memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
         }
 
         if (n % 2)
@@ -463,6 +440,9 @@ void so3_core_inverse_via_ssht_real(
     int fftw_n;
     fftw_plan plan;
 
+    inverse_complex_ssht complex_ssht;
+    inverse_real_ssht real_ssht;
+
     L0 = parameters->L0;
     L = parameters->L;
     N = parameters->N;
@@ -482,19 +462,23 @@ void so3_core_inverse_via_ssht_real(
                     , storage);
     }
 
-    // Compute fn(a,b)
-
     switch (sampling)
     {
     case SO3_SAMPLING_MW:
         fn_n_stride = L * (2*L-1);
+        complex_ssht = ssht_core_mw_lb_inverse_sov_sym;
+        real_ssht = ssht_core_mw_lb_inverse_sov_sym_real;
         break;
     case SO3_SAMPLING_MW_SS:
         fn_n_stride = (L+1) * 2*L;
+        complex_ssht = ssht_core_mw_lb_inverse_sov_sym_ss;
+        real_ssht = ssht_core_mw_lb_inverse_sov_sym_ss_real;
         break;
     default:
         SO3_ERROR_GENERIC("Invalid sampling scheme.");
     }
+
+    // Compute fn(a,b)
 
     // Only need to store for non-negative n
     fn = calloc(N*fn_n_stride, sizeof *fn);
@@ -562,27 +546,12 @@ void so3_core_inverse_via_ssht_real(
 
         if (N > 1 || n)
         {
-            switch (sampling)
-            {
-            case SO3_SAMPLING_MW:
-                ssht_core_mw_lb_inverse_sov_sym(
-                    fn + n*fn_n_stride, flm,
-                    L0e, L, -n,
-                    dl_method,
-                    verbosity
-                );
-                break;
-            case SO3_SAMPLING_MW_SS:
-                ssht_core_mw_lb_inverse_sov_sym_ss(
-                    fn + n*fn_n_stride, flm,
-                    L0e, L, -n,
-                    dl_method,
-                    verbosity
-                );
-                break;
-            default:
-                SO3_ERROR_GENERIC("Invalid sampling scheme.");
-            }
+            (*complex_ssht)(
+                fn + n*fn_n_stride, flm,
+                L0e, L, -n,
+                dl_method,
+                verbosity
+            );
         }
         else
         {
@@ -592,27 +561,12 @@ void so3_core_inverse_via_ssht_real(
             fn_r = calloc(fn_n_stride, sizeof *fn_r);
             SO3_ERROR_MEM_ALLOC_CHECK(fn_r);
 
-            switch (sampling)
-            {
-            case SO3_SAMPLING_MW:
-                ssht_core_mw_lb_inverse_sov_sym_real(
-                    fn_r, flm,
-                    L0e, L,
-                    dl_method,
-                    verbosity
-                );
-                break;
-            case SO3_SAMPLING_MW_SS:
-                ssht_core_mw_lb_inverse_sov_sym_ss_real(
-                    fn_r, flm,
-                    L0e, L,
-                    dl_method,
-                    verbosity
-                );
-                break;
-            default:
-                SO3_ERROR_GENERIC("Invalid sampling scheme.");
-            }
+            (*real_ssht)(
+                fn_r, flm,
+                L0e, L,
+                dl_method,
+                verbosity
+            );
 
             for (i = 0; i < fn_n_stride; ++i)
                 fn[i] = fn_r[i];
@@ -679,6 +633,9 @@ void so3_core_forward_via_ssht_real(
     int fftw_n;
     fftw_plan plan;
 
+    forward_complex_ssht complex_ssht;
+    forward_real_ssht real_ssht;
+
     // for precomputation
     double factor;
 
@@ -705,9 +662,13 @@ void so3_core_forward_via_ssht_real(
     {
     case SO3_SAMPLING_MW:
         fn_n_stride = L * (2*L-1);
+        complex_ssht = ssht_core_mw_lb_forward_sov_conv_sym;
+        real_ssht = ssht_core_mw_lb_forward_sov_conv_sym_real;
         break;
     case SO3_SAMPLING_MW_SS:
         fn_n_stride = (L+1) * 2*L;
+        complex_ssht = ssht_core_mw_lb_forward_sov_conv_sym_ss;
+        real_ssht = ssht_core_mw_lb_forward_sov_conv_sym_ss_real;
         break;
     default:
         SO3_ERROR_GENERIC("Invalid sampling scheme.");
@@ -756,6 +717,8 @@ void so3_core_forward_via_ssht_real(
         int ind, offset, el, sign;
         int L0e = MAX(L0, abs(n)); // 'e' for 'effective'
 
+        complex double *flm_block;
+
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
             || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1)
@@ -763,67 +726,40 @@ void so3_core_forward_via_ssht_real(
             continue;
         }
 
+
+        el = L0e;
+        switch (storage)
+        {
+        case SO3_STORAGE_PADDED:
+            so3_sampling_elmn2ind_real(&ind, 0, 0, n, parameters);
+            flm_block = flmn + ind;
+
+            i = offset = el*el;
+            break;
+        case SO3_STORAGE_COMPACT:
+            flm_block = flm;
+
+            i = offset = el*el - n*n;
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid storage method.");
+        }
+
+
         if (N > 1 || n)
         {
-            switch (storage)
-            {
-            case SO3_STORAGE_PADDED:
-                so3_sampling_elmn2ind_real(&ind, 0, 0, n, parameters);
-                switch (sampling)
-                {
-                case SO3_SAMPLING_MW:
-                    ssht_core_mw_lb_forward_sov_conv_sym(
-                        flmn + ind, fn + n*fn_n_stride,
-                        L0e, L, -n,
-                        dl_method,
-                        verbosity
-                    );
-                    break;
-                case SO3_SAMPLING_MW_SS:
-                    ssht_core_mw_lb_forward_sov_conv_sym_ss(
-                        flmn + ind, fn + n*fn_n_stride,
-                        L0e, L, -n,
-                        dl_method,
-                        verbosity
-                    );
-                    break;
-                default:
-                    SO3_ERROR_GENERIC("Invalid sampling scheme.");
-                }
 
-                el = L0e;
-                i = offset = el*el;
-                break;
-            case SO3_STORAGE_COMPACT:
-                switch (sampling)
-                {
-                case SO3_SAMPLING_MW:
-                    ssht_core_mw_lb_forward_sov_conv_sym(
-                        flm, fn + n*fn_n_stride,
-                        L0e, L, -n,
-                        dl_method,
-                        verbosity
-                    );
-                    break;
-                case SO3_SAMPLING_MW_SS:
-                    ssht_core_mw_lb_forward_sov_conv_sym_ss(
-                        flm, fn + n*fn_n_stride,
-                        L0e, L, -n,
-                        dl_method,
-                        verbosity
-                    );
-                    break;
-                default:
-                    SO3_ERROR_GENERIC("Invalid sampling scheme.");
-                }
+            (*complex_ssht)(
+                flm_block, fn + n*fn_n_stride,
+                L0e, L, -n,
+                dl_method,
+                verbosity
+            );
+
+            if (storage == SO3_STORAGE_COMPACT)
+            {
                 so3_sampling_elmn2ind_real(&ind, n, -n, n, parameters);
                 memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
-
-                el = L0e;
-                i = offset = el*el-n*n;
-                break;
-            default:
-                SO3_ERROR_GENERIC("Invalid storage method.");
             }
         }
         else
@@ -840,59 +776,23 @@ void so3_core_forward_via_ssht_real(
             switch (storage)
             {
             case SO3_STORAGE_PADDED:
-                so3_sampling_elmn2ind_real(&ind, 0, 0, 0, parameters);
-                switch (sampling)
-                {
-                case SO3_SAMPLING_MW:
-                    ssht_core_mw_lb_forward_sov_conv_sym_real(
-                        flmn + ind, fn_r,
-                        L0e, L,
-                        dl_method,
-                        verbosity
-                    );
-                    break;
-                case SO3_SAMPLING_MW_SS:
-                    ssht_core_mw_lb_forward_sov_conv_sym_ss_real(
-                        flmn + ind, fn_r,
-                        L0e, L,
-                        dl_method,
-                        verbosity
-                    );
-                    break;
-                default:
-                    SO3_ERROR_GENERIC("Invalid sampling scheme.");
-                }
-
-                el = L0e;
-                i = offset = el*el;
+                (*real_ssht)(
+                    flm_block, fn_r,
+                    L0e, L,
+                    dl_method,
+                    verbosity
+                );
                 break;
             case SO3_STORAGE_COMPACT:
-                switch (sampling)
-                {
-                case SO3_SAMPLING_MW:
-                    ssht_core_mw_lb_forward_sov_conv_sym_real(
-                        flm, fn_r,
-                        L0e, L,
-                        dl_method,
-                        verbosity
-                    );
-                    break;
-                case SO3_SAMPLING_MW_SS:
-                    ssht_core_mw_lb_forward_sov_conv_sym_ss_real(
-                        flm, fn_r,
-                        L0e, L,
-                        dl_method,
-                        verbosity
-                    );
-                    break;
-                default:
-                    SO3_ERROR_GENERIC("Invalid sampling scheme.");
-                }
+                (*real_ssht)(
+                    flm_block, fn_r,
+                    L0e, L,
+                    dl_method,
+                    verbosity
+                );
+
                 so3_sampling_elmn2ind_real(&ind, n, -n, n, parameters);
                 memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
-
-                el = L0e;
-                i = offset = el*el-n*n;
                 break;
             default:
                 SO3_ERROR_GENERIC("Invalid storage method.");
