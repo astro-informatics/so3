@@ -717,6 +717,8 @@ void so3_core_forward_via_ssht_real(
         int ind, offset, el, sign;
         int L0e = MAX(L0, abs(n)); // 'e' for 'effective'
 
+        complex double* flm_block;
+
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
             || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1)
@@ -724,84 +726,63 @@ void so3_core_forward_via_ssht_real(
             continue;
         }
 
-        if (N > 1 || n)
+        el = L0e;
+        i = offset = el*el;
+        switch (storage)
         {
-            switch (storage)
-            {
-            case SO3_STORAGE_PADDED:
-                so3_sampling_elmn2ind_real(&ind, 0, 0, n, parameters);
-                (*complex_ssht)(
-                    flmn + ind, fn + n*fn_n_stride,
-                    L0e, L, -n,
-                    dl_method,
-                    verbosity
-                );
+        case SO3_STORAGE_PADDED:
+            so3_sampling_elmn2ind_real(&ind, 0, 0, n, parameters);
+            flm_block = flmn + ind;
+            break;
+        case SO3_STORAGE_COMPACT:
+            flm_block = flm;
 
-                el = L0e;
-                i = offset = el*el;
-                break;
-            case SO3_STORAGE_COMPACT:
-                (*complex_ssht)(
-                    flm, fn + n*fn_n_stride,
-                    L0e, L, -n,
-                    dl_method,
-                    verbosity
-                );
+            offset -= n*n;
+            i = offset;
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid storage method.");
+        }
 
-                so3_sampling_elmn2ind_real(&ind, n, -n, n, parameters);
-                memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
 
-                el = L0e;
-                i = offset = el*el-n*n;
-                break;
-            default:
-                SO3_ERROR_GENERIC("Invalid storage method.");
-            }
+        if (N > 1)
+        {
+            (*complex_ssht)(
+                flm_block, fn + n*fn_n_stride,
+                L0e, L, -n,
+                dl_method,
+                verbosity
+            );
         }
         else
         {
+            // Now we know n = 0 in which case the reality conditions
+            // for SO3 and SSHT coincide.
+            int j;
             double *fn_r;
 
             // Create an array of real doubles for n = 0
             fn_r = malloc(fn_n_stride * sizeof *fn_r);
             SO3_ERROR_MEM_ALLOC_CHECK(fn_r);
-            for (i = 0; i < fn_n_stride; ++i)
-                fn_r[i] = creal(fn[i]);
+            for (j = 0; j < fn_n_stride; ++j)
+                fn_r[j] = creal(fn[j]);
 
             // Now use real SSHT transforms
-            switch (storage)
-            {
-            case SO3_STORAGE_PADDED:
-                so3_sampling_elmn2ind_real(&ind, 0, 0, 0, parameters);
-                (*real_ssht)(
-                    flmn + ind, fn_r,
-                    L0e, L,
-                    dl_method,
-                    verbosity
-                );
+            (*real_ssht)(
+                flm_block, fn_r,
+                L0e, L,
+                dl_method,
+                verbosity
+            );
 
-                el = L0e;
-                i = offset = el*el;
-                break;
-            case SO3_STORAGE_COMPACT:
-                (*real_ssht)(
-                    flm, fn_r,
-                    L0e, L,
-                    dl_method,
-                    verbosity
-                );
-
-                so3_sampling_elmn2ind_real(&ind, n, -n, n, parameters);
-                memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
-
-                el = L0e;
-                i = offset = el*el-n*n;
-                break;
-            default:
-                SO3_ERROR_GENERIC("Invalid storage method.");
-            }
+            free(fn_r);
         }
 
+        if (storage == SO3_STORAGE_COMPACT)
+        {
+            so3_sampling_elmn2ind_real(&ind, n, -n, n, parameters);
+            memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
+        }
 
         if (n % 2)
             sign = -1;
