@@ -717,8 +717,6 @@ void so3_core_forward_via_ssht_real(
         int ind, offset, el, sign;
         int L0e = MAX(L0, abs(n)); // 'e' for 'effective'
 
-        complex double *flm_block;
-
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
             || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1)
@@ -726,40 +724,38 @@ void so3_core_forward_via_ssht_real(
             continue;
         }
 
-
-        el = L0e;
-        switch (storage)
-        {
-        case SO3_STORAGE_PADDED:
-            so3_sampling_elmn2ind_real(&ind, 0, 0, n, parameters);
-            flm_block = flmn + ind;
-
-            i = offset = el*el;
-            break;
-        case SO3_STORAGE_COMPACT:
-            flm_block = flm;
-
-            i = offset = el*el - n*n;
-            break;
-        default:
-            SO3_ERROR_GENERIC("Invalid storage method.");
-        }
-
-
         if (N > 1 || n)
         {
-
-            (*complex_ssht)(
-                flm_block, fn + n*fn_n_stride,
-                L0e, L, -n,
-                dl_method,
-                verbosity
-            );
-
-            if (storage == SO3_STORAGE_COMPACT)
+            switch (storage)
             {
+            case SO3_STORAGE_PADDED:
+                so3_sampling_elmn2ind_real(&ind, 0, 0, n, parameters);
+                (*complex_ssht)(
+                    flmn + ind, fn + n*fn_n_stride,
+                    L0e, L, -n,
+                    dl_method,
+                    verbosity
+                );
+
+                el = L0e;
+                i = offset = el*el;
+                break;
+            case SO3_STORAGE_COMPACT:
+                (*complex_ssht)(
+                    flm, fn + n*fn_n_stride,
+                    L0e, L, -n,
+                    dl_method,
+                    verbosity
+                );
+
                 so3_sampling_elmn2ind_real(&ind, n, -n, n, parameters);
                 memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
+
+                el = L0e;
+                i = offset = el*el-n*n;
+                break;
+            default:
+                SO3_ERROR_GENERIC("Invalid storage method.");
             }
         }
         else
@@ -776,16 +772,20 @@ void so3_core_forward_via_ssht_real(
             switch (storage)
             {
             case SO3_STORAGE_PADDED:
+                so3_sampling_elmn2ind_real(&ind, 0, 0, 0, parameters);
                 (*real_ssht)(
-                    flm_block, fn_r,
+                    flmn + ind, fn_r,
                     L0e, L,
                     dl_method,
                     verbosity
                 );
+
+                el = L0e;
+                i = offset = el*el;
                 break;
             case SO3_STORAGE_COMPACT:
                 (*real_ssht)(
-                    flm_block, fn_r,
+                    flm, fn_r,
                     L0e, L,
                     dl_method,
                     verbosity
@@ -793,6 +793,9 @@ void so3_core_forward_via_ssht_real(
 
                 so3_sampling_elmn2ind_real(&ind, n, -n, n, parameters);
                 memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
+
+                el = L0e;
+                i = offset = el*el-n*n;
                 break;
             default:
                 SO3_ERROR_GENERIC("Invalid storage method.");
