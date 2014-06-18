@@ -123,7 +123,7 @@ void so3_core_inverse_via_ssht(
             fftw_rank, &fftw_n, fftw_howmany,
             fn, NULL, fftw_istride, fftw_idist,
             f, NULL, fftw_ostride, fftw_odist,
-            FFTW_BACKWARD, FFTW_PATIENT
+            FFTW_BACKWARD, FFTW_ESTIMATE
     );
 
     for(n = -N+1; n <= N-1; ++n)
@@ -133,15 +133,15 @@ void so3_core_inverse_via_ssht(
         double factor;
         complex double *flm;
 
-        flm = malloc(L*L * sizeof *flm);
-        SO3_ERROR_MEM_ALLOC_CHECK(flm);
-
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
             || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1)
         ) {
             continue;
         }
+
+        flm = malloc(L*L * sizeof *flm);
+        SO3_ERROR_MEM_ALLOC_CHECK(flm);
 
         switch (storage)
         {
@@ -336,7 +336,7 @@ void so3_core_forward_via_ssht(
                 fftw_rank, &fftw_n, fftw_howmany,
                 ftemp, NULL, fftw_istride, fftw_idist,
                 fn, NULL, fftw_ostride, fftw_odist,
-                FFTW_FORWARD, FFTW_PATIENT
+                FFTW_FORWARD, FFTW_ESTIMATE
         );
 
         fftw_execute(plan);
@@ -527,7 +527,7 @@ void so3_core_inverse_via_ssht_real(
             fftw_rank, &fftw_n, fftw_howmany,
             fn, NULL, fftw_istride, fftw_idist,
             f, NULL, fftw_ostride, fftw_odist,
-            FFTW_PATIENT
+            FFTW_ESTIMATE
     );
 
     flm = malloc(L*L * sizeof *flm);
@@ -726,7 +726,7 @@ void so3_core_forward_via_ssht_real(
             fftw_rank, &fftw_n, fftw_howmany,
             ftemp, NULL, fftw_istride, fftw_idist,
             fn, NULL, fftw_ostride, fftw_odist,
-            FFTW_PATIENT
+            FFTW_ESTIMATE
     );
 
     fftw_execute(plan);

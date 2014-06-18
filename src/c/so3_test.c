@@ -133,25 +133,25 @@ int main(int argc, char **argv)
 
     // real == 0 --> complex signal
     // real == 1 --> real signal
-    for (real = 0; real < 1; ++real)
+    for (real = 0; real < 2; ++real)
     {
         parameters.reality = real;
 
-        for (sampling_scheme = 0; sampling_scheme < SO3_SAMPLING_SIZE-1; ++sampling_scheme)
+        for (sampling_scheme = 0; sampling_scheme < SO3_SAMPLING_SIZE; ++sampling_scheme)
         {
             parameters.sampling_scheme = sampling_scheme;
 
             // For real signals, the n_order does not matter, so skip the second option
             // in that case.
-            for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real-1; ++n_order)
+            for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
             {
                 parameters.n_order = n_order;
 
-                for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE-1; ++storage_mode)
+                for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
                 {
                     parameters.storage = storage_mode;
 
-                    for (n_mode = 0; n_mode < SO3_N_MODE_SIZE-3; ++ n_mode)
+                    for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                     {
                         parameters.n_mode = n_mode;
 
@@ -446,86 +446,6 @@ void so3_test_gen_flmn_real(
                     so3_sampling_elmn2ind_real(&ind, el, m, n, parameters);
                     flmn[ind] = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
                 }
-            }
-        }
-    }
-}
-
-/*!
- * Generate random Wigner coefficients of a steerable complex signal.
- *
- * \param[out] flmn Random spherical harmonic coefficients generated. Provide
- *                  enough memory for fully padded storage, i.e. (2*N-1)*L*L
- *                  elements. Unused trailing elements will be set to zero.
- * \param[in]  parameters A parameters object with (at least) the following fields:
- *                        L0, L, N, storage, n_mode
- *                        The reality flag is ignored. Use so3_test_gen_steerable_flmn_real
- *                        instead for real signals.
- * \param[in] seed Integer seed required for random number generator.
- * \retval none
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-void so3_test_gen_steerable_flmn_complex(
-    complex double *flmn,
-    const so3_parameters_t *parameters,
-    int seed)
-{
-    int L0, L, N;
-    int i, el, m, n, n_start, n_stop, n_inc, ind;
-
-    complex double* flm;
-
-    L0 = parameters->L0;
-    L = parameters->L;
-    N = parameters->N;
-
-    // Generate random flm
-    flm = calloc(L*L, sizeof *flm);
-    for (i = 0; i < L*L; ++i)
-        flm[i] = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
-
-    for (i = 0; i < (2*N-1)*L*L; ++i)
-        flmn[i] = 0.0;
-
-    switch (parameters->n_mode)
-    {
-    case SO3_N_MODE_ALL:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        n_inc = 1;
-        break;
-    case SO3_N_MODE_EVEN:
-        n_start = ((N-1) % 2 == 0) ? -N+1 : -N+2;
-        n_stop  = ((N-1) % 2 == 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_ODD:
-        n_start = ((N-1) % 2 != 0) ? -N+1 : -N+2;
-        n_stop  = ((N-1) % 2 != 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_MAXIMUM:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        if (N > 1)
-            n_inc = 2*N - 2;
-        else
-            n_inc = 1;
-        break;
-    default:
-        SO3_ERROR_GENERIC("Invalid n-mode.");
-    }
-
-    for (n = n_start; n <= n_stop; n += n_inc)
-    {
-        for (el = MAX(L0, abs(n)); el < L; ++el)
-        {
-            for (m = -el; m <= el; ++m)
-            {
-                so3_sampling_elmn2ind(&ind, el, m, n, parameters);
-                flmn[ind] = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
             }
         }
     }
