@@ -1,8 +1,8 @@
 # ======== COMPILER ========
 
 CC	= gcc-4.4
-OPT	= -Wall -O3 -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
-#OPT	= -Wall -g -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
+#OPT	= -Wall -O3 -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
+OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
 
 
 # ======== LINKS ========

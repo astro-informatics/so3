@@ -178,6 +178,11 @@ typedef struct {
      * \var ssht_dl_method_t dl_method
      */
     ssht_dl_method_t dl_method;
+
+    /*!
+     * A non-zero value indicates that the signal is steerable.
+     */
+    int steerable;
 } so3_parameters_t;
 
 #endif

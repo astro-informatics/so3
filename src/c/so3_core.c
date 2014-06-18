@@ -16,6 +16,7 @@
 #include <math.h>
 #include <complex.h>  // Must be before fftw3.h
 #include <fftw3.h>
+#include <omp.h>
 
 #include "ssht.h"
 
@@ -59,7 +60,7 @@ void so3_core_inverse_via_ssht(
     // Iterator
     int n;
     // Intermediate results
-    complex double *fn, *flm;
+    complex double *fn;
     // Stride for several arrays
     int fn_n_stride;
     // FFTW-related variables
@@ -126,14 +127,16 @@ void so3_core_inverse_via_ssht(
             FFTW_BACKWARD, FFTW_ESTIMATE
     );
 
-    flm = malloc(L*L * sizeof *flm);
-    SO3_ERROR_MEM_ALLOC_CHECK(flm);
-
+    #pragma omp parallel for
     for(n = -N+1; n <= N-1; ++n)
     {
         int ind, offset, i, el;
         int L0e = MAX(L0, abs(n)); // 'e' for 'effective'
         double factor;
+        complex double *flm;
+
+        flm = malloc(L*L * sizeof *flm);
+        SO3_ERROR_MEM_ALLOC_CHECK(flm);
 
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
@@ -186,9 +189,10 @@ void so3_core_inverse_via_ssht(
 
         if (verbosity > 0)
             printf("\n");
+
+        free(flm);
     }
 
-    free(flm);
 
     fftw_execute(plan);
     fftw_destroy_plan(plan);
@@ -231,7 +235,7 @@ void so3_core_forward_via_ssht(
     // Iterator
     int i, n;
     // Intermediate results
-    complex double *ftemp, *flm, *fn;
+    complex double *ftemp, *fn;
     // Stride for several arrays
     int fn_n_stride;
     // FFTW-related variables
@@ -254,8 +258,7 @@ void so3_core_forward_via_ssht(
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
     verbosity = parameters->verbosity;
-    //steerable = parameters->steerable;
-    steerable = 0;
+    steerable = parameters->steerable;
 
     // Print messages depending on verbosity level.
     if (verbosity > 0) {
@@ -281,22 +284,48 @@ void so3_core_forward_via_ssht(
         SO3_ERROR_GENERIC("Invalid sampling scheme.");
     }
 
-    // Make a copy of the input, because input is const
-    // This could potentially be avoided by copying the input into fn and using an
-    // in-place FFTW. The performance impact has to be profiled, though.
-    ftemp = malloc((2*N-1)*fn_n_stride * sizeof *ftemp);
-    SO3_ERROR_MEM_ALLOC_CHECK(ftemp);
-    memcpy(ftemp, f, (2*N-1)*fn_n_stride * sizeof(complex double));
-
-    fn = malloc((2*N-1)*fn_n_stride * sizeof *fn);
-    SO3_ERROR_MEM_ALLOC_CHECK(fn);
-
     if (steerable)
     {
-        // magic
+        int g, offset;
+
+        fn = calloc((2*N-1)*fn_n_stride, sizeof *fn);
+        SO3_ERROR_MEM_ALLOC_CHECK(fn);
+
+        for (n = -N+1; n < N; n+=2)
+        {
+            // The conditional applies the spatial transform, because the fn
+            // are to be stored in n-order 0, 1, 2, -2, -1
+            offset = (n < 0 ? n + 2*N-1 : n);
+
+            for (g = 0; g < 2*N-1; ++g)
+            {
+                double gamma = 2.0 * g * SO3_PI / (2.0*N - 1.0);
+                if (n == -N+1)
+                {
+                    printf("g:        %d\n", g);
+                    printf("gamma:    %f\n", gamma);
+                    printf("f(gamma): %f + %f*I\n", creal(f[g*fn_n_stride+1]), cimag(f[g*fn_n_stride+1]));
+                }
+                for (i = 0; i < fn_n_stride; ++i)
+                {
+                    double weight = 0 ? 2*SO3_PI/N : 2*SO3_PI/(2*N-1);
+                    fn[offset * fn_n_stride + i] += weight*f[g * fn_n_stride + i]*cexp(-I*n*gamma);
+                }
+            }
+        }
     }
     else
     {
+        // Make a copy of the input, because input is const
+        // This could potentially be avoided by copying the input into fn and using an
+        // in-place FFTW. The performance impact has to be profiled, though.
+        ftemp = malloc((2*N-1)*fn_n_stride * sizeof *ftemp);
+        SO3_ERROR_MEM_ALLOC_CHECK(ftemp);
+        memcpy(ftemp, f, (2*N-1)*fn_n_stride * sizeof(complex double));
+
+        fn = malloc((2*N-1)*fn_n_stride * sizeof *fn);
+        SO3_ERROR_MEM_ALLOC_CHECK(fn);
+
         // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
         // necessary but still good practice.
         fftw_rank = 1;
@@ -314,21 +343,21 @@ void so3_core_forward_via_ssht(
 
         fftw_execute(plan);
         fftw_destroy_plan(plan);
+
+        free(ftemp);
+
+        factor = 2*SO3_PI/(double)(2*N-1);
+        for(i = 0; i < (2*N-1)*fn_n_stride; ++i)
+            fn[i] *= factor;
     }
 
-    free(ftemp);
-
-    factor = 2*SO3_PI/(double)(2*N-1);
-    for(i = 0; i < (2*N-1)*fn_n_stride; ++i)
-        fn[i] *= factor;
-
-    if (storage == SO3_STORAGE_COMPACT)
-        flm = malloc(L*L * sizeof *flm);
-
+    #pragma omp parallel for private(i,factor)
     for(n = -N+1; n <= N-1; ++n)
     {
         int ind, offset, el, sign;
         int L0e = MAX(L0, abs(n)); // 'e' for 'effective'
+
+        complex double *flm;
 
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
@@ -336,6 +365,9 @@ void so3_core_forward_via_ssht(
         ) {
             continue;
         }
+
+        if (storage == SO3_STORAGE_COMPACT)
+            flm = malloc(L*L * sizeof *flm);
 
         // The conditional applies the spatial transform, because the fn
         // are stored in n-order 0, 1, 2, -2, -1
@@ -387,12 +419,12 @@ void so3_core_forward_via_ssht(
             offset = i;
         }
 
+        if (storage == SO3_STORAGE_COMPACT)
+            free(flm);
+
         if (verbosity > 0)
             printf("\n");
     }
-
-    if (storage == SO3_STORAGE_COMPACT)
-        free(flm);
 
     free(fn);
 
