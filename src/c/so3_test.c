@@ -28,6 +28,8 @@
 #include <stdlib.h>
 #include <complex.h>
 #include <time.h>
+#include <fftw3.h>
+#include <omp.h>
 
 #include <so3.h>
 
@@ -80,6 +82,11 @@ int main(int argc, char **argv)
     double errors[SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
     double durations_forward[SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
     double durations_inverse[SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
+
+    fftw_init_threads();
+    int nthreads = omp_get_max_threads();
+    printf("Using %d threads.\n", nthreads);
+    fftw_plan_with_nthreads(nthreads);
 
     // Parse command line arguments
     L = N = 16;
@@ -136,15 +143,15 @@ int main(int argc, char **argv)
 
             // For real signals, the n_order does not matter, so skip the second option
             // in that case.
-            for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
+            for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real-1; ++n_order)
             {
                 parameters.n_order = n_order;
 
-                for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
+                for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE-1; ++storage_mode)
                 {
                     parameters.storage = storage_mode;
 
-                    for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
+                    for (n_mode = 0; n_mode < SO3_N_MODE_SIZE-3; ++ n_mode)
                     {
                         parameters.n_mode = n_mode;
 

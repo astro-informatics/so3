@@ -16,7 +16,6 @@
 #include <math.h>
 #include <complex.h>  // Must be before fftw3.h
 #include <fftw3.h>
-#include <omp.h>
 
 #include "ssht.h"
 
@@ -124,10 +123,9 @@ void so3_core_inverse_via_ssht(
             fftw_rank, &fftw_n, fftw_howmany,
             fn, NULL, fftw_istride, fftw_idist,
             f, NULL, fftw_ostride, fftw_odist,
-            FFTW_BACKWARD, FFTW_ESTIMATE
+            FFTW_BACKWARD, FFTW_PATIENT
     );
 
-    #pragma omp parallel for
     for(n = -N+1; n <= N-1; ++n)
     {
         int ind, offset, i, el;
@@ -338,7 +336,7 @@ void so3_core_forward_via_ssht(
                 fftw_rank, &fftw_n, fftw_howmany,
                 ftemp, NULL, fftw_istride, fftw_idist,
                 fn, NULL, fftw_ostride, fftw_odist,
-                FFTW_FORWARD, FFTW_ESTIMATE
+                FFTW_FORWARD, FFTW_PATIENT
         );
 
         fftw_execute(plan);
@@ -351,13 +349,12 @@ void so3_core_forward_via_ssht(
             fn[i] *= factor;
     }
 
-    #pragma omp parallel for private(i,factor)
     for(n = -N+1; n <= N-1; ++n)
     {
         int ind, offset, el, sign;
         int L0e = MAX(L0, abs(n)); // 'e' for 'effective'
 
-        complex double *flm;
+        complex double *flm = NULL;
 
         if ((n_mode == SO3_N_MODE_EVEN && n % 2)
             || (n_mode == SO3_N_MODE_ODD && !(n % 2))
@@ -530,7 +527,7 @@ void so3_core_inverse_via_ssht_real(
             fftw_rank, &fftw_n, fftw_howmany,
             fn, NULL, fftw_istride, fftw_idist,
             f, NULL, fftw_ostride, fftw_odist,
-            FFTW_ESTIMATE
+            FFTW_PATIENT
     );
 
     flm = malloc(L*L * sizeof *flm);
@@ -655,7 +652,7 @@ void so3_core_forward_via_ssht_real(
     int i, n;
     // Intermediate results
     double *ftemp;
-    complex double *flm, *fn;
+    complex double *flm = NULL, *fn;
     // Stride for several arrays
     int fn_n_stride;
     // FFTW-related variables
@@ -729,7 +726,7 @@ void so3_core_forward_via_ssht_real(
             fftw_rank, &fftw_n, fftw_howmany,
             ftemp, NULL, fftw_istride, fftw_idist,
             fn, NULL, fftw_ostride, fftw_odist,
-            FFTW_ESTIMATE
+            FFTW_PATIENT
     );
 
     fftw_execute(plan);
