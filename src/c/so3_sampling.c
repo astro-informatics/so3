@@ -8,6 +8,10 @@
 #include "so3_error.h"
 #include "so3_types.h"
 
+int so3_sampling_nalpha(const so3_parameters_t *);
+int so3_sampling_nbeta(const so3_parameters_t *);
+int so3_sampling_ngamma(const so3_parameters_t *);
+
 //============================================================================
 // Sampling relations for all supported sampling schemes
 //============================================================================
@@ -41,16 +45,9 @@ int so3_sampling_f_size(const so3_parameters_t *parameters)
     L = parameters->L;
     N = parameters->N;
 
-    // Are these actually correct?
-    switch (parameters->sampling_scheme)
-    {
-    case SO3_SAMPLING_MW:
-        return (2*L-1)*(L)*(2*N-1);
-    case SO3_SAMPLING_MW_SS:
-        return (2*L)*(L+1)*(2*N-1);
-    default:
-        SO3_ERROR_GENERIC("Invalid sampling scheme.");
-    }
+    return so3_sampling_nalpha(parameters) *
+           so3_sampling_nbeta(parameters) *
+           so3_sampling_ngamma(parameters);
 }
 
 /*!
@@ -84,9 +81,9 @@ int so3_sampling_n(const so3_parameters_t *parameters)
     switch (parameters->sampling_scheme)
     {
     case SO3_SAMPLING_MW:
-        return ((2*L-1)*(L-1) + 1)*(2*N-1);
+        return ((2*L-1)*(L-1) + 1)*so3_sampling_ngamma(parameters);
     case SO3_SAMPLING_MW_SS:
-        return ((2*L)*(L-1) + 2)*(2*N-1);
+        return ((2*L)*(L-1) + 2)*so3_sampling_ngamma(parameters);
     default:
         SO3_ERROR_GENERIC("Invalid sampling scheme.");
     }
@@ -164,17 +161,10 @@ int so3_sampling_ngamma(const so3_parameters_t *parameters)
     int N;
     N = parameters->N;
 
-    // As long as we don't introduce other sampling schemes with
-    // different ngamma, we could actually remove this switch
-    // statement.
-    switch (parameters->sampling_scheme)
-    {
-    case SO3_SAMPLING_MW:
-    case SO3_SAMPLING_MW_SS:
+    if (parameters->steerable)
+        return N;
+    else
         return 2*N-1;
-    default:
-        SO3_ERROR_GENERIC("Invalid sampling scheme.");
-    }
 }
 
 
@@ -262,17 +252,10 @@ double so3_sampling_g2gamma(int g, const so3_parameters_t *parameters)
     int N;
     N = parameters->N;
 
-    // As long as we don't introduce other sampling schemes with
-    // different gamma sampling, we could actually remove this switch
-    // statement.
-    switch (parameters->sampling_scheme)
-    {
-    case SO3_SAMPLING_MW:
-    case SO3_SAMPLING_MW_SS:
+    if (parameters->steerable)
+        return g * SO3_PI / N;
+    else
         return 2.0 * g * SO3_PI / (2.0*N - 1.0);
-    default:
-        SO3_ERROR_GENERIC("Invalid sampling scheme.");
-    }
 }
 
 //============================================================================

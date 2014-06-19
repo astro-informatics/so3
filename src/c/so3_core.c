@@ -54,12 +54,13 @@ void so3_core_inverse_via_ssht(
     so3_storage_t storage;
     so3_n_mode_t n_mode;
     ssht_dl_method_t dl_method;
+    int steerable;
     int verbosity;
 
     // Iterator
     int n;
     // Intermediate results
-    complex double *fn;
+    complex double *fn, *ftemp;
     // Stride for several arrays
     int fn_n_stride;
     // FFTW-related variables
@@ -67,6 +68,7 @@ void so3_core_inverse_via_ssht(
     int fftw_idist, fftw_odist;
     int fftw_istride, fftw_ostride;
     int fftw_n;
+    complex double *fftw_target;
     fftw_plan plan;
 
     inverse_complex_ssht ssht;
@@ -79,6 +81,7 @@ void so3_core_inverse_via_ssht(
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
     verbosity = parameters->verbosity;
+    steerable = parameters->steerable;
 
     // Print messages depending on verbosity level.
     if (verbosity > 0) {
@@ -106,13 +109,34 @@ void so3_core_inverse_via_ssht(
 
     // Compute fn(a,b)
 
-    fn = calloc((2*N-1)*fn_n_stride, sizeof *fn);
+    if (steerable)
+    {
+        // For steerable signals, we need to supersample in n/gamma,
+        // in order to create a symmetric sampling.
+        fftw_n = 2*N; // Each transform is over 2*N
+
+        // We need to perform the FFT into a temporary buffer, because
+        // the result will be twice as large as the output we need.
+        ftemp = malloc(2*N*fn_n_stride * sizeof *ftemp);
+        SO3_ERROR_MEM_ALLOC_CHECK(ftemp);
+
+        fftw_target = ftemp;
+    }
+    else
+    {
+        fftw_n = 2*N-1; // Each transform is over 2*N-1
+
+        fftw_target = f;
+    }
+
+    fn = calloc(fftw_n*fn_n_stride, sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
+
+
 
     // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
     // necessary but still good practice.
     fftw_rank = 1; // We compute 1d transforms
-    fftw_n = 2*N-1; // Each transform is over 2*N-1
     fftw_howmany = fn_n_stride; // We need L*(2*L-1) of these transforms
 
     // We want to transform columns
@@ -122,7 +146,7 @@ void so3_core_inverse_via_ssht(
     plan = fftw_plan_many_dft(
             fftw_rank, &fftw_n, fftw_howmany,
             fn, NULL, fftw_istride, fftw_idist,
-            f, NULL, fftw_ostride, fftw_odist,
+            fftw_target, NULL, fftw_ostride, fftw_odist,
             FFTW_BACKWARD, FFTW_ESTIMATE
     );
 
@@ -172,7 +196,7 @@ void so3_core_inverse_via_ssht(
 
         // The conditional applies the spatial transform, so that we store
         // the results in n-order 0, 1, 2, -2, -1
-        offset = (n < 0 ? n + 2*N-1 : n);
+        offset = (n < 0 ? n + fftw_n : n);
 
         (*ssht)(
             fn + offset*fn_n_stride, flm,
@@ -194,6 +218,12 @@ void so3_core_inverse_via_ssht(
 
     fftw_execute(plan);
     fftw_destroy_plan(plan);
+
+    if (steerable)
+    {
+        memcpy(f, ftemp, N*fn_n_stride * sizeof(complex double));
+        free(ftemp);
+    }
 
     free(fn);
 
@@ -295,18 +325,12 @@ void so3_core_forward_via_ssht(
             // are to be stored in n-order 0, 1, 2, -2, -1
             offset = (n < 0 ? n + 2*N-1 : n);
 
-            for (g = 0; g < 2*N-1; ++g)
+            for (g = 0; g < N; ++g)
             {
-                double gamma = 2.0 * g * SO3_PI / (2.0*N - 1.0);
-                if (n == -N+1)
-                {
-                    printf("g:        %d\n", g);
-                    printf("gamma:    %f\n", gamma);
-                    printf("f(gamma): %f + %f*I\n", creal(f[g*fn_n_stride+1]), cimag(f[g*fn_n_stride+1]));
-                }
+                double gamma = g * SO3_PI / N;
                 for (i = 0; i < fn_n_stride; ++i)
                 {
-                    double weight = 0 ? 2*SO3_PI/N : 2*SO3_PI/(2*N-1);
+                    double weight = 2*SO3_PI/N;
                     fn[offset * fn_n_stride + i] += weight*f[g * fn_n_stride + i]*cexp(-I*n*gamma);
                 }
             }
@@ -454,12 +478,14 @@ void so3_core_inverse_via_ssht_real(
     so3_storage_t storage;
     so3_n_mode_t n_mode;
     ssht_dl_method_t dl_method;
+    int steerable;
     int verbosity;
 
     // Iterator
     int n;
     // Intermediate results
     complex double *fn, *flm;
+    double *ftemp;
     // Stride for several arrays
     int fn_n_stride;
     // FFTW-related variables
@@ -467,6 +493,7 @@ void so3_core_inverse_via_ssht_real(
     int fftw_idist, fftw_odist;
     int fftw_istride, fftw_ostride;
     int fftw_n;
+    double *fftw_target;
     fftw_plan plan;
 
     inverse_complex_ssht complex_ssht;
@@ -480,6 +507,7 @@ void so3_core_inverse_via_ssht_real(
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
     verbosity = parameters->verbosity;
+    steerable = parameters->steerable;
 
     // Print messages depending on verbosity level.
     if (verbosity > 0) {
@@ -509,14 +537,36 @@ void so3_core_inverse_via_ssht_real(
 
     // Compute fn(a,b)
 
+    // For steerable signals, we need to supersample in n/gamma,
+    // in order to create a symmetric sampling.
+    // Each transform is over fftw_n samples (logically; physically, fn for negative n will be omitted)
+    if (steerable)
+    {
+        // For steerable signals, we need to supersample in n/gamma,
+        // in order to create a symmetric sampling.
+        fftw_n = 2*N;
+
+        // We need to perform the FFT into a temporary buffer, because
+        // the result will be twice as large as the output we need.
+        ftemp = malloc(2*N*fn_n_stride * sizeof *ftemp);
+        SO3_ERROR_MEM_ALLOC_CHECK(ftemp);
+
+        fftw_target = ftemp;
+    }
+    else
+    {
+        fftw_n = 2*N-1;
+
+        fftw_target = f;
+    }
+
     // Only need to store for non-negative n
-    fn = calloc(N*fn_n_stride, sizeof *fn);
+    fn = calloc((fftw_n/2+1)*fn_n_stride, sizeof *fn);
     SO3_ERROR_MEM_ALLOC_CHECK(fn);
 
     // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
     // necessary but still good practice.
     fftw_rank = 1; // We compute 1d transforms
-    fftw_n = 2*N-1; // Each transform is over 2*N-1 (logically; physically, fn for negative n will be omitted)
     fftw_howmany = fn_n_stride; // We need L*(2*L-1) of these transforms
 
     // We want to transform columns
@@ -526,7 +576,7 @@ void so3_core_inverse_via_ssht_real(
     plan = fftw_plan_many_dft_c2r(
             fftw_rank, &fftw_n, fftw_howmany,
             fn, NULL, fftw_istride, fftw_idist,
-            f, NULL, fftw_ostride, fftw_odist,
+            fftw_target, NULL, fftw_ostride, fftw_odist,
             FFTW_ESTIMATE
     );
 
@@ -615,6 +665,12 @@ void so3_core_inverse_via_ssht_real(
     fftw_execute(plan);
     fftw_destroy_plan(plan);
 
+    if (steerable)
+    {
+        memcpy(f, ftemp, N*fn_n_stride * sizeof *f);
+        free(ftemp);
+    }
+
     free(fn);
 
     if (verbosity > 0)
@@ -646,6 +702,7 @@ void so3_core_forward_via_ssht_real(
     so3_storage_t storage;
     so3_n_mode_t n_mode;
     ssht_dl_method_t dl_method;
+    int steerable;
     int verbosity;
 
     // Iterator
@@ -675,6 +732,7 @@ void so3_core_forward_via_ssht_real(
     storage = parameters->storage;
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
+    steerable = parameters->steerable;
     verbosity = parameters->verbosity;
 
     // Print messages depending on verbosity level.
@@ -703,40 +761,68 @@ void so3_core_forward_via_ssht_real(
         SO3_ERROR_GENERIC("Invalid sampling scheme.");
     }
 
-    // Make a copy of the input, because input is const
-    // This could potentially be avoided by copying the input into fn and using an
-    // in-place FFTW. The performance impact has to be profiled, though.
-    ftemp = malloc((2*N-1)*fn_n_stride * sizeof *ftemp);
-    SO3_ERROR_MEM_ALLOC_CHECK(ftemp);
-    memcpy(ftemp, f, (2*N-1)*fn_n_stride * sizeof(double));
 
-    fn = malloc(N*fn_n_stride * sizeof *fn);
-    SO3_ERROR_MEM_ALLOC_CHECK(fn);
-    // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
-    // necessary but still good practice.
-    fftw_rank = 1; // We compute 1d transforms
-    fftw_n = 2*N-1; // Each transform is over 2*N-1 (logically; physically, fn for negative n will be omitted)
-    fftw_howmany = fn_n_stride; // We need L*(2*L-1) of these transforms
+    if (steerable)
+    {
+        int g, offset;
 
-    // We want to transform columns
-    fftw_idist = fftw_odist = 1; // The starts of the columns are contiguous in memory
-    fftw_istride = fftw_ostride = fn_n_stride; // Distance between two elements of the same column
+        fn = calloc((2*N-1)*fn_n_stride, sizeof *fn);
+        SO3_ERROR_MEM_ALLOC_CHECK(fn);
 
-    plan = fftw_plan_many_dft_r2c(
-            fftw_rank, &fftw_n, fftw_howmany,
-            ftemp, NULL, fftw_istride, fftw_idist,
-            fn, NULL, fftw_ostride, fftw_odist,
-            FFTW_ESTIMATE
-    );
+        for (n = -N+1; n < N; n+=2)
+        {
+            // The conditional applies the spatial transform, because the fn
+            // are to be stored in n-order 0, 1, 2, -2, -1
+            offset = (n < 0 ? n + 2*N-1 : n);
 
-    fftw_execute(plan);
-    fftw_destroy_plan(plan);
+            for (g = 0; g < N; ++g)
+            {
+                double gamma = g * SO3_PI / N;
+                for (i = 0; i < fn_n_stride; ++i)
+                {
+                    double weight = 2*SO3_PI/N;
+                    fn[offset * fn_n_stride + i] += weight*f[g * fn_n_stride + i]*cexp(-I*n*gamma);
+                }
+            }
+        }
+    }
+    else
+    {
+        // Make a copy of the input, because input is const
+        // This could potentially be avoided by copying the input into fn and using an
+        // in-place FFTW. The performance impact has to be profiled, though.
+        ftemp = malloc((2*N-1)*fn_n_stride * sizeof *ftemp);
+        SO3_ERROR_MEM_ALLOC_CHECK(ftemp);
+        memcpy(ftemp, f, (2*N-1)*fn_n_stride * sizeof(double));
 
-    free(ftemp);
+        fn = malloc(N*fn_n_stride * sizeof *fn);
+        SO3_ERROR_MEM_ALLOC_CHECK(fn);
+        // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
+        // necessary but still good practice.
+        fftw_rank = 1; // We compute 1d transforms
+        fftw_n = 2*N-1; // Each transform is over 2*N-1 (logically; physically, fn for negative n will be omitted)
+        fftw_howmany = fn_n_stride; // We need L*(2*L-1) of these transforms
 
-    factor = 2*SO3_PI/(double)(2*N-1);
-    for(i = 0; i < N*fn_n_stride; ++i)
-        fn[i] *= factor;
+        // We want to transform columns
+        fftw_idist = fftw_odist = 1; // The starts of the columns are contiguous in memory
+        fftw_istride = fftw_ostride = fn_n_stride; // Distance between two elements of the same column
+
+        plan = fftw_plan_many_dft_r2c(
+                fftw_rank, &fftw_n, fftw_howmany,
+                ftemp, NULL, fftw_istride, fftw_idist,
+                fn, NULL, fftw_ostride, fftw_odist,
+                FFTW_ESTIMATE
+        );
+
+        fftw_execute(plan);
+        fftw_destroy_plan(plan);
+
+        free(ftemp);
+
+        factor = 2*SO3_PI/(double)(2*N-1);
+        for(i = 0; i < N*fn_n_stride; ++i)
+            fn[i] *= factor;
+    }
 
     if (storage == SO3_STORAGE_COMPACT)
         flm = malloc(L*L * sizeof *flm);
