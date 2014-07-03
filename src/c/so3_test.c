@@ -83,10 +83,10 @@ int main(int argc, char **argv)
     double durations_forward[SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
     double durations_inverse[SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
 
-    fftw_init_threads();
-    int nthreads = omp_get_max_threads();
-    printf("Using %d threads.\n", nthreads);
-    fftw_plan_with_nthreads(nthreads);
+    //fftw_init_threads();
+    //int nthreads = omp_get_max_threads();
+    //printf("Using %d threads.\n", nthreads);
+    //fftw_plan_with_nthreads(nthreads);
 
     // Parse command line arguments
     L = N = 16;
