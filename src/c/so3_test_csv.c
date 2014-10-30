@@ -198,7 +198,7 @@ int main(int argc, char **argv)
                 avg_error += get_max_error(flmn_orig, flmn_syn, flmn_size)/NREPEAT;
             }
 
-            printf("%d;%d;%d;%f;%f;%e\n",
+            printf("%d;%d;%d;%f;%f;%f;%f;%e\n",
                    real,
                    L,
                    N,
