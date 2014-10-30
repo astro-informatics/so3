@@ -72,6 +72,8 @@ int main(int argc, char **argv)
 
     double min_duration_inverse;
     double min_duration_forward;
+    double avg_duration_inverse;
+    double avg_duration_forward;
     double avg_error;
 
     n_order_str[SO3_N_ORDER_ZERO_FIRST] = "n = 0 first";
@@ -125,7 +127,7 @@ int main(int argc, char **argv)
     SO3_ERROR_MEM_ALLOC_CHECK(f_real);
 
     // Output header row
-    printf("reality;L;N;min_duration_inverse;min_duration_forward;avg_error\n");
+    printf("reality;L;N;avg_duration_inverse;avg_duration_forward;min_duration_inverse;min_duration_forward;avg_error\n");
 
     parameters.sampling_scheme = SO3_SAMPLING_MW;
     parameters.n_order = SO3_N_ORDER_ZERO_FIRST;
@@ -156,6 +158,8 @@ int main(int argc, char **argv)
 
             min_duration_inverse = 0.0;
             min_duration_forward = 0.0;
+            avg_duration_inverse = 0.0;
+            avg_duration_forward = 0.0;
             avg_error = 0.0;
 
             for (i = 0; i < NREPEAT; ++i)
@@ -176,6 +180,7 @@ int main(int argc, char **argv)
                 time_end = clock();
 
                 duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
+                avg_duration_inverse = avg_duration_inverse + duration / NREPEAT;
                 if (!i || duration < min_duration_inverse)
                     min_duration_inverse = duration;
 
@@ -185,6 +190,7 @@ int main(int argc, char **argv)
                 time_end = clock();
 
                 duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
+                min_duration_forward = min_duration_forward + duration / NREPEAT;
                 if (!i || duration < min_duration_forward)
                     min_duration_forward = duration;
 
@@ -196,6 +202,8 @@ int main(int argc, char **argv)
                    real,
                    L,
                    N,
+                   avg_duration_inverse,
+                   avg_duration_forward,
                    min_duration_inverse,
                    min_duration_forward,
                    avg_error);
