@@ -190,7 +190,7 @@ int main(int argc, char **argv)
                 time_end = clock();
 
                 duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
-                min_duration_forward = min_duration_forward + duration / NREPEAT;
+                avg_duration_forward = avg_duration_forward + duration / NREPEAT;
                 if (!i || duration < min_duration_forward)
                     min_duration_forward = duration;
 

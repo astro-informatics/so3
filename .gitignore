@@ -1,2 +1,8 @@
+*.csv
+*.pl
+*.sh
+*.png
+*.pdf
+*.txt
 *~
 SO3.sublime-workspace

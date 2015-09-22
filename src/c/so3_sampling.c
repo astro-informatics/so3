@@ -275,7 +275,7 @@ double so3_sampling_g2gamma(int g, const so3_parameters_t *parameters)
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-inline int so3_sampling_flmn_size(
+int so3_sampling_flmn_size(
     const so3_parameters_t *parameters
 ) {
     int L, N;
@@ -328,7 +328,7 @@ inline int so3_sampling_flmn_size(
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, const so3_parameters_t *parameters)
+void so3_sampling_elmn2ind(int *ind, int el, int m, int n, const so3_parameters_t *parameters)
 {
     int L, N, offset, absn;
     L = parameters->L;
@@ -414,7 +414,7 @@ inline void so3_sampling_elmn2ind(int *ind, int el, int m, int n, const so3_para
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, const so3_parameters_t *parameters)
+void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, const so3_parameters_t *parameters)
 {
     int L, N, offset;
     L = parameters->L;
@@ -530,7 +530,7 @@ inline void so3_sampling_ind2elmn(int *el, int *m, int *n, int ind, const so3_pa
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-inline void so3_sampling_elmn2ind_real(int *ind, int el, int m, int n, const so3_parameters_t *parameters)
+void so3_sampling_elmn2ind_real(int *ind, int el, int m, int n, const so3_parameters_t *parameters)
 {
     int base_ind;
     so3_parameters_t temp_params;
@@ -585,7 +585,7 @@ inline void so3_sampling_elmn2ind_real(int *ind, int el, int m, int n, const so3
  * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
  * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
  */
-inline void so3_sampling_ind2elmn_real(int *el, int *m, int *n, int ind, const so3_parameters_t *parameters)
+void so3_sampling_ind2elmn_real(int *el, int *m, int *n, int ind, const so3_parameters_t *parameters)
 {
     int base_ind;
     so3_parameters_t temp_params;
