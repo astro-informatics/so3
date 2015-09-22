@@ -1,6 +1,6 @@
 # ======== COMPILER ========
 
-CC	= gcc -Wl,-stack_size,0x8000000000
+CC	= gcc
 OPT	= -Wall -O3 -fopenmp -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
 #OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
 
@@ -54,7 +54,7 @@ endif
 FFTWINC	     = $(FFTWDIR)/include
 FFTWLIB      = $(FFTWDIR)/lib
 FFTWLIBNM    = fftw3
-FFTWOMPLIBNM = fftw3_threads
+#FFTWOMPLIBNM = fftw3_threads
 
 SSHTSRCMAT	= $(SSHTDIR)/src/matlab
 SSHTOBJMAT  	= $(SSHTSRCMAT)
@@ -84,9 +84,14 @@ endif
 
 # ======== LDFLAGS ========
 
-LDFLAGS = -L$(SO3LIB) -l$(SO3LIBNM) -L$(SSHTLIB) -l$(SSHTLIBNM) -L$(FFTWLIB) -l$(FFTWOMPLIBNM) -l$(FFTWLIBNM) -lm
+LDFLAGS = -L$(SO3LIB) -l$(SO3LIBNM) -L$(SSHTLIB) -l$(SSHTLIBNM) -L$(FFTWLIB) -l$(FFTWLIBNM) -lm
 
-LDFLAGSMEX = -L$(SO3LIB) -l$(SO3LIBNM) -L$(SSHTLIB) -l$(SSHTLIBNM) -L$(FFTWLIB) -l$(FFTWOMPLIBNM) -l$(FFTWLIBNM)
+LDFLAGSMEX = -L$(SO3LIB) -l$(SO3LIBNM) -L$(SSHTLIB) -l$(SSHTLIBNM) -L$(FFTWLIB) -l$(FFTWLIBNM)
+
+
+#LDFLAGS = -L$(SO3LIB) -l$(SO3LIBNM) -L$(SSHTLIB) -l$(SSHTLIBNM) -L$(FFTWLIB) -l$(FFTWOMPLIBNM) -l$(FFTWLIBNM) -lm
+
+#LDFLAGSMEX = -L$(SO3LIB) -l$(SO3LIBNM) -L$(SSHTLIB) -l$(SSHTLIBNM) -L$(FFTWLIB) -l$(FFTWOMPLIBNM) -l$(FFTWLIBNM)
 
 
 # ======== OBJECT FILES TO MAKE ========
