@@ -20,7 +20,7 @@ ifeq ($(UNAME), Linux)
   MEXFLAGS	= -cxx
 endif
 ifeq ($(UNAME), Darwin)
-  MLAB		= /Applications/MATLAB_R2013a.app
+  MLAB		= ${MATLAB}
   MLABINC	= ${MLAB}/extern/include
   MLABLIB	= ${MLAB}/extern/lib
 
@@ -48,7 +48,7 @@ ifeq ($(UNAME), Linux)
   FFTWDIR      = $(PROGDIR)/fftw-3.2.2_fPIC
 endif
 ifeq ($(UNAME), Darwin)
-  FFTWDIR      = $(PROGDIR)/fftw
+  FFTWDIR      = $(FFTW)
 endif
 
 FFTWINC	     = $(FFTWDIR)/include
@@ -171,7 +171,7 @@ $(SO3OBJMAT)/%_mex.o: %_mex.c $(SO3LIB)/lib$(SO3LIBNM).a
 	$(CC) $(OPT) $(FFLAGS) -c $< -o $@ -I${MLABINC}
 
 $(SO3OBJMEX)/%_mex.$(MEXEXT): $(SO3OBJMAT)/%_mex.o $(SO3LIB)/lib$(SO3LIBNM).a
-	$(MEX) $< -o $@ $(LDFLAGSMEX) $(MEXFLAGS) -L$(MLABLIB)
+	$(MEX) $< -output $@ $(LDFLAGSMEX) $(MEXFLAGS) -L$(MLABLIB)
 
 .PHONY: matlab
 matlab: $(SO3OBJSMEX)
