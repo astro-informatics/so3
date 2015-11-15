@@ -28,4 +28,16 @@ void so3_core_forward_via_ssht_real(
     const so3_parameters_t *parameters
 );
 
+
+
+void so3_core_inverse_direct(
+    complex double *f, const complex double *flmn,
+    const so3_parameters_t *parameters
+);
+
+void so3_core_forward_direct(
+    complex double *flmn, const complex double *f,
+    const so3_parameters_t *parameters
+);
+
 #endif

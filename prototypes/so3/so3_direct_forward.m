@@ -56,7 +56,7 @@ Fmn(:,:,1:L) = fft2(f)/(2*M-1)/(2*N-1);
 
 
 % step 2
-% Extent the beta domain to the range [-L+1:-1] which is equivalent to
+% Extend the beta domain to the range [-L+1:-1] which is equivalent to
 % [L:2L-1].
 Fmn(:,:,L+1:end) = Fmn(:,:,L-1:-1:1);
 m = (1:2:M-1);
