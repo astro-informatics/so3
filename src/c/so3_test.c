@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     //fftw_plan_with_nthreads(nthreads);
 
     // Parse command line arguments
-    L = N = 16;
+    L = N = 4;
     L0 = 0;
     seed = 1;
     if (argc > 1)

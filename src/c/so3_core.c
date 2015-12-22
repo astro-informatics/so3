@@ -989,7 +989,7 @@ void so3_core_inverse_direct(
     SO3_ERROR_MEM_ALLOC_CHECK(exps);
   
     // Perform precomputations.
-    for (el = 0; el <= 2*(L-1)+1; ++el)
+    for (el = 0; el <= 2*L-1; ++el)
         sqrt_tbl[el] = sqrt((double)el);
     for (m = 0; m <= L-1; m += 2)
     {
@@ -1141,7 +1141,7 @@ void so3_core_inverse_direct(
             // this loop can be split up just like the inner loop.
             for (n = -el; n <= el; ++n)
             {
-                double elnsign = n <= 0 ? 1.0 : elmmsign;
+                double elnsign = n >= 0 ? 1.0 : elmmsign;
                 // Factor which does not depend on m.
                 double elnmm_factor = elfactor * elnsign
                                       * dl[abs(n) + dl_offset + mm*dl_stride];
@@ -1205,6 +1205,7 @@ void so3_core_inverse_direct(
                         FFTW_BACKWARD, 
                         FFTW_ESTIMATE);
 
+    // Apply spatial shift.
     for (mm = -L+1; mm <= L-1; ++mm)
     {
         int mm_shift = mm < 0 ? 2*L-1 : 0;
