@@ -12,6 +12,44 @@ int so3_sampling_nalpha(const so3_parameters_t *);
 int so3_sampling_nbeta(const so3_parameters_t *);
 int so3_sampling_ngamma(const so3_parameters_t *);
 
+
+//============================================================================
+// Sampling weights
+//============================================================================
+
+/*!
+ * Compute conjugate weights for toroidal extension.
+ *
+ * \param[in] parameters A parameters object with (at least)
+ *                       \link so3_parameters_t::sampling_scheme sampling_scheme\endlink
+ * \param[in] p Integer index to compute weight for.
+ * \retval Corresponding conjugate weight.
+ *
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+complex double so3_sampling_weight(
+    const so3_parameters_t *parameters, 
+    int p)
+{
+    switch (parameters->sampling_scheme)
+    {
+    case SO3_SAMPLING_MW:
+        if (p == 1)
+            return -I * SSHT_PION2;
+        else if (p == -1)
+            return I * SSHT_PION2;
+        else if (p % 2 == 0)
+            return 2.0 / (1.0 - p*p);
+        else
+            return 0.0;
+      
+    case SO3_SAMPLING_MW_SS:
+        SO3_ERROR_GENERIC("Sampling weights for MWSS not yet implemented.");
+    default:
+        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+    }
+}
+
 //============================================================================
 // Sampling relations for all supported sampling schemes
 //============================================================================

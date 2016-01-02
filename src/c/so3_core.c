@@ -1266,7 +1266,7 @@ void so3_core_inverse_direct(
  *
  * \param[out] flmn Harmonic coefficients. If \link so3_parameters_t::n_mode n_mode
  *                  \endlink is different from \link SO3_N_MODE_ALL \endlink,
- *                  this array has to be nulled before being past to the function.
+ *                  this array has to be nulled before being passed to the function.
  * \param[in] f Function on sphere. Provide a buffer of size (2*L-1)*L*(2*N-1).
  * \param[in]  parameters A fully populated parameters object. The \link
  *                        so3_parameters_t::reality reality\endlink flag
@@ -1289,24 +1289,6 @@ void so3_core_forward_direct(
     int steerable;
     int verbosity;
 
-    // Iterator
-    int i, n;
-    // Intermediate results
-    complex double *ftemp, *fn;
-    // Stride for several arrays
-    int fn_n_stride;
-    // FFTW-related variables
-    int fftw_rank, fftw_howmany;
-    int fftw_idist, fftw_odist;
-    int fftw_istride, fftw_ostride;
-    int fftw_n;
-    fftw_plan plan;
-
-    forward_complex_ssht ssht;
-
-    // for precomputation
-    double factor;
-
     L0 = parameters->L0;
     L = parameters->L;
     N = parameters->N;
@@ -1327,156 +1309,376 @@ void so3_core_forward_direct(
                     , storage);
     }
 
-    switch (sampling)
+    int m_stride = 2*L-1;
+    int m_offset = L-1;
+    int n_stride = 2*N-1;
+    int n_offset = N-1;
+    int mm_stride = 2*L-1;
+    int mm_offset = L-1;
+    int a_stride = 2*L-1;
+    int b_stride = L;
+    int bext_stride = 2*L-1;
+    int g_stride = 2*N-1;
+
+    double *sqrt_tbl = calloc(2*(L-1)+2, sizeof(*sqrt_tbl));
+    SO3_ERROR_MEM_ALLOC_CHECK(sqrt_tbl);
+    double *signs = calloc(L+1, sizeof(*signs));
+    SO3_ERROR_MEM_ALLOC_CHECK(signs);
+    complex double *exps = calloc(2*L-1, sizeof(*exps));
+    SO3_ERROR_MEM_ALLOC_CHECK(exps);
+    complex double *expsmm = calloc(2*L-1, sizeof(*expsmm));
+    SO3_ERROR_MEM_ALLOC_CHECK(expsmm);
+
+    int el, m, n, mm; // mm is for m'
+    // Perform precomputations.
+    for (el = 0; el <= 2*(L-1)+1; ++el)
+        sqrt_tbl[el] = sqrt((double)el);
+    for (m = 0; m <= L-1; m += 2)
     {
-    case SO3_SAMPLING_MW:
-        fn_n_stride = L * (2*L-1);
-        ssht = ssht_core_mw_lb_forward_sov_conv_sym;
-        break;
-    case SO3_SAMPLING_MW_SS:
-        fn_n_stride = (L+1) * 2*L;
-        ssht = ssht_core_mw_lb_forward_sov_conv_sym_ss;
-        break;
-    default:
-        SO3_ERROR_GENERIC("Invalid sampling scheme.");
+        signs[m]   =  1.0;
+        signs[m+1] = -1.0;
     }
+    int i;
+    for (i = 0; i < 4; ++i)
+        exps[i] = cexp(I*SO3_PION2*i);
+    for (mm = -L+1; mm <= L-1; ++mm)
+        expsmm[mm + mm_offset] = cexp(-I*mm*SSHT_PI/(2.0*L-1.0));
 
-    if (steerable)
+    double norm_factor = 1.0/(2.0*L-1.0)/(2.0*N-1.0);
+
+    // Compute Fourier transform over alpha and gamma, i.e. compute Fmn(b).
+    complex double *Fmnb = calloc((2*L-1)*(2*L-1)*(2*N-1), sizeof(*Fmnb));
+    SO3_ERROR_MEM_ALLOC_CHECK(Fmnb);
+    complex double *inout = calloc((2*L-1)*(2*N-1), sizeof(*inout));
+    SO3_ERROR_MEM_ALLOC_CHECK(inout);
+    fftw_plan plan = fftw_plan_dft_2d(
+                        2*N-1, 2*L-1,
+                        inout, inout, 
+                        FFTW_FORWARD, 
+                        FFTW_ESTIMATE);
+
+    int a, b, g;
+    for (b = 0; b < L; ++b)
     {
-        int g, offset;
+        // TODO: This memcpy loop could probably be avoided by using
+        // a more elaborate FFTW plan which performs the FFT directly
+        // over the 1st and 3rd dimensions of f.
+        for (g = 0; g < 2*N-1; ++g)
+            memcpy(
+                inout + g*a_stride, 
+                f + 0 + a_stride*(
+                    b + b_stride*(
+                    g)), 
+                a_stride*sizeof(*f));
+        fftw_execute_dft(plan, inout, inout);
 
-        fn = calloc((2*N-1)*fn_n_stride, sizeof *fn);
-        SO3_ERROR_MEM_ALLOC_CHECK(fn);
-
-        for (n = -N+1; n < N; n+=2)
+        // Apply spatial shift and normalisation factor
+        for (n = -N+1; n <= N-1; ++n)
         {
-            // The conditional applies the spatial transform, because the fn
-            // are to be stored in n-order 0, 1, 2, -2, -1
-            offset = (n < 0 ? n + 2*N-1 : n);
-
-            for (g = 0; g < N; ++g)
+            int n_shift = n < 0 ? 2*N-1 : 0;
+            for (m = -L+1; m <= L-1; ++m)
             {
-                double gamma = g * SO3_PI / N;
-                for (i = 0; i < fn_n_stride; ++i)
+                int m_shift = m < 0 ? 2*L-1 : 0;
+                Fmnb[b + bext_stride*(
+                     m + m_offset + m_stride*(
+                     n + n_offset))] =
+                    inout[m + m_shift + m_stride*(
+                          n + n_shift)] * norm_factor;
+            }
+        }
+    }
+    fftw_destroy_plan(plan);
+
+    // Extend Fmnb periodically.
+    for (n = -N+1; n <= N-1; ++n)
+        for (m = -L+1; m <= L-1; ++m)
+        {
+            int signmn = signs[abs(m+n)%2];
+            for (b = L; b < 2*L-1; ++b)
+                Fmnb[b + bext_stride*(
+                     m + m_offset + m_stride*(
+                     n + n_offset))] =
+                    signmn
+                    * Fmnb[(2*L-2-b) + bext_stride*(
+                           m + m_offset + m_stride*(
+                           n + n_offset))];
+        }
+
+
+    // Compute Fourier transform over beta, i.e. compute Fmnm'.
+    complex double *Fmnm = calloc((2*L-1)*(2*L-1)*(2*N-1), sizeof(*Fmnm));
+    SO3_ERROR_MEM_ALLOC_CHECK(Fmnm);
+
+    plan = fftw_plan_dft_1d(
+            2*L-1,
+            inout, inout, 
+            FFTW_FORWARD, 
+            FFTW_ESTIMATE);
+    for (n = -N+1; n <= N-1; ++n)
+        for (m = -L+1; m <= L-1; ++m)
+        {
+            memcpy(inout, 
+                   Fmnb + 0 + bext_stride*(
+                          m + m_offset + m_stride*(
+                          n + n_offset)), 
+                   bext_stride*sizeof(*Fmnb));
+            fftw_execute_dft(plan, inout, inout);
+
+            // Apply spatial shift and normalisation factor
+            for (mm = -L+1; mm <= L-1; ++mm)
+            {
+                int mm_shift = mm < 0 ? 2*L-1 : 0;
+                Fmnm[mm + mm_offset + mm_stride*(
+                     m + m_offset + m_stride*(
+                     n + n_offset))] =
+                    inout[mm + mm_shift] / (2.0*L-1.0);
+            }
+        }
+    fftw_destroy_plan(plan);
+    free(inout);
+
+    // Apply phase modulation to account for sampling offset.
+    for (n = -N+1; n <= N-1; ++n)
+        for (m = -L+1; m <= L-1; ++m)
+            for (mm = -L+1; mm <= L-1; ++mm)
+                Fmnm[mm + mm_offset + mm_stride*(
+                     m + m_offset + m_stride*(
+                     n + n_offset))] *=
+                    expsmm[mm + mm_offset];
+
+    // Compute weights.
+    complex double *w = calloc(4*L-3, sizeof(*w));
+    SO3_ERROR_MEM_ALLOC_CHECK(w);
+    int w_offset = 2*(L-1);
+    for (mm = -2*(L-1); mm <= 2*(L-1); ++mm)
+        w[mm+w_offset] = so3_sampling_weight(parameters, mm);
+
+    // Compute IFFT of w to give wr.
+    complex double *wr = calloc(4*L-3, sizeof(*w));
+    SO3_ERROR_MEM_ALLOC_CHECK(wr);
+    inout = calloc(4*L-3, sizeof(*inout));
+    SO3_ERROR_MEM_ALLOC_CHECK(inout);
+    fftw_plan plan_bwd = fftw_plan_dft_1d(
+                            4*L-3, 
+                            inout, inout, 
+                            FFTW_BACKWARD, 
+                            FFTW_MEASURE);
+    fftw_plan plan_fwd = fftw_plan_dft_1d(
+                            4*L-3, 
+                            inout, 
+                            inout, 
+                            FFTW_FORWARD, 
+                            FFTW_MEASURE);
+
+    // Apply spatial shift.
+    for (mm = 1; mm <= 2*L-2; ++mm)
+        inout[mm + w_offset] = w[mm - 2*(L-1) - 1 + w_offset];
+    for (mm = -2*(L-1); mm <= 0; ++mm)
+        inout[mm + w_offset] = w[mm + 2*(L-1) + w_offset];
+
+    fftw_execute_dft(plan_bwd, inout, inout);
+
+    // Apply spatial shift.
+    for (mm = 0; mm <= 2*L-2; ++mm)
+        wr[mm + w_offset] = inout[mm - 2*(L-1) + w_offset];
+    for (mm = -2*(L-1); mm <= -1; ++mm)
+        wr[mm + w_offset] = inout[mm + 2*(L-1) + 1 + w_offset];
+
+    // Compute Gmnm' by convolution implemented as product in real space.
+    complex double *Fmnm_pad = calloc(4*L-3, sizeof(*Fmnm_pad));
+    SO3_ERROR_MEM_ALLOC_CHECK(Fmnm_pad);
+    complex double *Gmnm = calloc((2*L-1)*(2*L-1)*(2*N-1), sizeof(*Gmnm));
+    SO3_ERROR_MEM_ALLOC_CHECK(Gmnm);
+    for (n = -N+1; n <= N-1; ++n)
+        for (m = -L+1; m <= L-1; ++m)
+        {
+
+            // Zero-pad Fmnm'.
+            for (mm = -2*(L-1); mm <= -L; ++mm)
+                Fmnm_pad[mm+w_offset] = 0.0;
+            for (mm = L; mm <= 2*(L-1); ++mm)
+                Fmnm_pad[mm+w_offset] = 0.0;
+            for (mm = -(L-1); mm <= L-1; ++mm)
+                Fmnm_pad[mm + w_offset] =
+                    Fmnm[mm + mm_offset + mm_stride*(
+                         m + m_offset + m_stride*(
+                         n + n_offset))];
+        
+            // Apply spatial shift.
+            for (mm = 1; mm <= 2*L-2; ++mm)
+                inout[mm + w_offset] = Fmnm_pad[mm - 2*(L-1) - 1 + w_offset];
+            for (mm = -2*(L-1); mm <= 0; ++mm)
+                inout[mm + w_offset] = Fmnm_pad[mm + 2*(L-1) + w_offset];
+            // Compute IFFT of Fmnm'.
+            fftw_execute_dft(plan_bwd, inout, inout);
+            // Apply spatial shift.
+            for (mm = 0; mm <= 2*L-2; ++mm)
+                Fmnm_pad[mm + w_offset] = inout[mm - 2*(L-1) + w_offset];
+            for (mm = -2*(L-1); mm <= -1; ++mm)
+                Fmnm_pad[mm + w_offset] = inout[mm + 2*(L-1) + 1 + w_offset];
+        
+            // Compute product of Fmnm' and weight in real space.
+            int r;
+            for (r = -2*(L-1); r <= 2*(L-1); ++r)
+                Fmnm_pad[r + w_offset] *= wr[r + w_offset];
+        
+            // Apply spatial shift.
+            for (mm = 1; mm <= 2*L-2; ++mm)
+                inout[mm + w_offset] = Fmnm_pad[mm - 2*(L-1) - 1 + w_offset];
+            for (mm = -2*(L-1); mm <= 0; ++mm)
+                inout[mm + w_offset] = Fmnm_pad[mm + 2*(L-1) + w_offset];
+            // Compute Gmnm' by FFT.
+            fftw_execute_dft(plan_fwd, inout, inout);
+            // Apply spatial shift.
+            for (mm = 0; mm <= 2*L-2; ++mm)
+                Fmnm_pad[mm + w_offset] = inout[mm - 2*(L-1) + w_offset];
+            for (mm = -2*(L-1); mm <= -1; ++mm)
+                Fmnm_pad[mm + w_offset] = inout[mm + 2*(L-1) + 1 + w_offset];
+        
+            // Extract section of Gmnm' of interest.
+            for (mm = -(L-1); mm <= L-1; ++mm)
+                Gmnm[m + m_offset + m_stride*(
+                     mm + mm_offset + mm_stride*(
+                     n + n_offset))] =
+                    Fmnm_pad[mm + w_offset] 
+                    * 4.0 * SSHT_PI * SSHT_PI / (4.0*L-3.0);
+        
+        }
+    fftw_destroy_plan(plan_bwd);
+    fftw_destroy_plan(plan_fwd);
+
+    // Compute flmn.
+    double *dl, *dl8 = NULL;
+    dl = ssht_dl_calloc(L, SSHT_DL_QUARTER);
+    SO3_ERROR_MEM_ALLOC_CHECK(dl);
+    if (dl_method == SSHT_DL_RISBO)
+    {
+        dl8 = ssht_dl_calloc(L, SSHT_DL_QUARTER_EXTENDED);
+        SO3_ERROR_MEM_ALLOC_CHECK(dl8);
+    }
+    int dl_offset = ssht_dl_get_offset(L, SSHT_DL_QUARTER);
+    int dl_stride = ssht_dl_get_stride(L, SSHT_DL_QUARTER);
+    for (n = -N+1; n <= N-1; ++n)
+        for (el = abs(n); el < L; ++el)
+            for (m = -el; m <= el; ++m)
+            {
+                int ind;
+                so3_sampling_elmn2ind(&ind, el, m, n, parameters);
+                flmn[ind] = 0.0;
+            }
+
+    for (el = L0; el < L; ++el)
+    {
+        int eltmp;
+
+        // Compute Wigner plane.
+        switch (dl_method)
+        {
+        case SSHT_DL_RISBO:
+            if (el != 0 && el == L0)
+            {
+                for(eltmp = 0; eltmp <= L0; ++eltmp)
+                    ssht_dl_beta_risbo_eighth_table(dl8, SO3_PION2, L,
+                        SSHT_DL_QUARTER_EXTENDED,
+                        eltmp, sqrt_tbl, signs);
+                ssht_dl_beta_risbo_fill_eighth2quarter_table(dl,
+                    dl8, L,
+                    SSHT_DL_QUARTER,
+                    SSHT_DL_QUARTER_EXTENDED,
+                    el,
+                    signs);
+            }
+            else
+            {
+                ssht_dl_beta_risbo_eighth_table(dl8, SO3_PION2, L,
+                    SSHT_DL_QUARTER_EXTENDED,
+                    el, sqrt_tbl, signs);
+                ssht_dl_beta_risbo_fill_eighth2quarter_table(dl,
+                    dl8, L,
+                    SSHT_DL_QUARTER,
+                    SSHT_DL_QUARTER_EXTENDED,
+                    el,
+                    signs);
+            }
+            break;
+
+        case SSHT_DL_TRAPANI:
+            if (el != 0 && el == L0)
+            {
+                for(eltmp = 0; eltmp <= L0; ++eltmp)
+                    ssht_dl_halfpi_trapani_eighth_table(dl, L,
+                        SSHT_DL_QUARTER,
+                        eltmp, sqrt_tbl);
+                ssht_dl_halfpi_trapani_fill_eighth2quarter_table(dl, L,
+                    SSHT_DL_QUARTER,
+                    el, signs);
+            }
+            else
+            {
+                ssht_dl_halfpi_trapani_eighth_table(dl, L,
+                    SSHT_DL_QUARTER,
+                    el, sqrt_tbl);
+                ssht_dl_halfpi_trapani_fill_eighth2quarter_table(dl, L,
+                    SSHT_DL_QUARTER,
+                    el, signs);
+            }
+            break;
+
+        default:
+            SO3_ERROR_GENERIC("Invalid dl method");
+        }
+
+        // Compute flmn for current el.
+    
+        // TODO: Pull out a few multiplications into precomputations
+        // or split up loops to avoid conditionals to check signs.
+        for (mm = -el; mm <= el; ++mm)
+        {
+            // These signs are needed for the symmetry relations of
+            // Wigner symbols.
+            double elmmsign = signs[el] * signs[mm];
+
+            for (n = -el; n <= el; ++n)
+            {
+                double elnsign = n >= 0 ? 1.0 : elmmsign;
+                // Factor which does not depend on m.
+                double elnmm_factor = elnsign
+                                      * dl[abs(n) + dl_offset + mm*dl_stride];
+                
+                for (m = -el; m <= el; ++m)
                 {
-                    double weight = 2*SO3_PI/N;
-                    fn[offset * fn_n_stride + i] += weight*f[g * fn_n_stride + i]*cexp(-I*n*gamma);
+                    double elmsign = m >= 0 ? 1.0 : elmmsign;
+                    int ind;
+                    so3_sampling_elmn2ind(&ind, el, m, n, parameters);
+                    int mod = ((m-n)%4 + 4)%4;
+                    flmn[ind] += 
+                        exps[mod]
+                        * elnmm_factor
+                        * elmsign
+                        * dl[abs(m) + dl_offset + mm*dl_stride]
+                        * Gmnm[m + m_offset + m_stride*(
+                               mm + mm_offset + mm_stride*(
+                               n))];
+
                 }
             }
         }
     }
-    else
-    {
-        // Make a copy of the input, because input is const
-        // This could potentially be avoided by copying the input into fn and using an
-        // in-place FFTW. The performance impact has to be profiled, though.
-        ftemp = malloc((2*N-1)*fn_n_stride * sizeof *ftemp);
-        SO3_ERROR_MEM_ALLOC_CHECK(ftemp);
-        memcpy(ftemp, f, (2*N-1)*fn_n_stride * sizeof(complex double));
 
-        fn = malloc((2*N-1)*fn_n_stride * sizeof *fn);
-        SO3_ERROR_MEM_ALLOC_CHECK(fn);
-
-        // Initialize fftw_plan first. With FFTW_ESTIMATE this is technically not
-        // necessary but still good practice.
-        fftw_rank = 1;
-        fftw_n = 2*N-1;
-        fftw_howmany = fn_n_stride;
-        fftw_idist = fftw_odist = 1;
-        fftw_istride = fftw_ostride = fn_n_stride;
-
-        plan = fftw_plan_many_dft(
-                fftw_rank, &fftw_n, fftw_howmany,
-                ftemp, NULL, fftw_istride, fftw_idist,
-                fn, NULL, fftw_ostride, fftw_odist,
-                FFTW_FORWARD, FFTW_ESTIMATE
-        );
-
-        fftw_execute(plan);
-        fftw_destroy_plan(plan);
-
-        free(ftemp);
-
-        factor = 2*SO3_PI/(double)(2*N-1);
-        for(i = 0; i < (2*N-1)*fn_n_stride; ++i)
-            fn[i] *= factor;
-    }
-
-    for(n = -N+1; n <= N-1; ++n)
-    {
-        int ind, offset, el, sign;
-        int L0e = MAX(L0, abs(n)); // 'e' for 'effective'
-
-        complex double *flm = NULL;
-
-        if ((n_mode == SO3_N_MODE_EVEN && n % 2)
-            || (n_mode == SO3_N_MODE_ODD && !(n % 2))
-            || (n_mode == SO3_N_MODE_MAXIMUM && abs(n) < N-1)
-        ) {
-            continue;
-        }
-
-        if (storage == SO3_STORAGE_COMPACT)
-            flm = malloc(L*L * sizeof *flm);
-
-        // The conditional applies the spatial transform, because the fn
-        // are stored in n-order 0, 1, 2, -2, -1
-        offset = (n < 0 ? n + 2*N-1 : n);
-
-        complex double *flm_block;
-        complex double *fn_block = fn + offset*fn_n_stride;
-
-        el = L0e;
-        switch (storage)
-        {
-        case SO3_STORAGE_PADDED:
-            so3_sampling_elmn2ind(&ind, 0, 0, n, parameters);
-            flm_block = flmn + ind;
-            i = offset = el*el;
-            break;
-        case SO3_STORAGE_COMPACT:
-            flm_block = flm;
-            i = offset = el*el-n*n;
-            break;
-        default:
-            SO3_ERROR_GENERIC("Invalid storage method.");
-        }
-
-        (*ssht)(
-            flm_block, fn_block,
-            L0e, L, -n,
-            dl_method,
-            verbosity
-        );
-
-        if (storage == SO3_STORAGE_COMPACT)
-        {
-            so3_sampling_elmn2ind(&ind, abs(n), -abs(n), n, parameters);
-            memcpy(flmn + ind, flm + n*n, (L*L - n*n) * sizeof(complex double));
-        }
-
-        if (n % 2)
-            sign = -1;
-        else
-            sign = 1;
-
-        for(; el < L; ++el)
-        {
-            factor = sign*sqrt(4.0*SO3_PI/(double)(2*el+1));
-            for (; i < offset + 2*el+1; ++i)
-                flmn[ind + i] *= factor;
-
-            offset = i;
-        }
-
-        if (storage == SO3_STORAGE_COMPACT)
-            free(flm);
-
-        if (verbosity > 0)
-            printf("\n");
-    }
-
-    free(fn);
+    free(dl);
+    if (dl_method == SSHT_DL_RISBO)
+        free(dl8);
+    free(Fmnb);
+    free(Fmnm);
+    free(inout);
+    free(w);
+    free(wr);
+    free(Fmnm_pad);
+    free(Gmnm);
+    free(sqrt_tbl);
+    free(signs);
+    free(exps);
+    free(expsmm);
 
     if (verbosity > 0)
         printf("%sForward transform computed!\n", SO3_PROMPT);
