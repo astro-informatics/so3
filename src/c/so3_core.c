@@ -1636,17 +1636,20 @@ void so3_core_forward_direct(
         {
             // These signs are needed for the symmetry relations of
             // Wigner symbols.
-            double elmmsign = signs[el] * signs[mm];
+            double elmmsign = signs[el] * signs[abs(mm)];
 
             for (n = -el; n <= el; ++n)
             {
+                double mmsign = mm >= 0 ? 1.0 : signs[el] * signs[abs(n)];
                 double elnsign = n >= 0 ? 1.0 : elmmsign;
+                 
                 // Factor which does not depend on m.
-                double elnmm_factor = elnsign
-                                      * dl[abs(n) + dl_offset + mm*dl_stride];
+                double elnmm_factor = mmsign * elnsign
+                                      * dl[abs(n) + dl_offset + abs(mm)*dl_stride];
                 
                 for (m = -el; m <= el; ++m)
                 {
+                    mmsign = mm >= 0 ? 1.0 : signs[el] * signs[abs(m)];
                     double elmsign = m >= 0 ? 1.0 : elmmsign;
                     int ind;
                     so3_sampling_elmn2ind(&ind, el, m, n, parameters);
@@ -1654,11 +1657,11 @@ void so3_core_forward_direct(
                     flmn[ind] += 
                         exps[mod]
                         * elnmm_factor
-                        * elmsign
-                        * dl[abs(m) + dl_offset + mm*dl_stride]
+                        * mmsign * elmsign
+                        * dl[abs(m) + dl_offset + abs(mm)*dl_stride]
                         * Gmnm[m + m_offset + m_stride*(
                                mm + mm_offset + mm_stride*(
-                               n))];
+                               n + n_offset))];
 
                 }
             }

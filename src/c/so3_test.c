@@ -47,7 +47,7 @@ int main(int argc, char **argv)
     so3_parameters_t parameters = {};
     int L, N, L0;
     complex double *flmn_orig, *flmn_syn;
-    complex double *f, *f_ssht;
+    complex double *f;
     double *f_real;
     int seed;
     clock_t time_start, time_end;
@@ -127,8 +127,6 @@ int main(int argc, char **argv)
     // For the usual MW sampling, only part of the memory will be used.
     f = malloc((2*L)*(L+1)*(2*N-1) * sizeof *f);
     SO3_ERROR_MEM_ALLOC_CHECK(f);
-    f_ssht = malloc((2*L)*(L+1)*(2*N-1) * sizeof *f_ssht);
-    SO3_ERROR_MEM_ALLOC_CHECK(f);
     f_real = malloc((2*L)*(L+1)*(2*N-1) * sizeof *f_real);
     SO3_ERROR_MEM_ALLOC_CHECK(f_real);
 
@@ -198,10 +196,7 @@ int main(int argc, char **argv)
 
                                 time_start = clock();
                                 if (routine)
-                                {
                                     so3_core_inverse_direct(f, flmn_orig, &parameters);
-                                    so3_core_inverse_via_ssht(f_ssht, flmn_orig, &parameters);
-                                }
                                 else
                                     if (real) so3_core_inverse_via_ssht_real(f_real, flmn_orig, &parameters);
                                     else      so3_core_inverse_via_ssht(f, flmn_orig, &parameters);
