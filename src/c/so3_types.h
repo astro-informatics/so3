@@ -68,6 +68,8 @@ typedef enum {
     SO3_N_MODE_ODD,
     /*! flmn are only non-zero for |n| = N-1 */
     SO3_N_MODE_MAXIMUM,
+    /*! flmn are only non-zero for |n| = el */
+    SO3_N_MODE_L,
     /*!
      * "guard" value that equals the number of usable enum values.
      * useful in loops, for instance.

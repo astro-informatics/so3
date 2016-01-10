@@ -71,6 +71,7 @@ int main(int argc, char **argv)
     n_mode_str[SO3_N_MODE_EVEN] = "only even n";
     n_mode_str[SO3_N_MODE_ODD] = "only odd n";
     n_mode_str[SO3_N_MODE_MAXIMUM] = "only |n| = N-1";
+    n_mode_str[SO3_N_MODE_L] = "only |n| = el";
 
     reality_str[0] = "complex";
     reality_str[1] = "real";
@@ -137,7 +138,7 @@ int main(int argc, char **argv)
 
     // routine == 0 --> use SSHT
     // routine == 1 --> don't use SSHT
-    for (routine = 1; routine < 2; ++routine)
+    for (routine = 0; routine < 2; ++routine)
     {
         // real == 0 --> complex signal
         // real == 1 --> real signal
@@ -155,17 +156,17 @@ int main(int argc, char **argv)
                 // For real signals, the n_order does not matter, so skip the second option
                 // in that case.
                 // ZERO_FIRST not yet supported by direct routines
-                for (n_order = 0 + routine; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
+                for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
                 {
                     parameters.n_order = n_order;
 
                     // PADDED not yet supported by direct routines
-                    for (storage_mode = 0 + routine; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
+                    for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
                     {
                         parameters.storage = storage_mode;
 
                         // Only ALL supported by direct routines
-                        for (n_mode = 0; n_mode < SO3_N_MODE_SIZE - 3*routine; ++ n_mode)
+                        for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                         {
                             parameters.n_mode = n_mode;
 
@@ -249,7 +250,7 @@ int main(int argc, char **argv)
 
     // routine == 0 --> use SSHT
     // routine == 1 --> don't use SSHT
-    for (routine = 1; routine < 2; ++routine)
+    for (routine = 0; routine < 2; ++routine)
     {
         printf("Results for routines %s...\n", routine_str[routine]);
         // real == 0 --> complex signal
@@ -266,19 +267,19 @@ int main(int argc, char **argv)
                 printf("    ...using %s sampling...\n", sampling_str[sampling_scheme]);
 
                 // PADDED not yet supported by direct routines
-                for (storage_mode = 0 + routine; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
+                for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
                 {
                     printf("      ...with %s...\n", storage_mode_str[storage_mode]);
 
                     // For real signals, the n_order does not matter, so skip the second option
                     // in that case.
                     // ZERO_FIRST not yet supported by direct routines
-                    for (n_order = 0 + routine; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
+                    for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
                     {
                         printf("        ...using %s...\n", n_order_str[n_order]);
 
                         // Only ALL supported by direct routines
-                        for (n_mode = 0; n_mode < SO3_N_MODE_SIZE - 3*routine; ++ n_mode)
+                        for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                         {
                             printf("          ...and %s...\n", n_mode_str[n_mode]);
                             printf("            Minimum time for forward transform: %fs\n", durations_forward[sampling_scheme][n_order][storage_mode][n_mode][real][routine]);
@@ -343,6 +344,7 @@ void so3_test_gen_flmn_complex(
     switch (parameters->n_mode)
     {
     case SO3_N_MODE_ALL:
+    case SO3_N_MODE_L:
         n_start = -N+1;
         n_stop  =  N-1;
         n_inc = 1;
@@ -373,6 +375,9 @@ void so3_test_gen_flmn_complex(
     {
         for (el = MAX(L0, abs(n)); el < L; ++el)
         {
+            if (parameters->n_mode == SO3_N_MODE_L && el != abs(n))
+                break;
+
             for (m = -el; m <= el; ++m)
             {
                 so3_sampling_elmn2ind(&ind, el, m, n, parameters);
@@ -420,6 +425,7 @@ void so3_test_gen_flmn_real(
     switch (parameters->n_mode)
     {
     case SO3_N_MODE_ALL:
+    case SO3_N_MODE_L:
         n_start = 0;
         n_stop  = N-1;
         n_inc = 1;
@@ -458,6 +464,9 @@ void so3_test_gen_flmn_real(
 
             for (el = L0; el < L; ++el)
             {
+                if (parameters->n_mode == SO3_N_MODE_L && el != 0)
+                    break;
+
                 for (m = 1; m <= el; ++m)
                 {
                     real = (2.0*ran2_dp(seed) - 1.0);
@@ -477,6 +486,9 @@ void so3_test_gen_flmn_real(
         {
             for (el = MAX(L0, n); el < L; ++el)
             {
+                if (parameters->n_mode == SO3_N_MODE_L && el != n)
+                    break;
+
                 for (m = -el; m <= el; ++m)
                 {
 

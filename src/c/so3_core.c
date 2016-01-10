@@ -78,6 +78,10 @@ void so3_core_inverse_via_ssht(
     N = parameters->N;
     sampling = parameters->sampling_scheme;
     storage = parameters->storage;
+    // TODO: Support N_MODE_L
+    // TODO: Support N_MODE_L
+    // TODO: Support N_MODE_L
+    // TODO: Support N_MODE_L
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
     verbosity = parameters->verbosity;
@@ -283,6 +287,9 @@ void so3_core_forward_via_ssht(
     N = parameters->N;
     sampling = parameters->sampling_scheme;
     storage = parameters->storage;
+    // TODO: Support N_MODE_L
+    // TODO: Support N_MODE_L
+    // TODO: Support N_MODE_L
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
     verbosity = parameters->verbosity;
@@ -504,6 +511,8 @@ void so3_core_inverse_via_ssht_real(
     N = parameters->N;
     sampling = parameters->sampling_scheme;
     storage = parameters->storage;
+    // TODO: Support N_MODE_L
+    // TODO: Support N_MODE_L
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
     verbosity = parameters->verbosity;
@@ -730,6 +739,7 @@ void so3_core_forward_via_ssht_real(
     N = parameters->N;
     sampling = parameters->sampling_scheme;
     storage = parameters->storage;
+    // TODO: Support N_MODE_L
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
     steerable = parameters->steerable;
@@ -961,6 +971,7 @@ void so3_core_inverse_direct(
     N = parameters->N;
     sampling = parameters->sampling_scheme;
     storage = parameters->storage;
+    // TODO: Add optimisations for all n-modes.
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
     verbosity = parameters->verbosity;
@@ -1119,8 +1130,12 @@ void so3_core_inverse_direct(
         // Factor which depends only on el.
         double elfactor = (2.0*el+1.0)/(8.0*SO3_PI*SO3_PI);
 
+        int n_step = 1;
+        if (n_mode == SO3_N_MODE_L)
+            n_step = MAX(1,2*el);
+
         // Factors which do not depend on m'.
-        for (n = -el; n <= el; ++n)
+        for (n = -el; n <= el; n += n_step)
             for (m = -el; m <= el; ++m)
             {
                 int ind;
@@ -1139,7 +1154,7 @@ void so3_core_inverse_direct(
 
             // TODO: If the conditional for elnsign is a bottleneck
             // this loop can be split up just like the inner loop.
-            for (n = -el; n <= el; ++n)
+            for (n = -el; n <= el; n += n_step)
             {
                 double elnsign = n >= 0 ? 1.0 : elmmsign;
                 // Factor which does not depend on m.
@@ -1294,6 +1309,7 @@ void so3_core_forward_direct(
     N = parameters->N;
     sampling = parameters->sampling_scheme;
     storage = parameters->storage;
+    // TODO: Add optimisations for all n-modes.
     n_mode = parameters->n_mode;
     dl_method = parameters->dl_method;
     verbosity = parameters->verbosity;
@@ -1311,14 +1327,14 @@ void so3_core_forward_direct(
 
     int m_stride = 2*L-1;
     int m_offset = L-1;
-    int n_stride = 2*N-1;
+    // unused: int n_stride = 2*N-1;
     int n_offset = N-1;
     int mm_stride = 2*L-1;
     int mm_offset = L-1;
     int a_stride = 2*L-1;
     int b_stride = L;
     int bext_stride = 2*L-1;
-    int g_stride = 2*N-1;
+    // unused: int g_stride = 2*N-1;
 
     double *sqrt_tbl = calloc(2*(L-1)+2, sizeof(*sqrt_tbl));
     SO3_ERROR_MEM_ALLOC_CHECK(sqrt_tbl);
@@ -1357,7 +1373,7 @@ void so3_core_forward_direct(
                         FFTW_FORWARD, 
                         FFTW_ESTIMATE);
 
-    int a, b, g;
+    int b, g;
     for (b = 0; b < L; ++b)
     {
         // TODO: This memcpy loop could probably be avoided by using
@@ -1629,6 +1645,10 @@ void so3_core_forward_direct(
         }
 
         // Compute flmn for current el.
+
+        int n_step = 1;
+        if (n_mode == SO3_N_MODE_L)
+            n_step = MAX(1,2*el);
     
         // TODO: Pull out a few multiplications into precomputations
         // or split up loops to avoid conditionals to check signs.
@@ -1638,7 +1658,7 @@ void so3_core_forward_direct(
             // Wigner symbols.
             double elmmsign = signs[el] * signs[abs(mm)];
 
-            for (n = -el; n <= el; ++n)
+            for (n = -el; n <= el; n += n_step)
             {
                 double mmsign = mm >= 0 ? 1.0 : signs[el] * signs[abs(n)];
                 double elnsign = n >= 0 ? 1.0 : elmmsign;
