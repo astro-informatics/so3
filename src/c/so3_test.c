@@ -138,13 +138,12 @@ int main(int argc, char **argv)
 
     // routine == 0 --> use SSHT
     // routine == 1 --> don't use SSHT
-    for (routine = 0; routine < 2; ++routine)
+    for (routine = 1; routine < 2; ++routine)
     {
         // real == 0 --> complex signal
         // real == 1 --> real signal
 
-        // Real signals are not yet implemented for routine 1, so skip them in this case.
-        for (real = 0; real < 2 - routine; ++real)
+        for (real = 1; real < 2; ++real)
         {
             parameters.reality = real;
 
@@ -155,17 +154,14 @@ int main(int argc, char **argv)
 
                 // For real signals, the n_order does not matter, so skip the second option
                 // in that case.
-                // ZERO_FIRST not yet supported by direct routines
                 for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
                 {
                     parameters.n_order = n_order;
 
-                    // PADDED not yet supported by direct routines
                     for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
                     {
                         parameters.storage = storage_mode;
 
-                        // Only ALL supported by direct routines
                         for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                         {
                             parameters.n_mode = n_mode;
@@ -197,7 +193,8 @@ int main(int argc, char **argv)
 
                                 time_start = clock();
                                 if (routine)
-                                    so3_core_inverse_direct(f, flmn_orig, &parameters);
+                                    if (real) so3_core_inverse_direct_real(f_real, flmn_orig, &parameters);
+                                    else      so3_core_inverse_direct(f, flmn_orig, &parameters);
                                 else
                                     if (real) so3_core_inverse_via_ssht_real(f_real, flmn_orig, &parameters);
                                     else      so3_core_inverse_via_ssht(f, flmn_orig, &parameters);
@@ -209,7 +206,8 @@ int main(int argc, char **argv)
 
                                 time_start = clock();
                                 if (routine)
-                                    so3_core_forward_direct(flmn_syn, f, &parameters);
+                                    if (real) so3_core_forward_direct_real(flmn_syn, f_real, &parameters);
+                                    else      so3_core_forward_direct(flmn_syn, f, &parameters);
                                 else
                                     if (real) so3_core_forward_via_ssht_real(flmn_syn, f_real, &parameters);
                                     else      so3_core_forward_via_ssht(flmn_syn, f, &parameters);
@@ -250,14 +248,13 @@ int main(int argc, char **argv)
 
     // routine == 0 --> use SSHT
     // routine == 1 --> don't use SSHT
-    for (routine = 0; routine < 2; ++routine)
+    for (routine = 1; routine < 2; ++routine)
     {
         printf("Results for routines %s...\n", routine_str[routine]);
         // real == 0 --> complex signal
         // real == 1 --> real signal
 
-        // Real signals are not yet implemented for routine 1, so skip them in this case.
-        for (real = 0; real < 2 - routine; ++real)
+        for (real = 1; real < 2; ++real)
         {
             printf("  ...with %s signals...\n", reality_str[real]);
 
@@ -266,19 +263,16 @@ int main(int argc, char **argv)
             {
                 printf("    ...using %s sampling...\n", sampling_str[sampling_scheme]);
 
-                // PADDED not yet supported by direct routines
                 for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
                 {
                     printf("      ...with %s...\n", storage_mode_str[storage_mode]);
 
                     // For real signals, the n_order does not matter, so skip the second option
                     // in that case.
-                    // ZERO_FIRST not yet supported by direct routines
                     for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
                     {
                         printf("        ...using %s...\n", n_order_str[n_order]);
 
-                        // Only ALL supported by direct routines
                         for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
                         {
                             printf("          ...and %s...\n", n_mode_str[n_mode]);
@@ -456,6 +450,9 @@ void so3_test_gen_flmn_real(
             // Fill fl00 with random real values
             for (el = L0; el < L; ++el)
             {
+                if (parameters->n_mode == SO3_N_MODE_L && el != 0)
+                    break;
+
                 so3_sampling_elmn2ind_real(&ind, el, 0, 0, parameters);
                 flmn[ind] = (2.0*ran2_dp(seed) - 1.0);
             }

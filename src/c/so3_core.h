@@ -40,4 +40,14 @@ void so3_core_forward_direct(
     const so3_parameters_t *parameters
 );
 
+void so3_core_inverse_direct_real(
+    double *f, const complex double *flmn,
+    const so3_parameters_t *parameters
+);
+
+void so3_core_forward_direct_real(
+    complex double *flmn, const double *f,
+    const so3_parameters_t *parameters
+);
+
 #endif
