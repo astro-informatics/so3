@@ -1020,33 +1020,6 @@ void so3_core_inverse_direct(
 
     int n_start, n_stop, n_inc;
 
-    switch (n_mode)
-    {
-    case SO3_N_MODE_ALL:
-    case SO3_N_MODE_L:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        n_inc = 1;
-        break;
-    case SO3_N_MODE_EVEN:
-        n_start = ((N-1) % 2 == 0) ? -N+1 : -N+2;
-        n_stop  = ((N-1) % 2 == 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_ODD:
-        n_start = ((N-1) % 2 != 0) ? -N+1 : -N+2;
-        n_stop  = ((N-1) % 2 != 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_MAXIMUM:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        n_inc = MAX(1,2*N - 2);
-        break;
-    default:
-        SO3_ERROR_GENERIC("Invalid n-mode.");
-    }
-
     double *dl = ssht_dl_calloc(L, SSHT_DL_QUARTER);
     SO3_ERROR_MEM_ALLOC_CHECK(dl);
     double *dl8 = NULL;
@@ -1932,6 +1905,8 @@ void so3_core_inverse_direct_real(
     int mm_offset = L-1;
     // unused: int mm_stride = 2*L-1;
 
+    int n_start, n_stop, n_inc;
+
     double *dl = ssht_dl_calloc(L, SSHT_DL_QUARTER);
     SO3_ERROR_MEM_ALLOC_CHECK(dl);
     double *dl8 = NULL;
@@ -2039,12 +2014,42 @@ void so3_core_inverse_direct_real(
         // Factor which depends only on el.
         double elfactor = (2.0*el+1.0)/(8.0*SO3_PI*SO3_PI);
 
-        int n_start = 0;
-        if (n_mode == SO3_N_MODE_L)
+
+        switch (n_mode)
+        {
+        case SO3_N_MODE_ALL:
+            n_start = 0;
+            n_stop  = el;
+            n_inc = 1;
+            break;
+        case SO3_N_MODE_EVEN:
+            n_start = 0;
+            n_stop  = el - (el%2);
+            n_inc = 2;
+            break;
+        case SO3_N_MODE_ODD:
+            n_start = 1;
+            n_stop  = el - (1-el%2);
+            n_inc = 2;
+            break;
+        case SO3_N_MODE_MAXIMUM:
+            if (el < N-1)
+                continue;
+            n_start = N-1;
+            n_stop  = N-1;
+            n_inc = 1;
+            break;
+        case SO3_N_MODE_L:
             n_start = el;
+            n_stop  = el;
+            n_inc = 1;
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid n-mode.");
+        }
 
         // Factors which do not depend on m'.
-        for (n = n_start; n <= el; ++n)
+        for (n = n_start; n <= n_stop; n += n_inc)
             for (m = -el; m <= el; ++m)
             {
                 int ind;
@@ -2061,7 +2066,7 @@ void so3_core_inverse_direct_real(
             // Wigner symbols.
             double elmmsign = signs[el] * signs[mm];
 
-            for (n = n_start; n <= el; ++n)
+            for (n = n_start; n <= n_stop; n += n_inc)
             {
                 // Factor which does not depend on m.
                 double elnmm_factor = elfactor
@@ -2091,9 +2096,36 @@ void so3_core_inverse_direct_real(
     if (dl_method == SSHT_DL_RISBO)
         free(dl8);
 
+    switch (n_mode)
+    {
+    case SO3_N_MODE_ALL:
+    case SO3_N_MODE_L:
+        n_start = 0;
+        n_stop  = N-1;
+        n_inc = 1;
+        break;
+    case SO3_N_MODE_EVEN:
+        n_start = 0;
+        n_stop  = ((N-1) % 2 == 0) ?  N-1 :  N-2;
+        n_inc = 2;
+        break;
+    case SO3_N_MODE_ODD:
+        n_start = 1;
+        n_stop  = ((N-1) % 2 != 0) ?  N-1 :  N-2;
+        n_inc = 2;
+        break;
+    case SO3_N_MODE_MAXIMUM:
+        n_start = N-1;
+        n_stop  = N-1;
+        n_inc = 1;
+        break;
+    default:
+        SO3_ERROR_GENERIC("Invalid n-mode.");
+    }
+
     // Use symmetry to compute Fmnm' for negative m'.
     for (mm = -L+1; mm < 0; ++mm)
-        for (n = 0; n <= N-1; ++n)
+        for (n = n_start; n <= n_stop; n += n_inc)
             for (m = -L+1; m <= L-1; ++m)
                 Fmnm[m + m_offset + m_stride*(
                      n + n_offset + n_stride*(
@@ -2107,7 +2139,7 @@ void so3_core_inverse_direct_real(
     for (mm = -L+1; mm <= L-1; ++mm)
     {
         complex double mmfactor = cexp(I*mm*SO3_PI/(2.0*L-1.0));
-        for (n = 0; n <= N-1; ++n)
+        for (n = n_start; n <= n_stop; n += n_inc)
             for (m = -L+1; m <= L-1; ++m)
                 Fmnm[m + m_offset + m_stride*(
                      n + n_offset + n_stride*(
@@ -2134,7 +2166,7 @@ void so3_core_inverse_direct_real(
     for (mm = -L+1; mm <= L-1; ++mm)
     {
         int mm_shift = mm < 0 ? 2*L-1 : 0;
-        for (n = 0; n <= N-1; ++n)
+        for (n = n_start; n <= n_stop; n += n_inc)
         {
             for (m = -L+1; m <= L-1; ++m)
             {

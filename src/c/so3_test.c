@@ -143,7 +143,7 @@ int main(int argc, char **argv)
         // real == 0 --> complex signal
         // real == 1 --> real signal
 
-        for (real = 0; real < 1; ++real)
+        for (real = 1; real < 2; ++real)
         {
             parameters.reality = real;
 
@@ -254,7 +254,7 @@ int main(int argc, char **argv)
         // real == 0 --> complex signal
         // real == 1 --> real signal
 
-        for (real = 0; real < 1; ++real)
+        for (real = 1; real < 2; ++real)
         {
             printf("  ...with %s signals...\n", reality_str[real]);
 
