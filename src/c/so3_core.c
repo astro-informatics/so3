@@ -2280,6 +2280,35 @@ void so3_core_forward_direct_real(
     int bext_stride = 2*L-1;
     int g_stride = 2*N-1;
 
+    int n_start, n_stop, n_inc;
+
+    switch (n_mode)
+    {
+    case SO3_N_MODE_ALL:
+    case SO3_N_MODE_L:
+        n_start = 0;
+        n_stop  = N-1;
+        n_inc = 1;
+        break;
+    case SO3_N_MODE_EVEN:
+        n_start = 0;
+        n_stop  = ((N-1) % 2 == 0) ?  N-1 :  N-2;
+        n_inc = 2;
+        break;
+    case SO3_N_MODE_ODD:
+        n_start = 1;
+        n_stop  = ((N-1) % 2 != 0) ?  N-1 :  N-2;
+        n_inc = 2;
+        break;
+    case SO3_N_MODE_MAXIMUM:
+        n_start = N-1;
+        n_stop  = N-1;
+        n_inc = 1;
+        break;
+    default:
+        SO3_ERROR_GENERIC("Invalid n-mode.");
+    }
+
     double *sqrt_tbl = calloc(2*(L-1)+2, sizeof(*sqrt_tbl));
     SO3_ERROR_MEM_ALLOC_CHECK(sqrt_tbl);
     double *signs = calloc(L+1, sizeof(*signs));
@@ -2342,7 +2371,7 @@ void so3_core_forward_direct_real(
 
         // Apply spatial shift and normalisation factor, while
         // reshaping the dimensions once more.
-        for (n = 0; n <= N-1; ++n)
+        for (n = n_start; n <= n_stop; n += n_inc)
         {
             for (m = -L+1; m <= L-1; ++m)
             {
@@ -2358,7 +2387,7 @@ void so3_core_forward_direct_real(
     fftw_destroy_plan(plan);
 
     // Extend Fmnb periodically.
-    for (n = 0; n <= N-1; ++n)
+    for (n = n_start; n <= n_stop; n += n_inc)
         for (m = -L+1; m <= L-1; ++m)
         {
             int signmn = signs[abs(m+n)%2];
@@ -2384,7 +2413,7 @@ void so3_core_forward_direct_real(
             inout, inout, 
             FFTW_FORWARD, 
             FFTW_ESTIMATE);
-    for (n = 0; n <= N-1; ++n)
+    for (n = n_start; n <= n_stop; n += n_inc)
         for (m = -L+1; m <= L-1; ++m)
         {
             memcpy(inout, 
@@ -2408,7 +2437,7 @@ void so3_core_forward_direct_real(
     free(inout);
 
     // Apply phase modulation to account for sampling offset.
-    for (n = 0; n <= N-1; ++n)
+    for (n = n_start; n <= n_stop; n += n_inc)
         for (m = -L+1; m <= L-1; ++m)
             for (mm = -L+1; mm <= L-1; ++mm)
                 Fmnm[mm + mm_offset + mm_stride*(
@@ -2459,7 +2488,7 @@ void so3_core_forward_direct_real(
     SO3_ERROR_MEM_ALLOC_CHECK(Fmnm_pad);
     complex double *Gmnm = calloc((2*L-1)*(2*L-1)*N, sizeof(*Gmnm));
     SO3_ERROR_MEM_ALLOC_CHECK(Gmnm);
-    for (n = 0; n <= N-1; ++n)
+    for (n = n_start; n <= n_stop; n += n_inc)
         for (m = -L+1; m <= L-1; ++m)
         {
 
@@ -2600,9 +2629,39 @@ void so3_core_forward_direct_real(
 
         // Compute flmn for current el.
 
-        int n_start = 0;
-        if (n_mode == SO3_N_MODE_L)
+
+        switch (n_mode)
+        {
+        case SO3_N_MODE_ALL:
+            n_start = 0;
+            n_stop  = el;
+            n_inc = 1;
+            break;
+        case SO3_N_MODE_EVEN:
+            n_start = 0;
+            n_stop  = el - (el%2);
+            n_inc = 2;
+            break;
+        case SO3_N_MODE_ODD:
+            n_start = 1;
+            n_stop  = el - (1-el%2);
+            n_inc = 2;
+            break;
+        case SO3_N_MODE_MAXIMUM:
+            if (el < N-1)
+                continue;
+            n_start = N-1;
+            n_stop  = N-1;
+            n_inc = 1;
+            break;
+        case SO3_N_MODE_L:
             n_start = el;
+            n_stop  = el;
+            n_inc = 1;
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid n-mode.");
+        }
     
         // TODO: Pull out a few multiplications into precomputations
         // or split up loops to avoid conditionals to check signs.
@@ -2612,7 +2671,7 @@ void so3_core_forward_direct_real(
             // Wigner symbols.
             double elmmsign = signs[el] * signs[abs(mm)];
 
-            for (n = n_start; n <= el; ++n)
+            for (n = n_start; n <= n_stop; n += n_inc)
             {
                 double mmsign = mm >= 0 ? 1.0 : signs[el] * signs[n];
                  
