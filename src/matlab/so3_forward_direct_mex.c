@@ -50,23 +50,23 @@
 
     /* Check number of arguments. */
     if (nrhs != 10)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:nrhs",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:nrhs",
                           "Require ten inputs.");
     if (nlhs != 1)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidOutput:nlhs",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidOutput:nlhs",
                           "Require one output.");
 
     /* Parse reality. */
     iin = 8;
     if( !mxIsLogicalScalar(prhs[iin]) )
-        mexErrMsgIdAndTxt("so3_inverse_mex:InvalidInput:reality",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:reality",
                           "Reality flag must be logical.");
     reality = mxIsLogicalScalarTrue(prhs[iin]);
 
     /* Parse function samples f. */
     iin = 0;
     if (mxGetNumberOfDimensions(prhs[iin]) != 3)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:fVector",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:fVector",
                           "Function samples must be contained in a 3d-array.");
     dims = mxGetDimensions(prhs[iin]);
     f_na = dims[2];
@@ -108,14 +108,14 @@
         mxIsComplex(prhs[iin]) ||
         mxGetNumberOfElements(prhs[iin])!=1)
     {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:lowerHarmonicBandLimit",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:lowerHarmonicBandLimit",
                           "Lower harmonic band-limit must be integer.");
     }
     L0 = (int)mxGetScalar(prhs[iin]);
     if (mxGetScalar(prhs[iin]) > (double)L0 ||
         L0 < 0)
     {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:lowerHarmonicBandLimitNonInt",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:lowerHarmonicBandLimitNonInt",
                           "Lower harmonic band-limit must be non-negative integer.");
     }
 
@@ -125,19 +125,19 @@
         mxIsComplex(prhs[iin]) ||
         mxGetNumberOfElements(prhs[iin])!=1)
     {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:harmonicBandLimit",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:harmonicBandLimit",
                           "Harmonic band-limit must be integer.");
     }
     L = (int)mxGetScalar(prhs[iin]);
     if (mxGetScalar(prhs[iin]) > (double)L ||
         L <= 0)
     {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:harmonicBandLimitNonInt",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:harmonicBandLimitNonInt",
                           "Harmonic band-limit must be positive integer.");
     }
 
     if (L0 >= L)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:bandLimitOrder",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:bandLimitOrder",
                           "Lower harmonic band-limit L0 must be less than upper harmonic band-limit L.");
 
     /* Parse orientational band-limit N. */
@@ -146,38 +146,38 @@
         mxIsComplex(prhs[iin]) ||
         mxGetNumberOfElements(prhs[iin])!=1)
     {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:orientationalBandLimit",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:orientationalBandLimit",
                           "Orientational band-limit must be integer.");
     }
     N = (int)mxGetScalar(prhs[iin]);
     if (mxGetScalar(prhs[iin]) > (double)N ||
         N <= 0)
     {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:orientationalBandLimitNonInt",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:orientationalBandLimitNonInt",
                           "Orientational band-limit must be positive integer.");
     }
 
     /* Parse storage order. */
     iin = 4;
     if( !mxIsChar(prhs[iin]) ) {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:orderChar",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:orderChar",
                           "Storage order must be string.");
     }
     len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
     if (len >= SO3_STRING_LEN)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:orderTooLong",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:orderTooLong",
                           "Storage order exceeds string length.");
     mxGetString(prhs[iin], order_str, len);
 
     /* Parse storage type. */
     iin = 5;
     if( !mxIsChar(prhs[iin]) ) {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:storageChar",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:storageChar",
                           "Storage type must be string.");
     }
     len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
     if (len >= SO3_STRING_LEN)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:storageTooLong",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:storageTooLong",
                           "Storage type exceeds string length.");
     mxGetString(prhs[iin], storage_str, len);
 
@@ -190,7 +190,7 @@
         storage_method = SO3_STORAGE_COMPACT;
     }
     else
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:storage",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:storage",
                           "Invalid storage type.");
 
     if (strcmp(order_str, SO3_N_ORDER_ZERO_FIRST_STR) == 0)
@@ -198,7 +198,7 @@
     else if (strcmp(order_str, SO3_N_ORDER_NEGATIVE_FIRST_STR) == 0)
         n_order = SO3_N_ORDER_NEGATIVE_FIRST;
     else
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:order",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:order",
                           "Invalid storage order.");
 
 
@@ -206,12 +206,12 @@
     /* Parse n-mode. */
     iin = 6;
     if( !mxIsChar(prhs[iin]) ) {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:nModeChar",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:nModeChar",
                           "Storage type must be string.");
     }
     len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
     if (len >= SO3_STRING_LEN)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:nModeTooLong",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:nModeTooLong",
                           "n-mode exceeds string length.");
     mxGetString(prhs[iin], n_mode_str, len);
 
@@ -226,18 +226,18 @@
     else if (strcmp(n_mode_str, SO3_N_MODE_MAXIMUM_STR) == 0)
         n_mode = SO3_N_MODE_MAXIMUM;
     else
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:nMode",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:nMode",
                           "Invalid n-mode.");
 
     /* Parse Wigner recursion method. */
     iin = 7;
     if( !mxIsChar(prhs[iin]) ) {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:dlMethodChar",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:dlMethodChar",
                           "Wigner recursion method must be string.");
     }
     len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
     if (len >= SO3_STRING_LEN)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:dlMethodTooLong",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:dlMethodTooLong",
                           "Wigner recursion method exceeds string length.");
     mxGetString(prhs[iin], dl_method_str, len);
 
@@ -246,18 +246,18 @@
     else if (strcmp(dl_method_str, SSHT_RECURSION_TRAPANI) == 0)
         dl_method = SSHT_DL_TRAPANI;
     else
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:dlMethod",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:dlMethod",
                           "Invalid Wigner recursion method.");
 
     /* Parse sampling scheme method. */
     iin = 9;
     if( !mxIsChar(prhs[iin]) ) {
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:samplingSchemeChar",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:samplingSchemeChar",
                           "Sampling scheme must be string.");
     }
     len = (mxGetM(prhs[iin]) * mxGetN(prhs[iin])) + 1;
     if (len >= SO3_STRING_LEN)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:samplingSchemeTooLong",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:samplingSchemeTooLong",
                           "Sampling scheme exceeds string length.");
     mxGetString(prhs[iin], sampling_str, len);
 
@@ -292,11 +292,11 @@
         ngamma = so3_sampling_ngamma(&parameters);
     }
     else
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:samplingScheme",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:samplingScheme",
                           "Invalid sampling scheme.");
 
     if (f_na != nalpha || f_nb != nbeta || f_ng != ngamma)
-        mexErrMsgIdAndTxt("so3_forward_mex:InvalidInput:fSize",
+        mexErrMsgIdAndTxt("so3_forward_direct_mex:InvalidInput:fSize",
                           "Invalid dimension sizes of function samples.");
 
     /* Compute inverse transform. */
@@ -305,14 +305,14 @@
 
     if (reality)
     {
-        so3_core_forward_via_ssht_real(
+        so3_core_forward_direct_real(
             flmn, fr,
             &parameters
         );
     }
     else
     {
-        so3_core_forward_via_ssht(
+        so3_core_forward_direct(
             flmn, f,
             &parameters
         );

@@ -201,6 +201,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     if (strcmp(n_mode_str, SO3_N_MODE_ALL_STR) == 0)
         n_mode = SO3_N_MODE_ALL;
+    else if (strcmp(n_mode_str, SO3_N_MODE_L_STR) == 0)
+        n_mode = SO3_N_MODE_L;
     else if (strcmp(n_mode_str, SO3_N_MODE_EVEN_STR) == 0)
         n_mode = SO3_N_MODE_EVEN;
     else if (strcmp(n_mode_str, SO3_N_MODE_ODD_STR) == 0)

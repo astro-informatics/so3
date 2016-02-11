@@ -10,6 +10,7 @@
 #define SO3_STORAGE_COMPACT_STR "Compact"
 
 #define SO3_N_MODE_ALL_STR "All"
+#define SO3_N_MODE_L_STR "L"
 #define SO3_N_MODE_EVEN_STR "Even"
 #define SO3_N_MODE_ODD_STR "Odd"
 #define SO3_N_MODE_MAXIMUM_STR "Maximum"

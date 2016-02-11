@@ -30,6 +30,7 @@ function [flmn] = so3_forward(f, L, N, varargin)
 %                 'Compact'       [indices for el < en are omitted] }
 %
 %   'NMode' = { 'All'             [all flmn are non-zero (default)],
+%               'L'               [only flmn for |m| = L are non-zero],
 %               'Even'            [only flmn for even n are non-zero],
 %               'Odd'             [only flmn for odd n are non-zero],
 %               'Maximum'         [only flmn for |n| = N-1 are non-zero] }
