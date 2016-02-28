@@ -34,6 +34,7 @@ complex double so3_sampling_weight(
     switch (parameters->sampling_scheme)
     {
     case SO3_SAMPLING_MW:
+    case SO3_SAMPLING_MW_SS:
         if (p == 1)
             return -I * SSHT_PION2;
         else if (p == -1)
@@ -42,9 +43,6 @@ complex double so3_sampling_weight(
             return 2.0 / (1.0 - p*p);
         else
             return 0.0;
-      
-    case SO3_SAMPLING_MW_SS:
-        SO3_ERROR_GENERIC("Sampling weights for MWSS not yet implemented.");
     default:
         SO3_ERROR_GENERIC("Invalid sampling scheme.");
     }

@@ -1130,18 +1130,22 @@ void so3_core_inverse_direct(
         switch (n_mode)
         {
         case SO3_N_MODE_ALL:
-            n_start = -el;
-            n_stop  =  el;
+            n_start = MAX(-N+1,-el);
+            n_stop  = MIN( N-1, el);
             n_inc = 1;
             break;
         case SO3_N_MODE_EVEN:
-            n_start = -el + (el%2);
-            n_stop  =  el - (el%2);
+            n_start = MAX(-N+1,-el);
+            n_start += (-n_start)%2;
+            n_stop  = MIN( N-1, el);
+            n_stop  -=  n_stop%2;
             n_inc = 2;
             break;
         case SO3_N_MODE_ODD:
-            n_start = -el + (1-el%2);
-            n_stop  =  el - (1-el%2);
+            n_start = MAX(-N+1,-el);
+            n_start += 1+n_start%2;
+            n_stop  = MIN( N-1, el);
+            n_stop  -= 1-n_stop%2;
             n_inc = 2;
             break;
         case SO3_N_MODE_MAXIMUM:
@@ -1152,6 +1156,8 @@ void so3_core_inverse_direct(
             n_inc = MAX(1,2*N-2);
             break;
         case SO3_N_MODE_L:
+            if (el >= N)
+                continue;
             n_start = -el;
             n_stop  =  el;
             n_inc = MAX(1,2*el);
@@ -1731,18 +1737,22 @@ void so3_core_forward_direct(
         switch (n_mode)
         {
         case SO3_N_MODE_ALL:
-            n_start = -el;
-            n_stop  =  el;
+            n_start = MAX(-N+1,-el);
+            n_stop  = MIN( N-1, el);
             n_inc = 1;
             break;
         case SO3_N_MODE_EVEN:
-            n_start = -el + (el%2);
-            n_stop  =  el - (el%2);
+            n_start = MAX(-N+1,-el);
+            n_start += (-n_start)%2;
+            n_stop  = MIN( N-1, el);
+            n_stop  -=  n_stop%2;
             n_inc = 2;
             break;
         case SO3_N_MODE_ODD:
-            n_start = -el + (1-el%2);
-            n_stop  =  el - (1-el%2);
+            n_start = MAX(-N+1,-el);
+            n_start += 1+n_start%2;
+            n_stop  = MIN( N-1, el);
+            n_stop  -= 1-n_stop%2;
             n_inc = 2;
             break;
         case SO3_N_MODE_MAXIMUM:
@@ -1753,6 +1763,8 @@ void so3_core_forward_direct(
             n_inc = MAX(1,2*N-2);
             break;
         case SO3_N_MODE_L:
+            if (el >= N)
+                continue;
             n_start = -el;
             n_stop  =  el;
             n_inc = MAX(1,2*el);
@@ -2019,17 +2031,19 @@ void so3_core_inverse_direct_real(
         {
         case SO3_N_MODE_ALL:
             n_start = 0;
-            n_stop  = el;
+            n_stop  = MIN( N-1, el);
             n_inc = 1;
             break;
         case SO3_N_MODE_EVEN:
             n_start = 0;
-            n_stop  = el - (el%2);
+            n_stop  = MIN( N-1, el);
+            n_stop  -=  n_stop%2;
             n_inc = 2;
             break;
         case SO3_N_MODE_ODD:
             n_start = 1;
-            n_stop  = el - (1-el%2);
+            n_stop  = MIN( N-1, el);
+            n_stop  -= 1-n_stop%2;
             n_inc = 2;
             break;
         case SO3_N_MODE_MAXIMUM:
@@ -2040,6 +2054,8 @@ void so3_core_inverse_direct_real(
             n_inc = 1;
             break;
         case SO3_N_MODE_L:
+            if (el >= N)
+                continue;
             n_start = el;
             n_stop  = el;
             n_inc = 1;
@@ -2634,17 +2650,19 @@ void so3_core_forward_direct_real(
         {
         case SO3_N_MODE_ALL:
             n_start = 0;
-            n_stop  = el;
+            n_stop  = MIN( N-1, el);
             n_inc = 1;
             break;
         case SO3_N_MODE_EVEN:
             n_start = 0;
-            n_stop  = el - (el%2);
+            n_stop  = MIN( N-1, el);
+            n_stop  -=  n_stop%2;
             n_inc = 2;
             break;
         case SO3_N_MODE_ODD:
             n_start = 1;
-            n_stop  = el - (1-el%2);
+            n_stop  = MIN( N-1, el);
+            n_stop  -= 1-n_stop%2;
             n_inc = 2;
             break;
         case SO3_N_MODE_MAXIMUM:
@@ -2655,6 +2673,8 @@ void so3_core_forward_direct_real(
             n_inc = 1;
             break;
         case SO3_N_MODE_L:
+            if (el >= N)
+                continue;
             n_start = el;
             n_stop  = el;
             n_inc = 1;
