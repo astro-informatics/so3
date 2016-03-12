@@ -98,23 +98,31 @@ LDFLAGSMEX = -L$(SO3LIB) -l$(SO3LIBNM) -L$(SSHTLIB) -l$(SSHTLIBNM) -L$(FFTWLIB) 
 
 SO3OBJS = $(SO3OBJ)/so3_sampling.o    \
           $(SO3OBJ)/so3_core.o        \
+          $(SO3OBJ)/so3_adjoint.o
 
 SO3HEADERS = so3_types.h     \
              so3_error.h     \
              so3_sampling.h  \
-             so3_core.h
+             so3_core.h 	 \
+             so3_adjoint.h
 
 SO3OBJSMAT = $(SO3OBJMAT)/so3_sampling_mex.o \
              $(SO3OBJMAT)/so3_elmn2ind_mex.o \
              $(SO3OBJMAT)/so3_ind2elmn_mex.o \
              $(SO3OBJMAT)/so3_forward_mex.o  \
-             $(SO3OBJMAT)/so3_inverse_mex.o
+             $(SO3OBJMAT)/so3_inverse_mex.o  \
+             $(SO3OBJMAT)/so3_forward_direct_mex.o  \
+             $(SO3OBJMAT)/so3_inverse_direct_mex.o  \
+             $(SO3OBJMAT)/so3_inverse_adjoint_direct_mex.o
 
 SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) \
              $(SO3OBJMEX)/so3_elmn2ind_mex.$(MEXEXT) \
              $(SO3OBJMEX)/so3_ind2elmn_mex.$(MEXEXT) \
              $(SO3OBJMEX)/so3_forward_mex.$(MEXEXT)  \
-             $(SO3OBJMEX)/so3_inverse_mex.$(MEXEXT)
+             $(SO3OBJMEX)/so3_inverse_mex.$(MEXEXT)  \
+             $(SO3OBJMEX)/so3_forward_direct_mex.$(MEXEXT)  \
+             $(SO3OBJMEX)/so3_inverse_direct_mex.$(MEXEXT)  \
+             $(SO3OBJMEX)/so3_inverse_adjoint_direct_mex.$(MEXEXT)
 
 
 # ======== MAKE RULES ========

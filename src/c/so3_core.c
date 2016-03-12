@@ -1428,7 +1428,7 @@ void so3_core_forward_direct(
     SO3_ERROR_MEM_ALLOC_CHECK(sqrt_tbl);
     double *signs = calloc(L+1, sizeof(*signs));
     SO3_ERROR_MEM_ALLOC_CHECK(signs);
-    complex double *exps = calloc(2*L-1, sizeof(*exps));
+    complex double *exps = calloc(4, sizeof(*exps));
     SO3_ERROR_MEM_ALLOC_CHECK(exps);
     complex double *expsmm = calloc(2*L-1, sizeof(*expsmm));
     SO3_ERROR_MEM_ALLOC_CHECK(expsmm);
@@ -2329,7 +2329,7 @@ void so3_core_forward_direct_real(
     SO3_ERROR_MEM_ALLOC_CHECK(sqrt_tbl);
     double *signs = calloc(L+1, sizeof(*signs));
     SO3_ERROR_MEM_ALLOC_CHECK(signs);
-    complex double *exps = calloc(2*L-1, sizeof(*exps));
+    complex double *exps = calloc(4, sizeof(*exps));
     SO3_ERROR_MEM_ALLOC_CHECK(exps);
     complex double *expsmm = calloc(2*L-1, sizeof(*expsmm));
     SO3_ERROR_MEM_ALLOC_CHECK(expsmm);
