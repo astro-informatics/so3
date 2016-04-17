@@ -113,6 +113,7 @@ SO3OBJSMAT = $(SO3OBJMAT)/so3_sampling_mex.o \
              $(SO3OBJMAT)/so3_inverse_mex.o  \
              $(SO3OBJMAT)/so3_forward_direct_mex.o  \
              $(SO3OBJMAT)/so3_inverse_direct_mex.o  \
+             $(SO3OBJMAT)/so3_forward_adjoint_direct_mex.o  \
              $(SO3OBJMAT)/so3_inverse_adjoint_direct_mex.o
 
 SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) \
@@ -122,6 +123,7 @@ SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) \
              $(SO3OBJMEX)/so3_inverse_mex.$(MEXEXT)  \
              $(SO3OBJMEX)/so3_forward_direct_mex.$(MEXEXT)  \
              $(SO3OBJMEX)/so3_inverse_direct_mex.$(MEXEXT)  \
+             $(SO3OBJMEX)/so3_forward_adjoint_direct_mex.$(MEXEXT)  \
              $(SO3OBJMEX)/so3_inverse_adjoint_direct_mex.$(MEXEXT)
 
 
