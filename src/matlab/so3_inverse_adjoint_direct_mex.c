@@ -302,7 +302,7 @@
     /* Compute inverse transform. */
 
     flmn = calloc(flmn_size, sizeof(*flmn));
-
+    
     if (reality)
     {
         so3_adjoint_inverse_direct_real(
