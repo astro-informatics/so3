@@ -1,6 +1,6 @@
 function so3_adjoint_forward_test(L, N)
 % Define transforms.
-real = false % this must be the case
+real = true % this must be the case
  
 so3F = @(f) so3_forward_direct(f, L, N, 'Sampling', 'MW', ...
     'Order', 'NegativeFirst', 'Reality', real);
@@ -21,20 +21,21 @@ else
 end
 % Create random flmn vector
 if (real)
-    flmn = randn((N)*L*L, 1) + 1i*randn((N)*L*L, 1);
+    g = randn(ngamma,nbeta,nalpha);
+    flmn = so3_forward(g, L, N, 'Sampling', 'MW', 'Order', 'NegativeFirst', 'Reality', true);
 else
     flmn = randn((2*N-1)*L*L, 1) + 1i*randn((2*N-1)*L*L, 1);
 end
 
 % Compute scalar via standard transform:
 
-Ax = so3F(f);
+Ax = so3F(f)
 
 yAx = flmn(:)' * Ax(:)
 
 % Compute scalar via adjoint transform:
 
-Ay = so3FA(flmn);
+Ay = so3FA(flmn)
 
 yAxA = Ay(:)' * f(:)
 
