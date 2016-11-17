@@ -2,10 +2,10 @@ function [Ax, AxE] = so3_adjoint_inverse_test(L, N)
 % Define transforms.
 real = true % this must be the case
  
-so3I = @(flmn) so3_inverse_direct(so3_pack_flmn(flmn,L,N), L, N, 'Sampling', 'MW', ...
+so3I = @(flmn) so3_inverse_direct(flmn, L, N, 'Sampling', 'MW', ...
     'Order', 'NegativeFirst', 'Reality', real);
-so3IA = @(f) so3_unpack_flmn(so3_inverse_adjoint_direct(f, L, N, 'Sampling', 'MW', ...
-    'Order', 'NegativeFirst', 'Reality', real),L,N);
+so3IA = @(f) so3_inverse_adjoint_direct(f, L, N, 'Sampling', 'MW', ...
+    'Order', 'NegativeFirst', 'Reality', real);
 [alphas, betas, gammas, n, nalpha, nbeta, ngamma] = so3_sampling(L, N, ...
     'Grid', true, 'Method', 'MW');
  
@@ -44,7 +44,6 @@ end
 if (real)
     g = randn(ngamma,nbeta,nalpha);
     flmn = so3_forward(g, L, N, 'Sampling', 'MW', 'Order', 'NegativeFirst', 'Reality', true);
-    flmn = so3_unpack_flmn(flmn, L, N);
 else
     flmn = randn((2*N-1)*L*L, 1) + 1i*randn((2*N-1)*L*L, 1);
 end
@@ -59,7 +58,10 @@ yAx = f(:)' * Ax(:)
 
 Ay = so3IA(f);
 
-yAxA = Ay(:)' * flmn(:)
+upflmn = so3_unpack_flmn(flmn,L,N);
+upAy   = so3_unpack_flmn(Ay,L,N);
+
+yAxA = upAy(:)' * upflmn(:)
 
 test_dot = flmn(:)' * flmn(:)
 
