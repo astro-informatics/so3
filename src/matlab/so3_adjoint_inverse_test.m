@@ -1,6 +1,6 @@
 function [Ax, AxE] = so3_adjoint_inverse_test(L, N)
 % Define transforms.
-real = true % this must be the case
+real = false % this must be the case
  
 so3I = @(flmn) so3_inverse_direct(flmn, L, N, 'Sampling', 'MW', ...
     'Order', 'NegativeFirst', 'Reality', real);

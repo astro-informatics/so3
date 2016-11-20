@@ -1,6 +1,6 @@
 # ======== COMPILER ========
 
-CC	= gcc-4.4
+CC	= gcc
 #OPT	= -Wall -O3 -fopenmp -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
 OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
 
@@ -11,7 +11,7 @@ UNAME := $(shell uname)
 PROGDIR = ..
 
 ifeq ($(UNAME), Linux)
-  MLAB		= /usr/local/MATLAB/R2013a
+  MLAB		= /usr/local/MATLAB/matlab
   MLABINC	= ${MLAB}/extern/include
   MLABLIB	= ${MLAB}/extern/lib
 
@@ -45,7 +45,7 @@ SSHTBIN  = $(SSHTDIR)/bin/c
 SSHTINC  = $(SSHTDIR)/include/c
 
 ifeq ($(UNAME), Linux)
-  FFTWDIR      = $(PROGDIR)/fftw-3.2.2_fPIC
+  FFTWDIR      = $(PROGDIR)/fftw
 endif
 ifeq ($(UNAME), Darwin)
   FFTWDIR      = $(FFTW)

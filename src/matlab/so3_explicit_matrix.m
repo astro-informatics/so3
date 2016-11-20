@@ -14,7 +14,7 @@ function [F_so3, I_so3] = so3_explicit_matrix(L, N, method)
 % Author: Christopher Wallis (www.christophergrwallis.org)
  
 % Define transforms.
-real = false % this must be the case
+real = true % this must be the case
  
 so3I = @(flmn) so3_forward_adjoint_direct(flmn, L, N, 'Sampling', method, ...
     'Order', 'NegativeFirst', 'Reality', real);
