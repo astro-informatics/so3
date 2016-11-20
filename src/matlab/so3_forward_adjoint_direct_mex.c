@@ -318,7 +318,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
                 for(a = 0; a < nalpha; ++a)
                 {
                     f_real[a*ngamma*nbeta + b*ngamma + g] = fr[g*nalpha*nbeta + b*nalpha + a];
-                    printf("%.6f\t%.6f\n", f_real[a*ngamma*nbeta + b*ngamma + g], fr[g*nalpha*nbeta + b*nalpha + a]);
+                    // printf("%.6f\t%.6f\n", f_real[a*ngamma*nbeta + b*ngamma + g], fr[g*nalpha*nbeta + b*nalpha + a]);
                 }
             }
         }
@@ -337,7 +337,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
                 {
                     f_real[a*ngamma*nbeta + b*ngamma + g] = creal(f[g*nalpha*nbeta + b*nalpha + a]);
                     f_imag[a*ngamma*nbeta + b*ngamma + g] = cimag(f[g*nalpha*nbeta + b*nalpha + a]);
-                    printf("%.6f\t%.6f\n", f_real[a*ngamma*nbeta + b*ngamma + g], creal(f[g*nalpha*nbeta + b*nalpha + a]));
+                    // printf("%.6f\t%.6f\n", f_real[a*ngamma*nbeta + b*ngamma + g], creal(f[g*nalpha*nbeta + b*nalpha + a]));
                 }
             }
         }

@@ -1,6 +1,6 @@
 function [Ax, AxE] = so3_adjoint_inverse_test(L, N)
 % Define transforms.
-real = false % this must be the case
+real = true % this must be the case
  
 so3I = @(flmn) so3_inverse_direct(flmn, L, N, 'Sampling', 'MW', ...
     'Order', 'NegativeFirst', 'Reality', real);
@@ -58,10 +58,14 @@ yAx = f(:)' * Ax(:)
 
 Ay = so3IA(f);
 
-upflmn = so3_unpack_flmn(flmn,L,N);
-upAy   = so3_unpack_flmn(Ay,L,N);
+if (real)
+    upflmn = so3_unpack_flmn(flmn,L,N);
+    upAy   = so3_unpack_flmn(Ay,L,N);
 
-yAxA = upAy(:)' * upflmn(:)
+    yAxA = upAy(:)' * upflmn(:)
+else
+    yAxA = Ay(:)' * flmn(:)
+end
 
 test_dot = flmn(:)' * flmn(:)
 

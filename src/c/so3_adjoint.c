@@ -1343,7 +1343,7 @@ void so3_adjoint_forward_direct_real(
     }
 
     // Iterators
-    int el, m, n, mm, b, g; // mm for m'
+    int el, m, n, mm, a, b, g; // mm for m'
 
     int m_stride = 2*L-1;
     int m_offset = L-1;
@@ -1826,7 +1826,8 @@ void so3_adjoint_forward_direct_real(
 
     free(Fmnb);
     free(Fmnm);
-    free(inout);
+    free(fft_in);
+    free(fft_out);
     free(w);
     free(wr);
     free(Gmnm_pad);

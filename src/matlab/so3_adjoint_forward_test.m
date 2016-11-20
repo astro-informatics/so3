@@ -31,11 +31,20 @@ end
 
 Ax = so3F(f)
 
-yAx = flmn(:)' * Ax(:)
+if (real)
+    upflmn = so3_unpack_flmn(flmn,L,N);
+    upAx   = so3_unpack_flmn(Ax,L,N);
+
+    yAx = upflmn(:)' * upAx(:)
+else
+    yAx = flmn(:)' * Ax(:)
+end
+
+%yAx = flmn(:)' * Ax(:)
 
 % Compute scalar via adjoint transform:
 
-Ay = so3FA(flmn)
+Ay = so3FA(flmn);
 
 yAxA = Ay(:)' * f(:)
 
