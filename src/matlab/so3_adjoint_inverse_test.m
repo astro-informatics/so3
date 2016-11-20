@@ -58,10 +58,15 @@ yAx = f(:)' * Ax(:)
 
 Ay = so3IA(f);
 
-yAxA = Ay(:)' * flmn(:)
+upflmn = so3_unpack_flmn(flmn,L,N);
+upAy   = so3_unpack_flmn(Ay,L,N);
 
-abs(yAx - yAxA)
+yAxA = upAy(:)' * upflmn(:)
 
-AxE = F_so3' * flmn(:);
+test_dot = flmn(:)' * flmn(:)
 
-max(abs(Ax(:) - AxE(:)))
+yAx - yAxA
+
+%AxE = F_so3' * flmn(:)
+
+%max(abs(Ax(:) - AxE(:)))
