@@ -138,12 +138,12 @@ int main(int argc, char **argv)
 
     // routine == 0 --> use SSHT
     // routine == 1 --> don't use SSHT
-    for (routine = 1; routine < 2; ++routine)
+    for (routine = 0; routine < 2; ++routine)
     {
         // real == 0 --> complex signal
         // real == 1 --> real signal
 
-        for (real = 1; real < 2; ++real)
+        for (real = 0; real < 2; ++real)
         {
             parameters.reality = real;
 
@@ -193,8 +193,8 @@ int main(int argc, char **argv)
 
                                 time_start = clock();
                                 if (routine)
-                                    if (real) so3_adjoint_forward_direct_real(f_real, flmn_orig, &parameters);
-                                    else      so3_adjoint_forward_direct(f, flmn_orig, &parameters);
+                                    if (real) so3_core_inverse_direct_real(f_real, flmn_orig, &parameters);
+                                    else      so3_core_inverse_direct(f, flmn_orig, &parameters);
                                 else
                                     if (real) so3_core_inverse_via_ssht_real(f_real, flmn_orig, &parameters);
                                     else      so3_core_inverse_via_ssht(f, flmn_orig, &parameters);
@@ -206,8 +206,8 @@ int main(int argc, char **argv)
 
                                 time_start = clock();
                                 if (routine)
-                                    if (real) so3_adjoint_inverse_direct_real(flmn_syn, f_real, &parameters);
-                                    else      so3_adjoint_inverse_direct(flmn_syn, f, &parameters);
+                                    if (real) so3_core_forward_direct_real(flmn_syn, f_real, &parameters);
+                                    else      so3_core_forward_direct(flmn_syn, f, &parameters);
                                 else
                                     if (real) so3_core_forward_via_ssht_real(flmn_syn, f_real, &parameters);
                                     else      so3_core_forward_via_ssht(flmn_syn, f, &parameters);
@@ -248,13 +248,13 @@ int main(int argc, char **argv)
 
     // routine == 0 --> use SSHT
     // routine == 1 --> don't use SSHT
-    for (routine = 1; routine < 2; ++routine)
+    for (routine = 0; routine < 2; ++routine)
     {
         printf("Results for routines %s...\n", routine_str[routine]);
         // real == 0 --> complex signal
         // real == 1 --> real signal
 
-        for (real = 1; real < 2; ++real)
+        for (real = 0; real < 2; ++real)
         {
             printf("  ...with %s signals...\n", reality_str[real]);
 
