@@ -849,7 +849,7 @@ void so3_adjoint_forward_direct(
                          n + n_offset))] / (2.0*L-1.0);
             }
             fftw_execute_dft(plan, inout, inout);
-            memcpy(Fmnb + 0 + mm_stride*(
+            memcpy(Fmnb + 0 + bext_stride*(
                           m + m_offset + m_stride*(
                           n + n_offset)),
                    inout,
@@ -1537,7 +1537,7 @@ void so3_adjoint_forward_direct_real(
             for (m = -el; m <= el; ++m)
             {
                 int ind;
-                so3_sampling_elmn2ind(&ind, el, m, n, parameters);
+                so3_sampling_elmn2ind_real(&ind, el, m, n, parameters);
                 int mod = ((n-m)%4 + 4)%4;
                 mn_factors[m + m_offset + m_stride*(
                            n + n_offset)] =
@@ -1752,7 +1752,7 @@ void so3_adjoint_forward_direct_real(
                          n + n_offset))] / (2.0*L-1.0);
             }
             fftw_execute_dft(plan, inout, inout);
-            memcpy(Fmnb + 0 + mm_stride*(
+            memcpy(Fmnb + 0 + bext_stride*(
                           m + m_offset + m_stride*(
                           n + n_offset)),
                    inout,
