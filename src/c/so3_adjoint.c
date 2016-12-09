@@ -403,6 +403,7 @@ void so3_adjoint_forward_direct(
     complex double *f, const complex double *flmn,
     const so3_parameters_t *parameters
 ) {    
+    printf("here\n");
     int L0, L, N;
     so3_sampling_t sampling;
     so3_storage_t storage;
@@ -887,9 +888,12 @@ void so3_adjoint_forward_direct(
         FFTW_ESTIMATE);
 
     double norm_factor = 1.0/(2.0*L-1.0)/(2.0*N-1.0);
+    int i_count;
 
     for (b = 0; b < L; ++b)
     {
+        for (i_count=0; i_count<(2*L-1)*(2*N-1); i_count++) {inout[i_count] = 0.0;}
+
         // Apply spatial shift and normalisation factor
         for (n = n_start; n <= n_stop; n += n_inc)
         {
@@ -904,7 +908,7 @@ void so3_adjoint_forward_direct(
                          n + n_offset))] * norm_factor;
             }
         }
-
+        for (i_count=0; i_count<(2*L-1)*(2*N-1); i_count++) {if (abs(inout[i_count]) > 1E9) printf("inout (before), %d, %d,  %e\n", b, i_count, creal(inout[i_count]));}
         fftw_execute_dft(plan, inout, inout);
 
         // TODO: This memcpy loop could probably be avoided by using
@@ -918,7 +922,11 @@ void so3_adjoint_forward_direct(
                 inout + g*a_stride, 
                 a_stride*sizeof(*f));
 
+        for (i_count=0; i_count<(2*L-1)*(2*N-1); i_count++) if (abs(inout[i_count]) > 1E9) printf("inout (after), %d, %d,  %e\n", b, i_count, creal(inout[i_count]));
+
     }
+    for (i_count=0; i_count<(2*L-1)*(2*L-1)*(2*N-1); i_count++) if (abs(Fmnb[i_count]) > 1E2) printf("Fmnb, %d,  %e\n", i_count, creal(Fmnb[i_count]));
+    for (i_count=0; i_count<(2*L-1)*(L)*(2*N-1); i_count++) if (creal(f[i_count]) > 1E80) printf("f, %d,  %e\n", i_count, creal(f[i_count]));
     fftw_destroy_plan(plan);
 
     free(Fmnb);
