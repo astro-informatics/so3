@@ -891,7 +891,7 @@ void so3_adjoint_forward_direct(
 
     for (b = 0; b < L; ++b)
     {
-        for (i_count=0; i_count<(2*L-1)*(2*N-1); i_count++) {inout[i_count] = 0.0;}
+        for (int i_count=0; i_count<(2*L-1)*(2*N-1); i_count++) {inout[i_count] = 0.0;}
 
         // Apply spatial shift and normalisation factor
         for (n = n_start; n <= n_stop; n += n_inc)
