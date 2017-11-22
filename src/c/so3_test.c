@@ -33,7 +33,7 @@
 
 #include <so3.h>
 
-#define NREPEAT 2
+#define NREPEAT 5
 #define MIN(a,b) ((a < b) ? (a) : (b))
 #define MAX(a,b) ((a > b) ? (a) : (b))
 
@@ -83,17 +83,17 @@ int main(int argc, char **argv)
     sampling_str[0] = "MW";
     sampling_str[1] = "MWSS";
 
-    steerable_str[0] = "STEERABLE";
-    steerable_str[1] = "NOT STEERABLE";
+    steerable_str[0] = "NOT STEERABLE";
+    steerable_str[1] = "STEERABLE";
 
     // one element for each combination of sampling scheme, storage mode, n-mode and
     // real or complex signal.
     //double errors[2][SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2][2];
     //double durations_forward[2][SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2][2];
     //double durations_inverse[2][SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2][2];
-    double errors[2][SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][1][SO3_N_MODE_SIZE][2];
-    double durations_forward[2][SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][1][SO3_N_MODE_SIZE][2];
-    double durations_inverse[2][SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][1][SO3_N_MODE_SIZE][2];
+    double errors[2][SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
+    double durations_forward[2][SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
+    double durations_inverse[2][SO3_SAMPLING_SIZE][SO3_N_MODE_SIZE][SO3_STORAGE_SIZE][SO3_N_MODE_SIZE][2];
 
     //fftw_init_threads();
     //int nthreads = omp_get_max_threads();
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
     //fftw_plan_with_nthreads(nthreads);
 
     // Parse command line arguments
-    L = N = 64;
+    L = N = 4;
     L0 = 0;
     seed = 1;
     if (argc > 1)
@@ -170,8 +170,8 @@ int main(int argc, char **argv)
                 {
                     parameters.n_order = n_order;
 
-                    //for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
-                    for (storage_mode = 0; storage_mode < 1; ++storage_mode)
+                    for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
+                    //for (storage_mode = 0; storage_mode < 1; ++storage_mode)
                     {
                         parameters.storage = storage_mode;
 
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
                             for (i = 0; i <NREPEAT; ++i)
                             {
                                 int j;
-                                double duration, tot, count, tot_inverse, error_direct, error_ssht;
+                                double duration, tot, tot_inverse, error_direct, error_ssht;
                                 double inverse_duration_ssht, forward_duration_ssht;
                                 double inverse_duration_direct, forward_duration_direct;
 
@@ -224,10 +224,12 @@ int main(int argc, char **argv)
 
                                 // Reset output array
                                 for (j = 0; j < (2*N-1)*L*L; ++j)
+                                {
                                     flmn_syn_direct[j] = 0.0;
                                     flmn_syn_ssht[j] = 0.0;
+                                }
 
-                                count = 0.0;
+                                //count = 0.0;
                                 tot = 0.0;
                                 tot_inverse = 0.0;
                                 error_direct = 0.0;
@@ -283,7 +285,7 @@ int main(int argc, char **argv)
                                     durations_forward[steerable][sampling_scheme][n_order][storage_mode][n_mode][real] = duration;
 
                                 flmn_size = so3_sampling_flmn_size(&parameters);
-                                errors[steerable][sampling_scheme][n_order][storage_mode][n_mode][real] += get_max_error(flmn_orig, flmn_syn_direct, flmn_size)/NREPEAT;
+                                errors[steerable][sampling_scheme][n_order][storage_mode][n_mode][real] += get_max_error(flmn_orig, flmn_syn_ssht, flmn_size)/NREPEAT;
                                 //printf("%.10e,",*flmn_syn);
                                 //printf("%.10e",*flmn_orig);
                                 //printf(" ---");
@@ -362,7 +364,7 @@ int main(int argc, char **argv)
     for (steerable = 0; steerable < 2; ++steerable)
     {
 
-        //printf("Results for routines %s...\n", routine_str[routine]);
+        printf("Results for %s...\n", steerable_str[steerable]);
         // real == 0 --> complex signal
         // real == 1 --> real signal
 
@@ -394,7 +396,7 @@ int main(int argc, char **argv)
                             //printf("            Average max errors for round-trip:  %e\n", errors[steerable][sampling_scheme][n_order][storage_mode][n_mode][real]);
                         }
                     }
-                    //printf("\n");
+                    printf("\n");
                 }
             }
         }
