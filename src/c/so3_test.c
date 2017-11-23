@@ -33,7 +33,7 @@
 
 #include <so3.h>
 
-#define NREPEAT 5
+#define NREPEAT 2
 #define MIN(a,b) ((a < b) ? (a) : (b))
 #define MAX(a,b) ((a > b) ? (a) : (b))
 
@@ -102,6 +102,7 @@ int main(int argc, char **argv)
 
     // Parse command line arguments
     L = N = 4;
+    int show_arrays = 2;
     L0 = 0;
     seed = 1;
     if (argc > 1)
@@ -151,11 +152,12 @@ int main(int argc, char **argv)
 
     // steerable == 0 --> don't use steerable
     // steerable == 1 --> use steerable
-    for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
+    //for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
+    for (n_mode = 0; n_mode < 2; ++ n_mode)
     {
         parameters.n_mode = n_mode;
 
-        for (real = 0; real < 2; ++real)
+        for (real = 0; real < 1; ++real)
         {
             parameters.reality = real;
 
@@ -166,12 +168,13 @@ int main(int argc, char **argv)
 
                 // For real signals, the n_order does not matter, so skip the second option
                 // in that case.
-                for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
+                //for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
+                for (n_order = 0; n_order < 1; ++n_order)
                 {
                     parameters.n_order = n_order;
 
-                    for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
-                    //for (storage_mode = 0; storage_mode < 1; ++storage_mode)
+                    //for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
+                    for (storage_mode = 0; storage_mode < 1; ++storage_mode)
                     {
                         parameters.storage = storage_mode;
 
@@ -183,6 +186,7 @@ int main(int argc, char **argv)
                             durations_forward[steerable][sampling_scheme][n_order][storage_mode][n_mode][real] = 0.0;
                             errors[steerable][sampling_scheme][n_order][storage_mode][n_mode][real] = 0.0;
 
+                            printf("\n");
                             printf("Testing a %s signal with %s with %s sampling using %s with %s. N-Mode: %s. Running %d times: ",
                                     reality_str[real],
                                     steerable_str[steerable],
@@ -191,7 +195,6 @@ int main(int argc, char **argv)
                                     n_order_str[n_order],
                                     n_mode_str[n_mode],
                                     NREPEAT);
-                            printf("\n");
                             printf("\n");
 
 
@@ -235,7 +238,7 @@ int main(int argc, char **argv)
                                 error_direct = 0.0;
                                 error_ssht = 0.0;
                                 
-
+                                //parameters.steerable = steerable;
 
                                 if (real) so3_test_gen_flmn_real(flmn_orig, &parameters, seed);
                                 else      so3_test_gen_flmn_complex(flmn_orig, &parameters, seed);
@@ -261,6 +264,8 @@ int main(int argc, char **argv)
                                 duration = (time_end - time_start) / (double)CLOCKS_PER_SEC;
                                 if (!i || duration < durations_inverse[steerable][sampling_scheme][n_order][storage_mode][n_mode][real])
                                     durations_inverse[steerable][sampling_scheme][n_order][storage_mode][n_mode][real] = duration;
+
+                                //parameters.steerable = 0;
 
                                 time_start = clock();
                                 
@@ -322,17 +327,261 @@ int main(int argc, char **argv)
                                 printf("  |-|  ");
                                 printf("%.7e", inverse_duration_ssht);
                                 printf("  |-|  ");
-                                printf("%.7e", forward_duration_ssht);
+                                printf("%.7e\n", forward_duration_ssht);
                                 //for (j = 0; j < (2*N-1)*L*L; ++j)
                                   //  if (real) tot = flmn_syn[j];
                                     //else tot = cabs(flmn_syn[j]);
 
                                    // if (tot != 0.0) count = count + tot;
                                 //printf("%.30e", count);
-                            printf("\n");
 
-                                    
                             }
+
+                            if (show_arrays == 1)
+                            {    
+                                int c1, c2, c3;
+                                c1 = c2 = c3 = 0;
+
+                                printf("\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                printf("\n");
+                                printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SSHT flmn real component ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                for (int k = 0; k < (2*N-1)*L*L; ++k)
+                                {
+                                    if (k < 10)
+                                    {
+                                        printf("|| %d   ||",k);  
+                                    }
+                                    if (k > 9 && k < 100)
+                                    {
+                                        printf("|| %d  ||",k);  
+                                    }
+                                    if (k > 99)
+                                    {
+                                        printf("|| %d ||",k);  
+                                    }
+
+                                    if (creal(flmn_syn_ssht[k]) >= 0.0)
+                                    {
+                                        if (creal(flmn_syn_ssht[k]) == 0.0) printf(" --------- ");
+                                        else printf(" %.3e ", creal(flmn_syn_ssht[k]));
+                                    }
+                                    else
+                                    {
+                                        printf("%.3e ", creal(flmn_syn_ssht[k]));
+                                    }
+                                    ++c1;
+
+                                    if (c1 == 7)
+                                    {
+                                        printf("\n");
+                                        c1 = 0;
+                                    }
+                                }
+
+                                printf("\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                printf("\n");
+                                printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DIRECT flmn real component ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                for (int h = 0; h < (2*N-1)*L*L; ++h)
+                                {
+                                    if (h < 10)
+                                    {
+                                        printf("|| %d   ||",h);  
+                                    }
+                                    if (h > 9 && h < 100)
+                                    {
+                                        printf("|| %d  ||",h);  
+                                    }
+                                    if (h > 99)
+                                    {
+                                        printf("|| %d ||",h);  
+                                    }
+
+                                    if (creal(flmn_syn_direct[h]) >= 0.0)
+                                    {
+                                        if (creal(flmn_syn_direct[h]) == 0.0) printf(" --------- ");
+                                        else printf(" %.3e ", creal(flmn_syn_direct[h]));
+                                    }
+                                    else
+                                    {
+                                        printf("%.3e ", creal(flmn_syn_direct[h]));
+                                    }
+                                
+                                    ++c2;
+
+                                    if (c2 == 7)
+                                    {
+                                        printf("\n");
+                                        c2 = 0;
+                                    }
+                                }
+
+                                printf("\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                printf("\n");
+                                printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TRUE flmn real component~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                for (int r = 0; r < (2*N-1)*L*L; ++r)
+                                {
+                                    if (r < 10)
+                                    {
+                                        printf("|| %d   ||",r);  
+                                    }
+                                    if (r > 9 && r < 100)
+                                    {
+                                        printf("|| %d  ||",r);  
+                                    }
+                                    if (r > 99)
+                                    {
+                                        printf("|| %d ||",r);  
+                                    }
+
+                                    if (creal(flmn_orig[r]) >= 0.0)
+                                    {
+                                        if (creal(flmn_orig[r]) == 0.0) printf(" --------- ");
+                                        else printf(" %.3e ", creal(flmn_orig[r]));
+                                    }
+                                    else
+                                    {
+                                        printf("%.3e ", creal(flmn_orig[r]));
+                                    }
+                                    ++c3;
+
+                                    if (c3 == 7)
+                                    {
+                                        printf("\n");
+                                        c3 = 0;
+                                    }
+                                }
+                            }
+
+                            if (show_arrays == 2)
+                            {    
+                                int c1, c2, c3;
+                                c1 = c2 = c3 = 0;
+
+                                printf("\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                printf("\n");
+                                printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SSHT real part of f ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                for (int k = 0; k < (2*N-1)*L*L; ++k)
+                                {
+                                    if (k < 10)
+                                    {
+                                        printf("|| %d   ||",k);  
+                                    }
+                                    if (k > 9 && k < 100)
+                                    {
+                                        printf("|| %d  ||",k);  
+                                    }
+                                    if (k > 99)
+                                    {
+                                        printf("|| %d ||",k);  
+                                    }
+
+                                    if (creal(f_ssht[k]) >= 0.0)
+                                    {
+                                        if (creal(f_ssht[k]) == 0.0) printf(" --------- ");
+                                        else printf(" %.3e ", creal(f_ssht[k]));
+                                    }
+                                    else
+                                    {
+                                        printf("%.3e ", creal(f_ssht[k]));
+                                    }
+                                    ++c1;
+
+                                    if (c1 == 7)
+                                    {
+                                        printf("\n");
+                                        c1 = 0;
+                                    }
+                                }
+
+                                printf("\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                printf("\n");
+                                printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DIRECT real part of f ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                for (int h = 0; h < (2*N-1)*L*L; ++h)
+                                {
+                                    if (h < 10)
+                                    {
+                                        printf("|| %d   ||",h);  
+                                    }
+                                    if (h > 9 && h < 100)
+                                    {
+                                        printf("|| %d  ||",h);  
+                                    }
+                                    if (h > 99)
+                                    {
+                                        printf("|| %d ||",h);  
+                                    }
+
+                                    if (creal(f_direct[h]) >= 0.0)
+                                    {
+                                        if (creal(f_direct[h]) == 0.0) printf(" --------- ");
+                                        else printf(" %.3e ", creal(f_direct[h]));
+                                    }
+                                    else
+                                    {
+                                        printf("%.3e ", creal(f_direct[h]));
+                                    }
+                                
+                                    ++c2;
+
+                                    if (c2 == 7)
+                                    {
+                                        printf("\n");
+                                        c2 = 0;
+                                    }
+                                }
+
+                                printf("\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                printf("\n");
+                                printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Difference between real part of  f's ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+                                printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+                                for (int r = 0; r < (2*N-1)*L*L; ++r)
+                                {
+                                    if (r < 10)
+                                    {
+                                        printf("|| %d   ||",r);  
+                                    }
+                                    if (r > 9 && r < 100)
+                                    {
+                                        printf("|| %d  ||",r);  
+                                    }
+                                    if (r > 99)
+                                    {
+                                        printf("|| %d ||",r);  
+                                    }
+
+                                    if (creal(f_direct[r] - f_ssht[r]) >= 0.0)
+                                    {
+                                        if ((creal(f_direct[r]) - creal(f_ssht[r])) <= 0.0000000000001) printf(" --------- ");
+                                        else printf(" %.3e ", (creal(f_direct[r]) - creal(f_ssht[r])));
+                                    }
+                                    else
+                                    {
+                                        if ((creal(f_direct[r]) - creal(f_ssht[r])) >= -0.0000000000001) printf(" --------- ");
+                                        else printf("%.3e ", (creal(f_direct[r]) - creal(f_ssht[r])));
+                                    }
+                                    ++c3;
+
+                                    if (c3 == 7)
+                                    {
+                                        printf("\n");
+                                        c3 = 0;
+                                    }
+                                }
+                            }
+                             
+                                    
+                            
                             printf("\n");
                             printf("----------------------------------------------------------------------------------------------------------------------------------------------------------\n");
                         }
@@ -361,7 +610,7 @@ int main(int argc, char **argv)
     printf("L      = %40d\n", L);
     printf("N      = %40d\n\n", N);
 
-    for (steerable = 0; steerable < 2; ++steerable)
+    for (steerable = 1; steerable < 2; ++steerable)
     {
 
         printf("Results for %s...\n", steerable_str[steerable]);
