@@ -40,7 +40,7 @@ install(FILES
   src/c/so3_error.h src/c/so3_sampling.h
   src/c/so3_core.h src/c/so3_types.h
   src/c/so3.h
-  DESTINATION include)
+  DESTINATION include/so3)
 
 include("exporting")
 #building about and test executables
