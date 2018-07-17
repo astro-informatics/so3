@@ -31,7 +31,7 @@
 #include <fftw3.h>
 #include <omp.h>
 
-#include <so3.h>
+#include "so3.h"
 
 #define NREPEAT 5
 #define MIN(a,b) ((a < b) ? (a) : (b))

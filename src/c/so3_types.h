@@ -27,6 +27,18 @@
 #define SO3_TYPES
 
 #include "ssht.h"
+#ifdef __cplusplus
+#include <complex>
+#define SO3_COMPLEX(TYPE) std::complex<TYPE>
+extern "C" {
+#else
+#define SO3_COMPLEX(TYPE) TYPE complex
+#endif
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #define SO3_PI    3.141592653589793238462643383279502884197
 #define SO3_PION2 1.570796326794896619231321691639751442099
