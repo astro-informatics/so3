@@ -9,47 +9,47 @@
 #include <complex.h>
 
 // void so3_adjoint_inverse_via_ssht(
-//     complex double *f, const complex double *flmn,
+//     SO3_COMPLEX(double) *f, const SO3_COMPLEX(double) *flmn,
 //     const so3_parameters_t *parameters
 // );
 
 // void so3_adjoint_forward_via_ssht(
-//     complex double *flmn, const complex double *f,
+//     SO3_COMPLEX(double) *flmn, const SO3_COMPLEX(double) *f,
 //     const so3_parameters_t *parameters
 // );
 
 // void so3_adjoint_inverse_via_ssht_real(
-//     double *f, const complex double *flmn,
+//     double *f, const SO3_COMPLEX(double) *flmn,
 //     const so3_parameters_t *parameters
 // );
 
 // void so3_adjoint_forward_via_ssht_real(
-//     complex double *flmn, const double *f,
+//     SO3_COMPLEX(double) *flmn, const double *f,
 //     const so3_parameters_t *parameters
 // );
 
+SO3_COMPLEX #ifdef __cplusplus extern "C"
+{
+#endif
 
+  void so3_adjoint_inverse_direct(
+      SO3_COMPLEX(double) * flmn, const SO3_COMPLEX(double) * f,
+      const so3_parameters_t* parameters);
 
-void so3_adjoint_inverse_direct(
-    complex double *flmn, const complex double *f,
-    const so3_parameters_t *parameters
-);
+  void so3_adjoint_forward_direct(
+      SO3_COMPLEX(double) * f, const SO3_COMPLEX(double) * flmn,
+      const so3_parameters_t* parameters);
 
-void so3_adjoint_forward_direct(
-    complex double *f, const complex double *flmn,
-    const so3_parameters_t *parameters
-);
+  void so3_adjoint_inverse_direct_real(
+      SO3_COMPLEX(double) * flmn, const double* f,
+      const so3_parameters_t* parameters);
 
-void so3_adjoint_inverse_direct_real(
-    complex double *flmn, const double *f,
-    const so3_parameters_t *parameters
-);
+  void so3_adjoint_forward_direct_real(
+      double* f, const SO3_COMPLEX(double) * flmn,
+      const so3_parameters_t* parameters);
 
-void so3_adjoint_forward_direct_real(
-    double *f, const complex double *flmn,
-    const so3_parameters_t *parameters
-);
-
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif

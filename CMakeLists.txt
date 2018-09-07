@@ -16,7 +16,7 @@ find_package(FFTW3 REQUIRED COMPONENT SERIAL DOUBLE)
 find_package(OpenMP QUIET)
 find_package(Ssht REQUIRED)
 
-add_library(so3 STATIC src/c/so3_core.c src/c/so3_sampling.c)
+add_library(so3 STATIC src/c/so3_core.c src/c/so3_sampling.c src/c/so3_adjoint.c)
 target_include_directories(so3 PUBLIC ${FFTW3_INCLUDE_DIRS})
 target_include_directories(so3 PUBLIC ${Ssht_INCLUDE_DIR})
 target_include_directories(so3 PUBLIC
@@ -39,6 +39,7 @@ install(TARGETS so3 EXPORT So3Targets ARCHIVE DESTINATION lib PUBLIC_HEADER)
 install(FILES
   src/c/so3_error.h src/c/so3_sampling.h
   src/c/so3_core.h src/c/so3_types.h
+  src/c/so3_adjoint.h
   src/c/so3.h
   DESTINATION include)
 
