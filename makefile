@@ -1,6 +1,8 @@
 # ======== COMPILER ========
 
+
 CC	= gcc
+
 #OPT	= -Wall -O3 -fopenmp -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
 OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"1.1b1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
 
@@ -8,10 +10,12 @@ OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"1.1b1\" -DSO3_BUILD=\"`git rev-parse HEA
 # ======== LINKS ========
 
 UNAME := $(shell uname)
-PROGDIR = ..
+PROGDIR = ../../
 
 ifeq ($(UNAME), Linux)
+
   MLAB		= ${MATLAB}
+
   MLABINC	= ${MLAB}/extern/include
   MLABLIB	= ${MLAB}/extern/lib
 
@@ -29,7 +33,7 @@ ifeq ($(UNAME), Darwin)
   MEXFLAGS	= -cxx
 endif
 
-SO3DIR   = $(PROGDIR)/so3
+SO3DIR   = $(PROGDIR)/Chris/src_so3
 SO3LIB   = $(SO3DIR)/lib/c
 SO3LIBNM = so3
 SO3SRC   = $(SO3DIR)/src/c
@@ -45,7 +49,7 @@ SSHTBIN  = $(SSHTDIR)/bin/c
 SSHTINC  = $(SSHTDIR)/include/c
 
 ifeq ($(UNAME), Linux)
-  FFTWDIR      = $(PROGDIR)/fftw-3.2.2_fPIC
+  FFTWDIR      = $(PROGDIR)/fftw
 endif
 ifeq ($(UNAME), Darwin)
   FFTWDIR      = $(FFTW)
@@ -98,11 +102,13 @@ LDFLAGSMEX = -L$(SO3LIB) -l$(SO3LIBNM) -L$(SSHTLIB) -l$(SSHTLIBNM) -L$(FFTWLIB) 
 
 SO3OBJS = $(SO3OBJ)/so3_sampling.o    \
           $(SO3OBJ)/so3_core.o        \
+          $(SO3OBJ)/so3_adjoint.o
 
 SO3HEADERS = so3_types.h     \
              so3_error.h     \
              so3_sampling.h  \
-             so3_core.h
+             so3_core.h 	 \
+             so3_adjoint.h
 
 SO3OBJSMAT = $(SO3OBJMAT)/so3_sampling_mex.o \
              $(SO3OBJMAT)/so3_elmn2ind_mex.o \
@@ -110,7 +116,10 @@ SO3OBJSMAT = $(SO3OBJMAT)/so3_sampling_mex.o \
              $(SO3OBJMAT)/so3_forward_mex.o  \
              $(SO3OBJMAT)/so3_inverse_mex.o  \
              $(SO3OBJMAT)/so3_forward_direct_mex.o  \
-             $(SO3OBJMAT)/so3_inverse_direct_mex.o
+             $(SO3OBJMAT)/so3_inverse_direct_mex.o  \
+             $(SO3OBJMAT)/so3_forward_adjoint_direct_mex.o  \
+             $(SO3OBJMAT)/so3_inverse_adjoint_direct_mex.o
+
 
 SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) \
              $(SO3OBJMEX)/so3_elmn2ind_mex.$(MEXEXT) \
@@ -118,7 +127,10 @@ SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) \
              $(SO3OBJMEX)/so3_forward_mex.$(MEXEXT)  \
              $(SO3OBJMEX)/so3_inverse_mex.$(MEXEXT)  \
              $(SO3OBJMEX)/so3_forward_direct_mex.$(MEXEXT)  \
-             $(SO3OBJMEX)/so3_inverse_direct_mex.$(MEXEXT)
+             $(SO3OBJMEX)/so3_inverse_direct_mex.$(MEXEXT)  \
+             $(SO3OBJMEX)/so3_forward_adjoint_direct_mex.$(MEXEXT)  \
+             $(SO3OBJMEX)/so3_inverse_adjoint_direct_mex.$(MEXEXT)
+
 
 
 # ======== MAKE RULES ========
