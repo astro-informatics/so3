@@ -8,3 +8,4 @@ SO3.sublime-workspace
 *.idea/
 *.dSYM
 timing_test_*_*.txt
+build/
