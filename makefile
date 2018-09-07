@@ -10,7 +10,7 @@ OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"1.1b1\" -DSO3_BUILD=\"`git rev-parse HEA
 # ======== LINKS ========
 
 UNAME := $(shell uname)
-PROGDIR = ../../
+PROGDIR = ..
 
 ifeq ($(UNAME), Linux)
 
@@ -33,7 +33,7 @@ ifeq ($(UNAME), Darwin)
   MEXFLAGS	= -cxx
 endif
 
-SO3DIR   = $(PROGDIR)/Chris/src_so3
+SO3DIR   = $(PROGDIR)/so3
 SO3LIB   = $(SO3DIR)/lib/c
 SO3LIBNM = so3
 SO3SRC   = $(SO3DIR)/src/c
