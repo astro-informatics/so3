@@ -1,8 +1,10 @@
 # ======== COMPILER ========
 
-CC	= gcc-7
+
+CC	= gcc
+
 #OPT	= -Wall -O3 -fopenmp -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
-OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
+OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"1.1b1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
 
 
 # ======== LINKS ========
@@ -11,7 +13,9 @@ UNAME := $(shell uname)
 PROGDIR = ../../
 
 ifeq ($(UNAME), Linux)
-  MLAB		= /usr/local/MATLAB/matlab
+
+  MLAB		= ${MATLAB}
+
   MLABINC	= ${MLAB}/extern/include
   MLABLIB	= ${MLAB}/extern/lib
 
@@ -116,6 +120,7 @@ SO3OBJSMAT = $(SO3OBJMAT)/so3_sampling_mex.o \
              $(SO3OBJMAT)/so3_forward_adjoint_direct_mex.o  \
              $(SO3OBJMAT)/so3_inverse_adjoint_direct_mex.o
 
+
 SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) \
              $(SO3OBJMEX)/so3_elmn2ind_mex.$(MEXEXT) \
              $(SO3OBJMEX)/so3_ind2elmn_mex.$(MEXEXT) \
@@ -125,6 +130,7 @@ SO3OBJSMEX = $(SO3OBJMEX)/so3_sampling_mex.$(MEXEXT) \
              $(SO3OBJMEX)/so3_inverse_direct_mex.$(MEXEXT)  \
              $(SO3OBJMEX)/so3_forward_adjoint_direct_mex.$(MEXEXT)  \
              $(SO3OBJMEX)/so3_inverse_adjoint_direct_mex.$(MEXEXT)
+
 
 
 # ======== MAKE RULES ========

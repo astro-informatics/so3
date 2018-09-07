@@ -3,6 +3,8 @@
 *.sh
 *.png
 *.pdf
-*.txt
 *~
 SO3.sublime-workspace
+*.idea/
+*.dSYM
+timing_test_*_*.txt
