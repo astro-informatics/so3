@@ -9,3 +9,5 @@ SO3.sublime-workspace
 *.dSYM
 timing_test_*_*.txt
 build/
+bin/
+!bin/c/
