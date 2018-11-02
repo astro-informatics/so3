@@ -28,7 +28,7 @@ if(OpenMP_C_FOUND AND openmp)
 endif()
 target_link_libraries(so3 ${Ssht_LIBRARY})
 target_link_libraries(so3 ${FFTW3_DOUBLE_SERIAL_LIBRARY})
-
+target_link_libraries(so3 m)
 if(fPIC)
   set_target_properties(so3 PROPERTIES COMPILE_FLAGS "${FFTW3_DEFINITIONS} -fPIC")
 else()
