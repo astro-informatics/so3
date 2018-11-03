@@ -28,10 +28,9 @@
 //     const so3_parameters_t *parameters
 // );
 
-SO3_COMPLEX #ifdef __cplusplus extern "C"
-{
+#ifdef __cplusplus
+extern "C" {
 #endif
-
   void so3_adjoint_inverse_direct(
       SO3_COMPLEX(double) * flmn, const SO3_COMPLEX(double) * f,
       const so3_parameters_t* parameters);
