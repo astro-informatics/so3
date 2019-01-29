@@ -12,26 +12,19 @@ OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"1.1b1\" -DSO3_BUILD=\"`git rev-parse HEA
 UNAME := $(shell uname)
 PROGDIR = ..
 
+MLAB		= ${MATLAB}
+MLABINC	= ${MLAB}/extern/include
+MLABLIB	= ${MLAB}/extern/lib
+# -------------------- 
 ifeq ($(UNAME), Linux)
-
-  MLAB		= ${MATLAB}
-
-  MLABINC	= ${MLAB}/extern/include
-  MLABLIB	= ${MLAB}/extern/lib
-
   MEXEXT	= mexa64
-  MEX 		= ${MLAB}/bin/mex
-  MEXFLAGS	= -cxx
 endif
 ifeq ($(UNAME), Darwin)
-  MLAB		= ${MATLAB}
-  MLABINC	= ${MLAB}/extern/include
-  MLABLIB	= ${MLAB}/extern/lib
-
   MEXEXT	= mexmaci64
-  MEX 		= ${MLAB}/bin/mex
-  MEXFLAGS	= -cxx
 endif
+# -------------------- 
+MEX 		= ${MLAB}/bin/mex
+MEXFLAGS	= -cxx
 
 SO3DIR   = $(PROGDIR)/so3
 SO3LIB   = $(SO3DIR)/lib/c
@@ -48,13 +41,7 @@ SSHTLIBNM= ssht
 SSHTBIN  = $(SSHTDIR)/bin/c
 SSHTINC  = $(SSHTDIR)/include/c
 
-ifeq ($(UNAME), Linux)
-  FFTWDIR      = $(PROGDIR)/fftw
-endif
-ifeq ($(UNAME), Darwin)
-  FFTWDIR      = $(FFTW)
-endif
-
+FFTWDIR      = $(FFTW)
 FFTWINC	     = $(FFTWDIR)/include
 FFTWLIB      = $(FFTWDIR)/lib
 FFTWLIBNM    = fftw3
