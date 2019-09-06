@@ -1,22 +1,77 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "../so3_types.h"
 #include "../so3_sampling.h"
+#include "../so3_conv.h"
+#include "../so3_error.h"
+#include "../so3_test_utils.h"
 
+static void test_so3_convolution();
 static void test_sampling_elmn2ind();
 static void test_sampling_ind2elmn();
 static void test_sampling_elmn2ind_real();
 static void test_sampling_ind2elmn_real();
 
+
 int main() {
+    test_so3_convolution();
     test_sampling_elmn2ind();
     test_sampling_ind2elmn();
     test_sampling_elmn2ind_real();
     test_sampling_ind2elmn_real();
     printf("All unit tests passed!\n");
     return 0;
+}
+
+void test_so3_convolution()
+{
+    complex double *hlmn, *flmn, *glmn;
+    so3_parameters_t parameters = {};
+    int L=2, N=2;
+    int seed=1;
+
+    parameters.L0 = 0;
+    parameters.L = L;
+    parameters.N = N;
+    parameters.verbosity = 1;
+    parameters.n_mode = 0;
+    parameters.reality = 1;
+    parameters.sampling_scheme = 0;
+    parameters.n_order = 0;
+    parameters.storage = 0;
+    parameters.steerable = 0;
+
+    int flmn_length = so3_sampling_flmn_size(&parameters);
+    hlmn = malloc(flmn_length * sizeof *hlmn); SO3_ERROR_MEM_ALLOC_CHECK(hlmn);
+    flmn = malloc(flmn_length * sizeof *flmn); SO3_ERROR_MEM_ALLOC_CHECK(flmn);
+    glmn = malloc(flmn_length * sizeof *glmn); SO3_ERROR_MEM_ALLOC_CHECK(glmn);
+
+    if (parameters.reality) 
+    {
+        so3_test_gen_flmn_real(flmn, &parameters, seed);
+        so3_test_gen_flmn_real(glmn, &parameters, seed);
+    }
+    else
+    {
+        so3_test_gen_flmn_complex(flmn, &parameters, seed);
+        so3_test_gen_flmn_complex(glmn, &parameters, seed);
+    }
+
+    for (int i=0; i<flmn_length; i++)
+    {
+        printf(" %.3e ", creal(hlmn[i]));
+        printf(" i%.3e ", cimag(hlmn[i]));
+        printf(" %.3e ", creal(flmn[i]));
+        printf(" i%.3e ", cimag(flmn[i]));
+        printf(" %.3e ", creal(glmn[i]));
+        printf(" i%.3e ", cimag(glmn[i]));
+        printf("\n");
+    }
+
+    so3_conv_harmonic_convolution(hlmn, flmn, glmn, &parameters);
 }
 
 void test_sampling_elmn2ind()

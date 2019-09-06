@@ -16,9 +16,12 @@ find_package(FFTW3 REQUIRED COMPONENT SERIAL DOUBLE)
 find_package(OpenMP QUIET)
 find_package(Ssht REQUIRED)
 
-add_library(so3 STATIC src/c/so3_core.c src/c/so3_sampling.c src/c/so3_adjoint.c)
+add_library(so3 STATIC src/c/so3_core.c src/c/so3_sampling.c src/c/so3_adjoint.c src/c/so3_conv.c)
+add_library(so3_test_lib STATIC src/c/so3_test_utils.c)
 target_include_directories(so3 PUBLIC ${FFTW3_INCLUDE_DIRS})
 target_include_directories(so3 PUBLIC ${Ssht_INCLUDE_DIR})
+target_include_directories(so3_test_lib PUBLIC ${FFTW3_INCLUDE_DIRS})
+target_include_directories(so3_test_lib PUBLIC ${Ssht_INCLUDE_DIR})
 target_include_directories(so3 PUBLIC
   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/cpp>
@@ -39,7 +42,8 @@ install(TARGETS so3 EXPORT So3Targets ARCHIVE DESTINATION lib PUBLIC_HEADER)
 install(FILES
   src/c/so3_error.h src/c/so3_sampling.h
   src/c/so3_core.h src/c/so3_types.h
-  src/c/so3_adjoint.h
+  src/c/so3_adjoint.h src/c/so3_conv.h
+  src/c/so3_test.h
   src/c/so3.h
   DESTINATION include)
 
@@ -51,9 +55,9 @@ set_target_properties(so3_about PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BI
 
 if(tests)
   add_executable(so3_test src/c/so3_test.c)
-  target_link_libraries(so3_test so3)
+  target_link_libraries(so3_test so3 so3_test_lib)
   set_target_properties(so3_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
   add_executable(so3_unittest src/c/unittest/so3_unittest.c)
-  target_link_libraries(so3_unittest so3)
+  target_link_libraries(so3_unittest so3 so3_test_lib)
   set_target_properties(so3_unittest PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 endif()
