@@ -155,7 +155,7 @@ int main(int argc, char **argv)
     {
         parameters.n_mode = n_mode;
 
-        for (real = 0; real < 2; ++real)
+        for (real = 0; real < 1; ++real)
         {
             parameters.reality = real;
 
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
                     {
                         parameters.storage = storage_mode;
 
-                        for (steerable = 0; steerable < 2; ++steerable)
+                        for (steerable = 0; steerable < 1; ++steerable)
                         {
                             parameters.steerable = steerable;
 
