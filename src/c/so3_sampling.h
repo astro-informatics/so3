@@ -6,6 +6,7 @@
 #define SO3_SAMPLING
 
 #include "so3_types.h"
+#include <stdbool.h> 
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,7 +31,10 @@ void so3_sampling_elmn2ind(int* ind, int el, int m, int n, const so3_parameters_
 void so3_sampling_ind2elmn(int* el, int* m, int* n, int ind, const so3_parameters_t* parameters);
 void so3_sampling_elmn2ind_real(int* ind, int el, int m, int n, const so3_parameters_t* parameters);
 void so3_sampling_ind2elmn_real(int* el, int* m, int* n, int ind, const so3_parameters_t* parameters);
-void so3_sampling_n_loop_values(int *n_start, int *n_end, int *n_step, const so3_parameters_t *parameters);
+void so3_sampling_n_loop_values(int *n_start, int *n_stop, int *n_inc, const so3_parameters_t *parameters);
+void so3_sampling_el_loop_values(int *el_start, int *el_stop, int *el_inc, const int n, const so3_parameters_t *parameters);
+void so3_sampling_m_loop_values(int *m_start, int *m_stop, int *m_inc, const int el);
+bool so3_sampling_is_elmn_non_zero(const int el, const int m, const int n, const so3_parameters_t *parameters);
 
 #ifdef __cplusplus
 }

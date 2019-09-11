@@ -18,12 +18,14 @@
 
 #include "so3_types.h"
 #include "so3_error.h"
+#include "so3_sampling.h"
 
 double ran2_dp(int idum);
 void so3_test_gen_flmn_complex(complex double *flmn, const so3_parameters_t *parameters, int seed);
 void so3_test_gen_flmn_real(complex double *flmn, const so3_parameters_t *parameters, int seed);
 
 #define MAX(a,b) ((a > b) ? (a) : (b))
+
 
 /*!
  * Generate random Wigner coefficients of a complex signal.
@@ -47,7 +49,10 @@ void so3_test_gen_flmn_complex(
     int seed)
 {
     int L0, L, N;
-    int i, el, m, n, n_start, n_stop, n_inc, ind;
+    int i, el, m, n, ind;
+    int n_start, n_stop, n_inc;
+    int el_start, el_stop, el_inc;
+    int m_start, m_stop, m_inc;
 
     L0 = parameters->L0;
     L = parameters->L;
@@ -55,45 +60,15 @@ void so3_test_gen_flmn_complex(
 
     for (i = 0; i < (2*N-1)*L*L; ++i)
         flmn[i] = 0.0;
-
-    switch (parameters->n_mode)
-    {
-    case SO3_N_MODE_ALL:
-    case SO3_N_MODE_L:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        n_inc = 1;
-        break;
-    case SO3_N_MODE_EVEN:
-        n_start = ((N-1) % 2 == 0) ? -N+1 : -N+2;
-        n_stop  = ((N-1) % 2 == 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_ODD:
-        n_start = ((N-1) % 2 != 0) ? -N+1 : -N+2;
-        n_stop  = ((N-1) % 2 != 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_MAXIMUM:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        if (N > 1)
-            n_inc = 2*N - 2;
-        else
-            n_inc = 1;
-        break;
-    default:
-        SO3_ERROR_GENERIC("Invalid n-mode.");
-    }
-
+    
+    so3_sampling_n_loop_values(&n_start, &n_stop, &n_inc, parameters);
     for (n = n_start; n <= n_stop; n += n_inc)
     {
-        for (el = MAX(L0, abs(n)); el < L; ++el)
+        so3_sampling_el_loop_values(&el_start, &el_stop, &el_inc, n, parameters);
+        for (el = el_start; el <= el_stop; el +=el_inc)
         {
-            if (parameters->n_mode == SO3_N_MODE_L && el != abs(n))
-                break;
-
-            for (m = -el; m <= el; ++m)
+            so3_sampling_m_loop_values(&m_start, &m_stop, &m_inc, el);
+            for (m = m_start; m <= m_stop; m +=m_inc)
             {
                 so3_sampling_elmn2ind(&ind, el, m, n, parameters);
                 flmn[ind] = (2.0*ran2_dp(seed) - 1.0) + I * (2.0*ran2_dp(seed) - 1.0);
@@ -103,97 +78,6 @@ void so3_test_gen_flmn_complex(
 }
 
 
-/*!
- * Calculates the starting, stopping and increment of n 
- * that a applicable for a flmn.
- * This is useful for looping over the whole array
- *
- * \param[out] n_start starting n.
- * \param[out] n_stop  stopping n.
- * \param[out] n_inc   increment in n.
- * \param[in]  parameters A parameters object with (at least) the following fields:
- *                        \link so3_parameters_t::L L\endlink,
- *                        \link so3_parameters_t::N N\endlink,
- *                        \link so3_parameters_t::storage storage\endlink
- *                        <br>The \link so3_parameters_t::reality reality\endlink
- *                        flag is ignored. Use \link so3_sampling_ind2elmn
- *                        \endlink instead.
- * \retval none
- *
- * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
- * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
- */
-void so3_sampling_n_loop_values(int *n_start, int *n_stop, int *n_inc, const so3_parameters_t *parameters)
-{
-    int L0, L, N;
-
-    L0 = parameters->L0;
-    L = parameters->L;
-    N = parameters->N;
-
-    if (parameters->reality)
-    {
-        switch (parameters->n_mode)
-        {
-        case SO3_N_MODE_ALL:
-        case SO3_N_MODE_L:
-            *n_start = 0;
-            *n_stop  = N-1;
-            *n_inc = 1;
-            break;
-        case SO3_N_MODE_EVEN:
-            *n_start = 0;
-            *n_stop  = ((N-1) % 2 == 0) ?  N-1 :  N-2;
-            *n_inc = 2;
-            break;
-        case SO3_N_MODE_ODD:
-            *n_start = 1;
-            *n_stop  = ((N-1) % 2 != 0) ?  N-1 :  N-2;
-            *n_inc = 2;
-            break;
-        case SO3_N_MODE_MAXIMUM:
-            *n_start = N-1;
-            *n_stop  = N-1;
-            *n_inc = 1;
-            break;
-        default:
-            SO3_ERROR_GENERIC("Invalid n-mode.");
-        }
-    }
-    else
-    {    
-        switch (parameters->n_mode)
-        {
-        case SO3_N_MODE_ALL:
-        case SO3_N_MODE_L:
-            *n_start = -N+1;
-            *n_stop  =  N-1;
-            *n_inc = 1;
-            break;
-        case SO3_N_MODE_EVEN:
-            *n_start = ((N-1) % 2 == 0) ? -N+1 : -N+2;
-            *n_stop  = ((N-1) % 2 == 0) ?  N-1 :  N-2;
-            *n_inc = 2;
-            break;
-        case SO3_N_MODE_ODD:
-            *n_start = ((N-1) % 2 != 0) ? -N+1 : -N+2;
-            *n_stop  = ((N-1) % 2 != 0) ?  N-1 :  N-2;
-            *n_inc = 2;
-            break;
-        case SO3_N_MODE_MAXIMUM:
-            *n_start = -N+1;
-            *n_stop  =  N-1;
-            if (N > 1)
-                *n_inc = 2*N - 2;
-            else
-                *n_inc = 1;
-            break;
-        default:
-            SO3_ERROR_GENERIC("Invalid n-mode.");
-        }
-    }
-
-}
 
 
 /*!
@@ -231,36 +115,7 @@ void so3_test_gen_flmn_real(
     for (i = 0; i < (2*N-1)*L*L; ++i)
         flmn[i] = 0.0;
 
-    switch (parameters->n_mode)
-    {
-    case SO3_N_MODE_ALL:
-    case SO3_N_MODE_L:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        n_inc = 1;
-        break;
-    case SO3_N_MODE_EVEN:
-        n_start = ((N-1) % 2 == 0) ? -N+1 : -N+2;
-        n_stop  = ((N-1) % 2 == 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_ODD:
-        n_start = ((N-1) % 2 != 0) ? -N+1 : -N+2;
-        n_stop  = ((N-1) % 2 != 0) ?  N-1 :  N-2;
-        n_inc = 2;
-        break;
-    case SO3_N_MODE_MAXIMUM:
-        n_start = -N+1;
-        n_stop  =  N-1;
-        if (N > 1)
-            n_inc = 2*N - 2;
-        else
-            n_inc = 1;
-        break;
-    default:
-        SO3_ERROR_GENERIC("Invalid n-mode.");
-    }
-    // so3_sampling_n_loop_values(&n_start, &n_stop, &n_inc, parameters);
+    so3_sampling_n_loop_values(&n_start, &n_stop, &n_inc, parameters);
 
     for (n = n_start; n <= n_stop; n += n_inc)
     {

@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 
     // Parse command line arguments
     L = N = 4;
-    int show_arrays = 2;
+    int show_arrays = 0;
     L0 = 0;
     seed = 1;
     if (argc > 1)
@@ -150,28 +150,29 @@ int main(int argc, char **argv)
 
     // steerable == 0 --> don't use steerable
     // steerable == 1 --> use steerable
-    //for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
-    for (n_mode = 0; n_mode < 2; ++ n_mode)
+    for (n_mode = 0; n_mode < SO3_N_MODE_SIZE; ++ n_mode)
+    // for (n_mode = 0; n_mode < 1; ++ n_mode)
     {
         parameters.n_mode = n_mode;
 
-        for (real = 0; real < 1; ++real)
+        for (real = 0; real < 2; ++real)
         {
             parameters.reality = real;
 
-            // MWSS not yet supported by direct routines
-            for (sampling_scheme = 0; sampling_scheme < 1; ++sampling_scheme)
+            // MWSS not yet supported by direct routinesSO3_SAMPLING_SIZE
+            for (sampling_scheme = 0; sampling_scheme < SO3_SAMPLING_SIZE; ++sampling_scheme)
+            // for (sampling_scheme = 0; sampling_scheme < 1; ++sampling_scheme)
             {
                 parameters.sampling_scheme = sampling_scheme;
 
                 // For real signals, the n_order does not matter, so skip the second option
                 // in that case.
-                //for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
-                for (n_order = 0; n_order < 1; ++n_order)
+                for (n_order = 0; n_order < SO3_N_ORDER_SIZE - real; ++n_order)
+                // for (n_order = 0; n_order < 1; ++n_order)
                 {
                     parameters.n_order = n_order;
 
-                    //for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
+                    // for (storage_mode = 0; storage_mode < SO3_STORAGE_SIZE; ++storage_mode)
                     for (storage_mode = 0; storage_mode < 1; ++storage_mode)
                     {
                         parameters.storage = storage_mode;

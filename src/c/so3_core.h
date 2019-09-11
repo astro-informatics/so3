@@ -16,12 +16,12 @@ void so3_core_inverse_via_ssht(
     SO3_COMPLEX(double) * f, const SO3_COMPLEX(double) * flmn,
     const so3_parameters_t* parameters);
 
-void so3_core_forward_via_ssht(
-    SO3_COMPLEX(double) * flmn, const SO3_COMPLEX(double) * f,
-    const so3_parameters_t* parameters);
-
 void so3_core_inverse_via_ssht_real(
     double* f, const SO3_COMPLEX(double) * flmn,
+    const so3_parameters_t* parameters);
+
+void so3_core_forward_via_ssht(
+    SO3_COMPLEX(double) * flmn, const SO3_COMPLEX(double) * f,
     const so3_parameters_t* parameters);
 
 void so3_core_forward_via_ssht_real(
@@ -32,12 +32,12 @@ void so3_core_inverse_direct(
     SO3_COMPLEX(double) * f, const SO3_COMPLEX(double) * flmn,
     const so3_parameters_t* parameters);
 
-void so3_core_forward_direct(
-    SO3_COMPLEX(double) * flmn, const SO3_COMPLEX(double) * f,
-    const so3_parameters_t* parameters);
-
 void so3_core_inverse_direct_real(
     double* f, const SO3_COMPLEX(double) * flmn,
+    const so3_parameters_t* parameters);
+
+void so3_core_forward_direct(
+    SO3_COMPLEX(double) * flmn, const SO3_COMPLEX(double) * f,
     const so3_parameters_t* parameters);
 
 void so3_core_forward_direct_real(

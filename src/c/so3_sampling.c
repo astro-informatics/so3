@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdbool.h> 
 #include "so3_error.h"
 #include "so3_types.h"
 
@@ -12,6 +13,7 @@ int so3_sampling_nalpha(const so3_parameters_t *);
 int so3_sampling_nbeta(const so3_parameters_t *);
 int so3_sampling_ngamma(const so3_parameters_t *);
 
+#define MAX(a,b) ((a > b) ? (a) : (b))
 
 //============================================================================
 // Sampling weights
@@ -645,4 +647,233 @@ void so3_sampling_ind2elmn_real(int *el, int *m, int *n, int ind, const so3_para
     default:
         SO3_ERROR_GENERIC("Invalid storage method.");
     }
+}
+
+
+/*!
+ * Calculates the starting, stopping and increment of n 
+ * that a applicable for a flmn.
+ * This is useful for looping over the whole array
+ *
+ * \param[out] n_start starting n.
+ * \param[out] n_stop  stopping n.
+ * \param[out] n_inc   increment in n.
+ * \param[in]  parameters A parameters object with (at least) the following fields:
+ *                        \link so3_parameters_t::L L\endlink,
+ *                        \link so3_parameters_t::N N\endlink,
+ *                        \link so3_parameters_t::storage storage\endlink
+ *                        <br>The \link so3_parameters_t::reality reality\endlink
+ *                        flag is ignored. Use \link so3_sampling_ind2elmn
+ *                        \endlink instead.
+ *  example:
+ *     so3_sampling_n_loop_values(&n_start, &n_stop, &n_inc, parameters);
+ *     for (n = n_start; n <= n_stop; n += n_inc) {}
+ * 
+ * \retval none
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+void so3_sampling_n_loop_values(int *n_start, int *n_stop, int *n_inc, const so3_parameters_t *parameters)
+{
+    int L0, L, N;
+
+    L0 = parameters->L0;
+    L = parameters->L;
+    N = parameters->N;
+
+    if (parameters->reality)
+    {
+        switch (parameters->n_mode)
+        {
+        case SO3_N_MODE_ALL:
+        case SO3_N_MODE_L:
+            *n_start = 0;
+            *n_stop  = N-1;
+            *n_inc = 1;
+            break;
+        case SO3_N_MODE_EVEN:
+            *n_start = 0;
+            *n_stop  = ((N-1) % 2 == 0) ?  N-1 :  N-2;
+            *n_inc = 2;
+            break;
+        case SO3_N_MODE_ODD:
+            *n_start = 1;
+            *n_stop  = ((N-1) % 2 != 0) ?  N-1 :  N-2;
+            *n_inc = 2;
+            break;
+        case SO3_N_MODE_MAXIMUM:
+            *n_start = N-1;
+            *n_stop  = N-1;
+            *n_inc = 1;
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid n-mode.");
+        }
+    }
+    else
+    {    
+        switch (parameters->n_mode)
+        {
+        case SO3_N_MODE_ALL:
+        case SO3_N_MODE_L:
+            *n_start = -N+1;
+            *n_stop  =  N-1;
+            *n_inc = 1;
+            break;
+        case SO3_N_MODE_EVEN:
+            *n_start = ((N-1) % 2 == 0) ? -N+1 : -N+2;
+            *n_stop  = ((N-1) % 2 == 0) ?  N-1 :  N-2;
+            *n_inc = 2;
+            break;
+        case SO3_N_MODE_ODD:
+            *n_start = ((N-1) % 2 != 0) ? -N+1 : -N+2;
+            *n_stop  = ((N-1) % 2 != 0) ?  N-1 :  N-2;
+            *n_inc = 2;
+            break;
+        case SO3_N_MODE_MAXIMUM:
+            *n_start = -N+1;
+            *n_stop  =  N-1;
+            if (N > 1)
+                *n_inc = 2*N - 2;
+            else
+                *n_inc = 1;
+            break;
+        default:
+            SO3_ERROR_GENERIC("Invalid n-mode.");
+        }
+    }
+
+}
+
+
+/*!
+ * Calculates the starting, stopping and increment of el
+ * that a applicable for a flmn.
+ * This is useful for looping over the whole array
+ *
+ * \param[out] el_start starting el.
+ * \param[out] el_stop  stopping el.
+ * \param[out] el_inc   increment in el.
+ * \param[in]  n   The value of n the loop is being applied to.
+ * \param[in]  parameters A parameters object with (at least) the following fields:
+ *                        \link so3_parameters_t::L L\endlink,
+ *                        \link so3_parameters_t::N N\endlink,
+ *                        \link so3_parameters_t::storage storage\endlink
+ *                        <br>The \link so3_parameters_t::reality reality\endlink
+ *                        flag is ignored. Use \link so3_sampling_ind2elmn
+ *                        \endlink instead.
+ * \retval none
+ *
+ * example:
+ *      so3_sampling_el_loop_values(&el_start, &el_stop, &el_inc, n, &parameters);
+ *      for (el = el_start; el <= el_stop; el +=el_inc){}
+ * 
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+void so3_sampling_el_loop_values(int *el_start, int *el_stop, int *el_inc, const int n, const so3_parameters_t *parameters)
+{
+    *el_start = MAX(parameters->L0, abs(n));
+    if (parameters->n_mode == SO3_N_MODE_L) *el_stop = abs(n);
+    else *el_stop = parameters->L-1;
+    *el_inc = 1;
+
+}
+
+
+/*!
+ * Calculates the starting, stopping and increment of m
+ * that a applicable for a flmn.
+ * This is useful for looping over the whole array
+ *
+ * \param[out] m_start starting m.
+ * \param[out] m_stop  stopping m.
+ * \param[out] m_inc   increment in m.
+ * \param[in]  el   The value of el the loop is being applied to.
+ * \retval none
+ *
+ * example:
+ *      so3_sampling_el_loop_values(&m_start, &m_stop, &m_inc, el);
+ *      for (m = m_start; m <= m_stop; m +=m_inc){}
+ * 
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+void so3_sampling_m_loop_values(int *m_start, int *m_stop, int *m_inc, const int el)
+{
+    *m_start = -el;
+    *m_stop = el;
+    *m_inc = 1;
+}
+
+
+/*!
+ * Queries if integer i would be covered in a loop 
+ * for (i=i_start; i<=i_stop; i += i_inc)
+ *
+ * \param[in]  i       integer to query
+ * \param[in]  i_start starting point
+ * \param[in]  i_stop  stoping point
+ * \param[in]  i_inc   incrementing step
+
+ * \retval none
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+bool so3_sampling_is_i_in_loop_range(const int i, const int i_start, const int i_stop, const int i_inc)
+{
+    if (i < i_start) return false;
+    if (i > i_stop) return false;
+    if ((i-i_start)%i_inc != 0) return false;
+
+    return true;
+}
+
+/*!
+ * Queries if (el,m,n) harmonic indices are non zero in this setting
+ *
+ * \note Index ranges are as follows:
+ *  - el ranges from [0 .. L-1].
+ *  - m ranges from [-el .. el].
+ *  - n ranges from [-el' .. el'], where el' = min{el, N}
+ *  - ind ranges from [0 .. (2*N)(L**2-N(N-1)/3)-1] for compact storage methods
+             and from [0 .. (2*N-1)*L**2-1] for 0-padded storage methods.
+ *
+ * \param[in]  el  Harmonic index.
+ * \param[in]  m   Azimuthal harmonic index.
+ * \param[in]  n   Orientational harmonic index.
+ * \param[in]  parameters A parameters object with (at least) the following fields:
+ *                        \link so3_parameters_t::L L\endlink,
+ *                        \link so3_parameters_t::N N\endlink,
+ *                        \link so3_parameters_t::storage storage\endlink,
+ *                        \link so3_parameters_t::n_order n_order\endlink,
+ *                        \link so3_parameters_t::reality reality\endlink
+ * \retval none
+ *
+ * \author <a href="mailto:m.buettner.d@gmail.com">Martin Büttner</a>
+ * \author <a href="http://www.jasonmcewen.org">Jason McEwen</a>
+ */
+bool so3_sampling_is_elmn_non_zero(const int el, const int m, const int n, const so3_parameters_t *parameters)
+{
+    int L, N, offset, absn;
+    L = parameters->L;
+    N = parameters->N;
+
+    int n_start, n_stop, n_inc;
+    int el_start, el_stop, el_inc;
+    int m_start, m_stop, m_inc;
+
+    so3_sampling_n_loop_values(&n_start, &n_stop, &n_inc, parameters);
+    if (!(so3_sampling_is_i_in_loop_range(n, n_start, n_stop, n_inc))) return false;
+
+    so3_sampling_el_loop_values(&el_start, &el_stop, &el_inc, n, parameters);
+    if (!(so3_sampling_is_i_in_loop_range(el, el_start, el_stop, el_inc))) return false;
+
+    so3_sampling_m_loop_values(&m_start, &m_stop, &m_inc, el);
+    if (!(so3_sampling_is_i_in_loop_range(m, m_start, m_stop, m_inc))) return false;
+
+    return true;
+
 }

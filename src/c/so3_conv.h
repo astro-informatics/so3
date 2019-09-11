@@ -12,10 +12,28 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+void so3_conv_convolution(
+    SO3_COMPLEX(double) *h,
+    const so3_parameters_t *h_parameter,
+    const SO3_COMPLEX(double) *f,
+    const so3_parameters_t *f_parameter,
+    const SO3_COMPLEX(double) *g,
+    const so3_parameters_t *g_parameter
+);
+
 void so3_conv_harmonic_convolution(
-    SO3_COMPLEX(double) * hlmn, const SO3_COMPLEX(double) * flmn,
-    const SO3_COMPLEX(double) * glmn, const so3_parameters_t* parameters
-    );
+    SO3_COMPLEX(double) * hlmn, 
+    const so3_parameters_t* h_parameters,
+    const SO3_COMPLEX(double) * flmn,
+    const so3_parameters_t* f_parameters,
+    const SO3_COMPLEX(double) * glmn, 
+    const so3_parameters_t* g_parameters
+);
+
+so3_parameters_t so3_conv_get_parameters_of_convolved_lmn(
+    const so3_parameters_t* f_parameters,
+    const so3_parameters_t* g_parameters
+);
 #ifdef __cplusplus
 }
 #endif
