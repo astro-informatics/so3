@@ -121,6 +121,19 @@ so3_parameters_t so3_conv_get_parameters_of_convolved_lmn(
 }
 
 
+void so3_conv_get_parameters_of_convolved_lmn_void(
+    so3_parameters_t* h_parameters,
+    const so3_parameters_t* f_parameters,
+    const so3_parameters_t* g_parameters
+)
+{
+    so3_parameters_t dummy = {}, dummy1 = {}, dummy2 = {} ;
+    *h_parameters = so3_conv_get_parameters_of_convolved_lmn(
+        f_parameters,
+        g_parameters
+    );
+}
+
 /*!
  * Compute the convolution of one signal with another in real space
  * by doing the convolution in harmonic space

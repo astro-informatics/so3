@@ -877,3 +877,8 @@ bool so3_sampling_is_elmn_non_zero(const int el, const int m, const int n, const
     return true;
 
 }
+
+int so3_sampling_is_elmn_non_zero_return_int(const int el, const int m, const int n, const so3_parameters_t *parameters)
+    {
+        return (int)so3_sampling_is_elmn_non_zero(el, m, n, parameters);
+    }

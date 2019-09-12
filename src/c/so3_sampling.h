@@ -35,6 +35,7 @@ void so3_sampling_n_loop_values(int *n_start, int *n_stop, int *n_inc, const so3
 void so3_sampling_el_loop_values(int *el_start, int *el_stop, int *el_inc, const int n, const so3_parameters_t *parameters);
 void so3_sampling_m_loop_values(int *m_start, int *m_stop, int *m_inc, const int el);
 bool so3_sampling_is_elmn_non_zero(const int el, const int m, const int n, const so3_parameters_t *parameters);
+int so3_sampling_is_elmn_non_zero_return_int(const int el, const int m, const int n, const so3_parameters_t *parameters);
 
 #ifdef __cplusplus
 }
