@@ -60,6 +60,13 @@ cdef extern from "so3.h":
         const so3_parameters_t* g_parameters
     )
 
+    void so3_conv_s2toso3_harmonic_convolution(
+        double complex  * hlmn, 
+        const so3_parameters_t* h_parameters,
+        const double complex * flm,
+        const double complex * glm, 
+    )
+
     ctypedef struct so3_parameters_t:
         int verbosity
         int reality
@@ -306,8 +313,8 @@ def convolve_harmonic(
         &g_parameters
     )    
 
-    h_length = f_size(<dict>h_parameters)
-    hlmn = np.empty([h_length,], dtype=complex)
+    hlmn_length = flmn_size(<dict>h_parameters)
+    hlmn = np.empty([hlmn_length,], dtype=complex)
 
     so3_conv_convolution(
         <double complex *> np.PyArray_DATA(hlmn),
@@ -318,6 +325,24 @@ def convolve_harmonic(
         &g_parameters
     )
     return hlmn, h_parameters
+
+def s2toso3_harmonic_convolution(
+    dict h_parameters_dict,
+    np.ndarray[ double complex, ndim=1, mode="c"] flm not None,
+    np.ndarray[ double complex, ndim=1, mode="c"] glm not None):
+
+    cdef so3_parameters_t h_parameters=create_parameter_struct(h_parameters_dict)
+
+    hlmn_length = flmn_size(<dict>h_parameters)
+    hlmn = np.empty([hlmn_length,], dtype=complex)
+
+    so3_conv_s2toso3_harmonic_convolution(
+    <double complex *> np.PyArray_DATA(hlmn), 
+    &h_parameters,
+    <const double complex *> np.PyArray_DATA(flm),
+    <const double complex *> np.PyArray_DATA(glm)
+    )
+    return hlmn
 
 def test_func():
     return "hello"
