@@ -5,7 +5,7 @@
 #ifndef SO3_ADJOINT
 #define SO3_ADJOINT
 
-#include "ssht.h"
+#include "ssht/ssht.h"
 #include <complex.h>
 
 // void so3_adjoint_inverse_via_ssht(
