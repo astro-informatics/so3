@@ -5,6 +5,7 @@
 #ifndef SO3_ADJOINT
 #define SO3_ADJOINT
 
+#include "so3_types.h"
 #include "ssht/ssht.h"
 #include <complex.h>
 
