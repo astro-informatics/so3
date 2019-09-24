@@ -284,7 +284,7 @@ def convolve(
     )    
 
     h_length = f_size(<dict>h_parameters)
-    h = np.empty([h_length,], dtype=complex)
+    h = np.zeros([h_length,], dtype=complex)
 
     so3_conv_convolution(
         <double complex *> np.PyArray_DATA(h),
@@ -334,7 +334,7 @@ def s2toso3_harmonic_convolution(
     cdef so3_parameters_t h_parameters=create_parameter_struct(h_parameters_dict)
 
     hlmn_length = flmn_size(<dict>h_parameters)
-    hlmn = np.empty([hlmn_length,], dtype=complex)
+    hlmn = np.zeros([hlmn_length,], dtype=complex)
 
     so3_conv_s2toso3_harmonic_convolution(
     <double complex *> np.PyArray_DATA(hlmn), 
