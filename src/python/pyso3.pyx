@@ -225,30 +225,30 @@ def is_elmn_non_zero(int el, int m, int n, parameters_dict):
 
 
 # forward and inverse for MW and MWSS for complex functions
-def forward(np.ndarray[ double complex, ndim=1, mode="c"] flmn not None, dict parameters_dict):
+def inverse(np.ndarray[ double complex, ndim=1, mode="c"] flmn not None, dict parameters_dict):
     cdef so3_parameters_t parameters=create_parameter_struct(parameters_dict)
 
     if parameters_dict['reality']:
         f_length = f_size(parameters_dict)
-        f = np.empty([f_length,], dtype=float)
+        f = np.zeros([f_length,], dtype=float)
         so3_core_inverse_direct_real(<double *> np.PyArray_DATA(f), <const double complex*> np.PyArray_DATA(flmn), &parameters)
     else:
         f_length = f_size(parameters_dict)
-        f = np.empty([f_length,], dtype=complex)
+        f = np.zeros([f_length,], dtype=complex)
         so3_core_inverse_direct(<double complex*> np.PyArray_DATA(f), <const double complex*> np.PyArray_DATA(flmn), &parameters)
 
     return f
 
-def inverse(np.ndarray[ double complex, ndim=1, mode="c"] f not None, dict parameters_dict):
+def forward(np.ndarray[ double complex, ndim=1, mode="c"] f not None, dict parameters_dict):
     cdef so3_parameters_t parameters=create_parameter_struct(parameters_dict)
 
     if parameters_dict['reality']:
         flmn_length = flmn_size(parameters_dict)
-        flmn = np.empty([flmn_length,], dtype=float)
+        flmn = np.zeros([flmn_length,], dtype=float)
         so3_core_forward_direct_real(<double complex*> np.PyArray_DATA(flmn), <const double *> np.PyArray_DATA(f), &parameters)
     else:
         flmn_length = flmn_size(parameters_dict)
-        flmn = np.empty([flmn_length,], dtype=complex)
+        flmn = np.zeros([flmn_length,], dtype=complex)
         so3_core_forward_direct(<double complex*> np.PyArray_DATA(flmn), <const double complex*> np.PyArray_DATA(f), &parameters)
 
     return flmn
@@ -314,7 +314,7 @@ def convolve_harmonic(
     )    
 
     hlmn_length = flmn_size(<dict>h_parameters)
-    hlmn = np.empty([hlmn_length,], dtype=complex)
+    hlmn = np.zeros([hlmn_length,], dtype=complex)
 
     so3_conv_convolution(
         <double complex *> np.PyArray_DATA(hlmn),

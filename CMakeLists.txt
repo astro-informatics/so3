@@ -18,15 +18,14 @@ find_package(Ssht REQUIRED)
 
 add_library(so3 STATIC src/c/so3_core.c src/c/so3_sampling.c src/c/so3_adjoint.c src/c/so3_conv.c src/c/so3_test_utils.c)
 target_include_directories(so3 PUBLIC ${FFTW3_INCLUDE_DIRS})
-target_include_directories(so3 PUBLIC ${Ssht_INCLUDE_DIR})
+target_include_directories(so3 PUBLIC ${Ssht_INCLUDE_DIRS})
 target_include_directories(so3 PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/cpp>
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/c>
   $<INSTALL_INTERFACE:include/>)
 if(OpenMP_C_FOUND AND openmp)
   target_link_libraries(so3 OpenMP::OpenMP_C)
 endif()
-target_link_libraries(so3 ${Ssht_LIBRARY})
+target_link_libraries(so3 ssht)
 target_link_libraries(so3 ${FFTW3_DOUBLE_SERIAL_LIBRARY})
 target_link_libraries(so3 m)
 if(fPIC)

@@ -12,6 +12,7 @@ f = so3.inverse(flmn, f_p)
 flmn_new = so3.forward(f, f_p)
 
 print(np.mean(np.abs(flmn_new-flmn)), np.max(np.abs(flmn_new-flmn)))
+print(np.mean(np.abs(f_before-f)), np.max(np.abs(f_before-f)))
 
 
 g_before = np.random.normal(size=(f_length)) + 1j*np.random.normal(size=(f_length))
@@ -22,6 +23,3 @@ glmn = so3.forward(g_before, g_p)
 g = so3.inverse(glmn, g_p)
 
 h, h_p = so3.convolve(f, f_p, g, g_p)
-
-for n in so3.loop_over_n(f_p):
-    print(n)
