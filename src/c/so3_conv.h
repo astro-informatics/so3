@@ -34,6 +34,21 @@ so3_parameters_t so3_conv_get_parameters_of_convolved_lmn(
     const so3_parameters_t* f_parameters,
     const so3_parameters_t* g_parameters
 );
+
+void so3_conv_get_parameters_of_convolved_lmn_void(
+    so3_parameters_t* h_parameters,
+    const so3_parameters_t* f_parameters,
+    const so3_parameters_t* g_parameters
+);
+
+void so3_conv_s2toso3_harmonic_convolution(
+    SO3_COMPLEX(double) * hlmn, 
+    const so3_parameters_t* h_parameters,
+    const SO3_COMPLEX(double) * flm,
+    const SO3_COMPLEX(double) * glm
+);
+
+
 #ifdef __cplusplus
 }
 #endif

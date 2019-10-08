@@ -826,9 +826,7 @@ bool so3_sampling_is_i_in_loop_range(const int i, const int i_start, const int i
 {
     if (i < i_start) return false;
     if (i > i_stop) return false;
-    if ((i-i_start)%i_inc != 0) return false;
-
-    return true;
+    return (i-i_start)%i_inc == 0;
 }
 
 /*!
@@ -877,3 +875,8 @@ bool so3_sampling_is_elmn_non_zero(const int el, const int m, const int n, const
     return true;
 
 }
+
+int so3_sampling_is_elmn_non_zero_return_int(const int el, const int m, const int n, const so3_parameters_t *parameters)
+    {
+        return (int)so3_sampling_is_elmn_non_zero(el, m, n, parameters);
+    }
