@@ -20,6 +20,7 @@
 #include "so3_error.h"
 #include "so3_sampling.h"
 #include "so3_core.h"
+#include "ssht.h"
 
 #define MAX(a,b) ((a > b) ? (a) : (b))
 #define MIN(a,b) ((a < b) ? (a) : (b))
@@ -115,11 +116,24 @@ so3_parameters_t so3_conv_get_parameters_of_convolved_lmn(
     h_parameters = *f_parameters;
 
     h_parameters.L = MIN(f_parameters->L, g_parameters->L);
-    h_parameters.N = MIN(h_parameters.L, g_parameters->L);
+    h_parameters.N = h_parameters.L;
     h_parameters.L0 = MAX(f_parameters->L0, g_parameters->L0);
     return h_parameters;
 }
 
+
+void so3_conv_get_parameters_of_convolved_lmn_void(
+    so3_parameters_t* h_parameters,
+    const so3_parameters_t* f_parameters,
+    const so3_parameters_t* g_parameters
+)
+{
+    so3_parameters_t dummy = {}, dummy1 = {}, dummy2 = {} ;
+    *h_parameters = so3_conv_get_parameters_of_convolved_lmn(
+        f_parameters,
+        g_parameters
+    );
+}
 
 /*!
  * Compute the convolution of one signal with another in real space
@@ -167,4 +181,35 @@ void so3_conv_convolution(
     // transform to h
     so3_core_inverse_direct(h, hlmn, h_parameters);
 
+}
+
+void so3_conv_s2toso3_harmonic_convolution(
+    SO3_COMPLEX(double) * hlmn, 
+    const so3_parameters_t* h_parameters,
+    const SO3_COMPLEX(double) * flm,
+    const SO3_COMPLEX(double) * glm
+)
+{
+    int hlmn_length = so3_sampling_flmn_size(h_parameters);
+    int el, m, n;
+    int ind_f, ind_g;
+    SO3_COMPLEX(double) psi;
+
+    for (int i=0; i<hlmn_length; i++)
+    {
+        if (h_parameters->reality) so3_sampling_ind2elmn_real(&el, &m, &n, i, h_parameters);
+        else so3_sampling_ind2elmn(&el, &m, &n, i, h_parameters);
+
+        if (abs(m) <= el & abs(n) <= el)
+        {
+            ssht_sampling_elm2ind(&ind_f, el, m);
+            ssht_sampling_elm2ind(&ind_g, el, n);
+            psi = 8*SO3_PI*SO3_PI/(2*el+1);
+            hlmn[i] = flm[ind_f] * conj(glm[ind_g]) * psi;
+        }
+        else 
+        {
+            hlmn[i] = 0;
+        }
+    }
 }
