@@ -7,7 +7,7 @@ if(NOT NOEXPORT)
 endif()
 
 # First in binary dir
-set(ALL_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src/c")
+set(ALL_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}")
 configure_File(cmake/So3Config.in.cmake
   "${PROJECT_BINARY_DIR}/So3Config.cmake" @ONLY
 )
