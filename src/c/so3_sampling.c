@@ -826,9 +826,7 @@ bool so3_sampling_is_i_in_loop_range(const int i, const int i_start, const int i
 {
     if (i < i_start) return false;
     if (i > i_stop) return false;
-    if ((i-i_start)%i_inc != 0) return false;
-
-    return true;
+    return (i-i_start)%i_inc == 0;
 }
 
 /*!

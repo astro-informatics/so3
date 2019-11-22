@@ -116,7 +116,7 @@ so3_parameters_t so3_conv_get_parameters_of_convolved_lmn(
     h_parameters = *f_parameters;
 
     h_parameters.L = MIN(f_parameters->L, g_parameters->L);
-    h_parameters.N = MIN(h_parameters.L, g_parameters->L);
+    h_parameters.N = h_parameters.L;
     h_parameters.L0 = MAX(f_parameters->L0, g_parameters->L0);
     return h_parameters;
 }
@@ -197,18 +197,19 @@ void so3_conv_s2toso3_harmonic_convolution(
 
     for (int i=0; i<hlmn_length; i++)
     {
-        hlmn[i] = 0;
-
         if (h_parameters->reality) so3_sampling_ind2elmn_real(&el, &m, &n, i, h_parameters);
         else so3_sampling_ind2elmn(&el, &m, &n, i, h_parameters);
-
-        psi = 8*SO3_PI*SO3_PI/(2*el+1);
 
         if (abs(m) <= el & abs(n) <= el)
         {
             ssht_sampling_elm2ind(&ind_f, el, m);
             ssht_sampling_elm2ind(&ind_g, el, n);
-            hlmn[i] += flm[ind_f] * conj(glm[ind_g]) * psi;
+            psi = 8*SO3_PI*SO3_PI/(2*el+1);
+            hlmn[i] = flm[ind_f] * conj(glm[ind_g]) * psi;
+        }
+        else 
+        {
+            hlmn[i] = 0;
         }
     }
 }
