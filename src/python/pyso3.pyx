@@ -25,13 +25,13 @@ cdef extern from "so3.h":
     void so3_sampling_m_loop_values(int *m_start, int *m_stop, int *m_inc, const int el);
     int so3_sampling_is_elmn_non_zero_return_int(const int el, const int m, const int n, const so3_parameters_t *parameters);
 
-    void so3_core_inverse_direct(double complex * f, const double complex * flmn, const so3_parameters_t* parameters)
+    void so3_core_inverse_via_ssht(double complex * f, const double complex * flmn, const so3_parameters_t* parameters)
 
-    void so3_core_inverse_direct_real(double* f, const double complex * flmn,const so3_parameters_t* parameters)
+    void so3_core_inverse_via_ssht_real(double* f, const double complex * flmn,const so3_parameters_t* parameters)
 
-    void so3_core_forward_direct(double complex * flmn, const double complex * f, const so3_parameters_t* parameters)
+    void so3_core_forward_via_ssht(double complex * flmn, const double complex * f, const so3_parameters_t* parameters)
 
-    void so3_core_forward_direct_real(
+    void so3_core_forward_via_ssht_real(
         double complex * flmn, const double* f,
         const so3_parameters_t* parameters)
 
@@ -103,14 +103,53 @@ def create_parameter_dict(
         int L0=0,
         int verbosity=0,
         int reality=0,
-        so3_sampling_t sampling_scheme=SO3_SAMPLING_MW,
-        so3_n_order_t n_order=SO3_N_ORDER_NEGATIVE_FIRST,
-        so3_storage_t storage=SO3_STORAGE_PADDED,
-        so3_n_mode_t n_mode=SO3_N_MODE_ALL,
-        ssht_dl_method_t dl_method=SSHT_DL_RISBO,
+        str sampling_scheme_str="SO3_SAMPLING_MW",
+        str n_order_str="SO3_N_ORDER_NEGATIVE_FIRST",
+        str storage_str="SO3_STORAGE_PADDED",
+        str n_mode_str="SO3_N_MODE_ALL",
+        str dl_method_str="SSHT_DL_RISBO",
         int steerable=0
         ):
-    """function to create params dict from input"""
+    """function to create params class from input
+    this is just here to prevent some breaking changes
+    """
+    cdef so3_sampling_t sampling_scheme
+    cdef so3_n_order_t n_order
+    cdef so3_storage_t storage
+    cdef so3_n_mode_t n_mode
+    cdef ssht_dl_method_t dl_method
+    
+    if sampling_scheme_str == "SO3_SAMPLING_MW":
+        sampling_scheme = SO3_SAMPLING_MW
+    else:
+        sampling_scheme = SO3_SAMPLING_MW_SS
+    
+    if n_order_str == "SO3_N_ORDER_NEGATIVE_FIRST":
+        n_order = SO3_N_ORDER_NEGATIVE_FIRST
+    else:
+        n_order = SO3_N_ORDER_ZERO_FIRST
+    
+    if storage_str=="SO3_STORAGE_PADDED":
+        storage = SO3_STORAGE_PADDED
+    else:
+        storage = SO3_STORAGE_COMPACT
+    
+    if n_mode_str=="SO3_N_MODE_ALL":
+        n_mode = SO3_N_MODE_ALL
+    elif n_mode_str=="SO3_N_MODE_EVEN":
+        n_mode = SO3_N_MODE_EVEN
+    elif n_mode_str=="SO3_N_MODE_ODD":
+        n_mode = SO3_N_MODE_ODD
+    elif n_mode_str=="SO3_N_MODE_MAXIMUM":
+        n_mode = SO3_N_MODE_MAXIMUM
+    else: 
+        n_mode = SO3_N_MODE_L
+    
+    if dl_method_str=="SSHT_DL_RISBO":
+        dl_method = SSHT_DL_RISBO
+    else:
+        dl_method = SSHT_DL_TRAPANI
+    
     cdef so3_parameters_t parameters = {}
     parameters.L = L
     parameters.N = N
@@ -231,11 +270,11 @@ def inverse(np.ndarray[ double complex, ndim=1, mode="c"] flmn not None, dict pa
     if parameters_dict['reality']:
         f_length = f_size(parameters_dict)
         f = np.zeros([f_length,], dtype=float)
-        so3_core_inverse_direct_real(<double *> np.PyArray_DATA(f), <const double complex*> np.PyArray_DATA(flmn), &parameters)
+        so3_core_inverse_via_ssht_real(<double *> np.PyArray_DATA(f), <const double complex*> np.PyArray_DATA(flmn), &parameters)
     else:
         f_length = f_size(parameters_dict)
         f = np.zeros([f_length,], dtype=complex)
-        so3_core_inverse_direct(<double complex*> np.PyArray_DATA(f), <const double complex*> np.PyArray_DATA(flmn), &parameters)
+        so3_core_inverse_via_ssht(<double complex*> np.PyArray_DATA(f), <const double complex*> np.PyArray_DATA(flmn), &parameters)
 
     return f
 
@@ -245,11 +284,11 @@ def forward(np.ndarray[ double complex, ndim=1, mode="c"] f not None, dict param
     if parameters_dict['reality']:
         flmn_length = flmn_size(parameters_dict)
         flmn = np.zeros([flmn_length,], dtype=float)
-        so3_core_forward_direct_real(<double complex*> np.PyArray_DATA(flmn), <const double *> np.PyArray_DATA(f), &parameters)
+        so3_core_forward_via_ssht_real(<double complex*> np.PyArray_DATA(flmn), <const double *> np.PyArray_DATA(f), &parameters)
     else:
         flmn_length = flmn_size(parameters_dict)
         flmn = np.zeros([flmn_length,], dtype=complex)
-        so3_core_forward_direct(<double complex*> np.PyArray_DATA(flmn), <const double complex*> np.PyArray_DATA(f), &parameters)
+        so3_core_forward_via_ssht(<double complex*> np.PyArray_DATA(flmn), <const double complex*> np.PyArray_DATA(f), &parameters)
 
     return flmn
 
