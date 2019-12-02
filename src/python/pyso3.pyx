@@ -204,7 +204,19 @@ def create_parameter_dict(
     parameters.dl_method = dl_method
     parameters.steerable = steerable
 
-    return parameters
+    return SO3Parameters(
+    L = L,
+    N = N,
+    L0 = L0,
+    verbosity = verbosity,
+    reality = reality,
+    sampling_scheme = sampling_scheme,
+    n_order = n_order,
+    storage = storage,
+    n_mode = n_mode,
+    dl_method = dl_method,
+    steerable = steerable
+    )
 
 cdef so3_parameters_t create_parameter_struct(so3_parameters):
     cdef so3_parameters_t parameters = {}
