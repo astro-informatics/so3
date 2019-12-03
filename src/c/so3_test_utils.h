@@ -6,7 +6,7 @@
 #define SO3_TEST_UTILS
 
 #include "so3_types.h"
-#include "ssht.h"
+#include <ssht/ssht.h>
 #include <complex.h>
 
 #ifdef __cplusplus

@@ -29,7 +29,6 @@
 #include <complex.h>
 #include <time.h>
 #include <fftw3.h>
-// #include <omp.h>
 
 #include "so3.h"
 #include "so3_test_utils.h"

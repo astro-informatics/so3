@@ -20,7 +20,7 @@
 #include "so3_error.h"
 #include "so3_sampling.h"
 #include "so3_core.h"
-#include "ssht.h"
+#include <ssht/ssht.h>
 
 #define MAX(a,b) ((a > b) ? (a) : (b))
 #define MIN(a,b) ((a < b) ? (a) : (b))
