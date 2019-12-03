@@ -11,3 +11,8 @@ timing_test_*_*.txt
 build/
 bin/
 !bin/c/
+*.so
+*.egg-info/
+pip-wheel-metadata
+.venv/
+_skbuild/

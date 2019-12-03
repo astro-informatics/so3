@@ -9,7 +9,7 @@ if(SSHT_DOWNLOADED)
 else()
     target_include_directories(so3 PUBLIC ${Ssht_INCLUDE_DIRS})
 endif()
-target_link_libraries(so3 PUBLIC ssht)
+target_link_libraries(so3 PUBLIC ssht ${FFTW3_LIBRARIES})
 if(fPIC)
   set_target_properties(so3 PROPERTIES COMPILE_FLAGS "${FFTW3_DEFINITIONS} -fPIC")
 else()
@@ -19,7 +19,7 @@ endif()
 install(TARGETS so3 EXPORT So3Targets ARCHIVE DESTINATION lib PUBLIC_HEADER)
 install(FILES
   so3_error.h so3_sampling.h so3_core.h so3_types.h so3_adjoint.h so3_conv.h
-  so3_test.h so3_test_utils.h so3.h
+  so3.h
   DESTINATION include)
 
 #building about and test executables
