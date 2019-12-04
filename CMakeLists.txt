@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
-option(openmp         "Enable OpenMP"                  ON)
 option(fPIC           "Enable fPIC (only for gcc)"     ON)
 option(tests          "Enable testing"                 ON)
 option(conan_fftw     "Download fftw using conan"      OFF)
-option(conan_ssht     "Download ssht using conan"      OFF)
 option(python         "Creates python package"         OFF)
 
 project(so3 C)
