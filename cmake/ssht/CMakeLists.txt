@@ -18,5 +18,6 @@ ExternalProject_Add(
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY=ON
         -Dconan_fftw=OFF
+        -Dopenmp=OFF
         -Dtests=OFF
 )
