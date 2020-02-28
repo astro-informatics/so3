@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 include("ExternalProject")
 
 if(NOT GIT_REPOSITORY)
-    set(GIT_REPOSITORY https://github.com/astro-informatics/src_ssht.git)
+    set(GIT_REPOSITORY https://gitlab.com/kagenova/kagelearn/development/ssht)
 endif()
 ExternalProject_Add(
     Ssht
