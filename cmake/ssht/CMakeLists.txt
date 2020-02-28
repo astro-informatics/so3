@@ -4,7 +4,7 @@ include("ExternalProject")
 
 if(NOT GIT_REPOSITORY AND NOT DEFINED ENV{SSHT_GIT_REPOSITORY})
     set(GIT_REPOSITORY https://gitlab.com/kagenova/kagelearn/development/ssht)
-elif(DEFINED ENV{SSHT_GIT_REPOSITORY} AND NOT GIT_REPOSITORY)
+elseif(DEFINED ENV{SSHT_GIT_REPOSITORY} AND NOT GIT_REPOSITORY)
     set(GIT_REPOSITORY $ENV{SSHT_GIT_REPOSITORY})
 endif()
 ExternalProject_Add(
