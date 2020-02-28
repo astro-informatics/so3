@@ -6,6 +6,7 @@
 #define SO3_SAMPLING
 
 #include "so3_types.h"
+#include <stdbool.h> 
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,11 +26,16 @@ double so3_sampling_g2gamma(int g, const so3_parameters_t* parameters);
 
 // Note, if this is compiled using C99-standard then the "extern" belongs in the
 // .c file instead.
-extern inline int so3_sampling_flmn_size(const so3_parameters_t* parameters);
-extern inline void so3_sampling_elmn2ind(int* ind, int el, int m, int n, const so3_parameters_t* parameters);
-extern inline void so3_sampling_ind2elmn(int* el, int* m, int* n, int ind, const so3_parameters_t* parameters);
-extern inline void so3_sampling_elmn2ind_real(int* ind, int el, int m, int n, const so3_parameters_t* parameters);
-extern inline void so3_sampling_ind2elmn_real(int* el, int* m, int* n, int ind, const so3_parameters_t* parameters);
+int so3_sampling_flmn_size(const so3_parameters_t* parameters);
+void so3_sampling_elmn2ind(int* ind, int el, int m, int n, const so3_parameters_t* parameters);
+void so3_sampling_ind2elmn(int* el, int* m, int* n, int ind, const so3_parameters_t* parameters);
+void so3_sampling_elmn2ind_real(int* ind, int el, int m, int n, const so3_parameters_t* parameters);
+void so3_sampling_ind2elmn_real(int* el, int* m, int* n, int ind, const so3_parameters_t* parameters);
+void so3_sampling_n_loop_values(int *n_start, int *n_stop, int *n_inc, const so3_parameters_t *parameters);
+void so3_sampling_el_loop_values(int *el_start, int *el_stop, int *el_inc, const int n, const so3_parameters_t *parameters);
+void so3_sampling_m_loop_values(int *m_start, int *m_stop, int *m_inc, const int el);
+bool so3_sampling_is_elmn_non_zero(const int el, const int m, const int n, const so3_parameters_t *parameters);
+int so3_sampling_is_elmn_non_zero_return_int(const int el, const int m, const int n, const so3_parameters_t *parameters);
 
 #ifdef __cplusplus
 }
