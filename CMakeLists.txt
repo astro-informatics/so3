@@ -37,10 +37,10 @@ endif()
 
 install(TARGETS so3 EXPORT So3Targets ARCHIVE DESTINATION lib PUBLIC_HEADER)
 install(FILES
-  src/c/so3_error.h src/c/so3_sampling.h
-  src/c/so3_core.h src/c/so3_types.h
-  src/c/so3_adjoint.h
-  src/c/so3.h
+  include/so3_error.h include/so3_sampling.h
+  include/so3_core.h include/so3_types.h
+  include/so3_adjoint.h
+  include/so3.h
   DESTINATION include)
 
 include("exporting")
