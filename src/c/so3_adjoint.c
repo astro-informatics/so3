@@ -403,7 +403,6 @@ void so3_adjoint_forward_direct(
     complex double *f, const complex double *flmn,
     const so3_parameters_t *parameters
 ) {    
-    printf("here\n");
     int L0, L, N;
     so3_sampling_t sampling;
     so3_storage_t storage;
