@@ -2,8 +2,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "../so3_types.h"
-#include "../so3_sampling.h"
+#include "so3_types.h"
+#include "so3_sampling.h"
 
 static void test_sampling_elmn2ind();
 static void test_sampling_ind2elmn();

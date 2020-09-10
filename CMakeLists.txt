@@ -23,6 +23,8 @@ target_include_directories(so3 PUBLIC
   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/cpp>
   $<INSTALL_INTERFACE:include/>)
+target_include_directories(so3 PRIVATE ${PROJECT_SOURCE_DIR}/include/)
+
 if(OpenMP_C_FOUND AND openmp)
   target_link_libraries(so3 OpenMP::OpenMP_C)
 endif()
@@ -37,10 +39,10 @@ endif()
 
 install(TARGETS so3 EXPORT So3Targets ARCHIVE DESTINATION lib PUBLIC_HEADER)
 install(FILES
-  src/c/so3_error.h src/c/so3_sampling.h
-  src/c/so3_core.h src/c/so3_types.h
-  src/c/so3_adjoint.h
-  src/c/so3.h
+  include/so3_error.h include/so3_sampling.h
+  include/so3_core.h include/so3_types.h
+  include/so3_adjoint.h
+  include/so3.h
   DESTINATION include)
 
 include("exporting")
@@ -51,9 +53,11 @@ set_target_properties(so3_about PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BI
 
 if(tests)
   add_executable(so3_test src/c/so3_test.c)
+  target_include_directories(so3_test PRIVATE ${PROJECT_SOURCE_DIR}/include/)
   target_link_libraries(so3_test so3)
   set_target_properties(so3_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
   add_executable(so3_unittest src/c/unittest/so3_unittest.c)
   target_link_libraries(so3_unittest so3)
+  target_include_directories(so3_unittest PRIVATE ${PROJECT_SOURCE_DIR}/include/)
   set_target_properties(so3_unittest PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 endif()
