@@ -43,8 +43,9 @@ macro(find_specific_libraries KIND PARALLEL)
     message(FATAL_ERROR "Please, find ${PARALLEL} libraries before FFTW")
   endif()
 
-  find_library(FFTW3_${KIND}_${PARALLEL}_LIBRARY NAMES
-    fftw3${SUFFIX_${KIND}}${SUFFIX_${PARALLEL}}${SUFFIX_FINAL} HINTS ${HINT_DIRS})
+  find_library(FFTW3_${KIND}_${PARALLEL}_LIBRARY 
+    NAMES fftw3${SUFFIX_${KIND}}${SUFFIX_${PARALLEL}}${SUFFIX_FINAL} libfftw3${SUFFIX_${KIND}}${SUFFIX_${PARALLEL}}${SUFFIX_FINAL} 
+    HINTS ${HINT_DIRS})
   if(FFTW3_${KIND}_${PARALLEL}_LIBRARY MATCHES fftw3)
     list(APPEND FFTW3_LIBRARIES ${FFTW3_${KIND}_${PARALLEL}_LIBRARY})
     set(FFTW3_${KIND}_${PARALLEL}_FOUND TRUE)
@@ -99,9 +100,6 @@ macro(find_specific_libraries KIND PARALLEL)
   endif()
 endmacro()
 
-
-
-
 if(NOT FFTW3_FIND_COMPONENTS)
   set(FFTW3_FIND_COMPONENTS SINGLE DOUBLE LONGDOUBLE SERIAL)
 endif()
@@ -131,18 +129,15 @@ if(MPI_C_FOUND)
 endif()
 unset(FFTW3_FIND_COMPONENTS)
 
-
-
-
 if(WIN32)
-  set(HINT_DIRS ${FFTW3_DIRECTORY} $ENV{FFTW3_DIRECTORY})
+  set(HINT_DIRS ${FFTW3_DIRECTORY} $ENV{FFTW3_DIRECTORY} ${FFTW3_INCLUDE_DIR})
 else()
   find_package(PkgConfig)
   if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_FFTW QUIET fftw3)
+    pkg_check_modules(PC_FFTW3 fftw3)
     set(FFTW3_DEFINITIONS ${PC_FFTW3_CFLAGS_OTHER})
   endif()
-  set(HINT_DIRS ${PC_FFTW3_INCLUDEDIR} ${PC_FFTW3_INCLUDE_DIRS}
+  set(HINT_DIRS ${PC_FFTW3_INCLUDE_DIR} ${PC_FFTW3_INCLUDE_DIRS}
     ${FFTW3_INCLUDE_DIR} $ENV{FFTW3_INCLUDE_DIR} )
 endif()
 
@@ -191,7 +186,8 @@ set(SUFFIX_THREADS "_threads")
 set(SUFFIX_FINAL "")
 
 if(WIN32)
-  set(SUFFIX_FINAL "-3")
+  set(SUFFIX_FINAL "")
+  set(HINT_DIRS $ENV{FFTW3_LIBRARY_DIR} ${FFTW3_LIBRARY_DIR})
 else()
   set(HINT_DIRS ${PC_FFTW3_LIBDIR} ${PC_FFTW3_LIBRARY_DIRS}
     $ENV{FFTW3_LIBRARY_DIR} ${FFTW3_LIBRARY_DIR} )
@@ -232,3 +228,8 @@ find_package_handle_standard_args(FFTW3
     VERSION_VAR FFTW3_VERSION_STRING
     HANDLE_COMPONENTS
 )
+
+add_library(fftw3 INTERFACE IMPORTED)
+target_link_libraries(fftw3 INTERFACE ${FFTW3_DOUBLE_SERIAL_LIBRARY})
+target_include_directories(fftw3 INTERFACE ${FFTW3_INCLUDE_DIRS})
+target_compile_definitions(fftw3 INTERFACE ${FFTW3_DEFINITIONS})
