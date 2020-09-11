@@ -33,7 +33,7 @@ SO3SRC   = $(SO3DIR)/src/c
 SO3BIN   = $(SO3DIR)/bin/c
 SO3OBJ   = $(SO3SRC)
 SO3INC   = $(SO3DIR)/include/c
-SO3DOC   = $(SO3DIR)/doc/c
+SO3DOC   = $(SO3DIR)/docs/c
 
 SSHTDIR  = $(PROGDIR)/ssht
 SSHTLIB  = $(SSHTDIR)/lib/c
