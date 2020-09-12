@@ -30,7 +30,7 @@
 #include <time.h>
 #include <fftw3.h>
 
-#include "so3.h"
+#include <so3/so3.h>
 
 #define NREPEAT 2
 #define MIN(a,b) ((a < b) ? (a) : (b))
