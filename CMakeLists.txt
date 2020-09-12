@@ -10,6 +10,9 @@ project(
   HOMEPAGE_URL "http://astro-informatics.github.io/so3/"
   LANGUAGES C)
 
+if(tests)
+    enable_testing()
+endif()
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()

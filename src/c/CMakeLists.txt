@@ -34,8 +34,11 @@ if(tests)
   target_link_libraries(so3_test so3)
   set_target_properties(so3_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                                             ${PROJECT_BINARY_DIR})
+  add_test(NAME so3_test COMMAND so3_test)
+
   add_executable(so3_unittest unittest/so3_unittest.c)
   target_link_libraries(so3_unittest so3)
   set_target_properties(so3_unittest PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                                                 ${PROJECT_BINARY_DIR})
+  add_test(NAME so3_unittest COMMAND so3_unittest)
 endif()
