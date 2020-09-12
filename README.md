@@ -1,6 +1,6 @@
 # SO3: Fast Wigner transforms
 [docs-img]: https://img.shields.io/badge/docs-stable-blue.svg
-[docs-url]: astro-informatics.github.io/so3/
+[docs-url]: http://astro-informatics.github.io/so3/
 
 [![][docs-img]][docs-url]
 ![Bintray](https://img.shields.io/bintray/v/mdavezac/AstroFizz/so3:AstroFizz?label=bintray%20-%20C%20package)
