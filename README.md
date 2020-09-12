@@ -2,7 +2,7 @@
 [docs-img]: https://img.shields.io/badge/docs-stable-blue.svg
 [docs-url]: http://astro-informatics.github.io/so3/
 [bintray-img]: https://img.shields.io/bintray/v/mdavezac/AstroFizz/so3:AstroFizz?label=C%20package
-[bintray-url]: https://bintray.com/mdavezac/AstroFizz/so3:AstroFizz/1.3.1:stable/link
+[bintray-url]: https://bintray.com/mdavezac/AstroFizz/so3:AstroFizz/1.2.0:stable/link
 
 [![][docs-img]][docs-url]
 [![][bintray-img]][bintray-url]
