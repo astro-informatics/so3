@@ -25,8 +25,8 @@ Release 1.2.0, Sept 20
 The can be installed using [CMake](https://cmake.org):
 
 ```cmake
-git clone http://astro-informatics.github.io/ssht/ -b main
-mkdir ssht/build && cd ssht/build
+git clone http://astro-informatics.github.io/so3/ -b main
+mkdir so3/build && cd so3/build
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
 make
 make install
