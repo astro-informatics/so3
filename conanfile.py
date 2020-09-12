@@ -16,7 +16,7 @@ class So3Conan(ConanFile):
     generators = "cmake"
     exports_sources = [
         "src/c/*",
-        "src/include/*",
+        "include/*",
         "CMakeLists.txt",
         "cmake/*.cmake",
     ]
