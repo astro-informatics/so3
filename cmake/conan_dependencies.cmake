@@ -20,11 +20,6 @@ endif()
 if(NOT CONAN_BUILD)
   set(CONAN_BUILD "missing")
 endif()
-if(NOT CONAN_SETTINGS
-   AND CMAKE_COMPILER_IS_GNUCC
-   AND CMAKE_C_COMPILER_VERSION VERSION_GREATER 4.9)
-  set(CONAN_SETTINGS SETTINGS compiler.libcxx=libstdc++)
-endif()
 
 conan_check(REQUIRED)
 conan_add_remote(NAME AstroFizz URL
@@ -38,6 +33,5 @@ conan_cmake_run(
   KEEP_RPATHS
   CMAKE_TARGETS
   NO_OUTPUT_DIRS
-  ${CONAN_SETTINGS}
   BUILD
   ${CONAN_BUILD})
