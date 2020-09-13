@@ -32,3 +32,8 @@ endif()
 add_subdirectory(src/c)
 
 include("exporting")
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    doxygen_add_docs(docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docs)
+endif()
