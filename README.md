@@ -23,13 +23,21 @@ Release 1.2.0, Sept 20
     IEEE Signal Processing Letters. Vol. 22, No. 12, 2015, pp 2425-2429
 
 ## INSTALLATION
+The C package can be installed with [CMake](https://cmake.org) and
+[conan](https://docs.conan.io/en/latest/howtos/other_languages_package_manager/python.html):
 
-The can be installed using [CMake](https://cmake.org):
+Both can be installed using pip:
 
-```cmake
+```bash
+pip install conan cmake
+```
+
+Then ssht can be compiled with:
+
+```bash
 git clone http://astro-informatics.github.io/so3/ -b main
 mkdir so3/build && cd so3/build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -Dconan_deps=True ..
 make
 make install
 ```
@@ -37,3 +45,5 @@ make install
 The above will also download [FFTW](https://www.fftw.org) and
 [SSHT](https://www.github.com/astro-informatics/ssht) and compile them, if
 necessary.
+
+Instructions for installing the fortran package can be found in docs/index.html.
