@@ -23,11 +23,17 @@ set(SO3_BUILD "CMake")
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 if(conan_deps)
   include("conan_dependencies")
+  set(SSHT_TARGET CONAN_PKG::ssht)
 else()
-  find_package(FFTW3 REQUIRED COMPONENTS SERIAL DOUBLE)
   find_package(Ssht REQUIRED)
+  set(SSHT_TARGET ssht)
 endif()
 
 add_subdirectory(src/c)
 
 include("exporting")
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    doxygen_add_docs(docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docs)
+endif()

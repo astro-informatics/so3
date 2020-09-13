@@ -1,5 +1,5 @@
 add_library(so3 STATIC so3_core.c so3_sampling.c so3_adjoint.c)
-target_link_libraries(so3 PUBLIC ssht)
+target_link_libraries(so3 PUBLIC ${SSHT_TARGET})
 target_include_directories(
   so3 PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
              $<INSTALL_INTERFACE:include>)
