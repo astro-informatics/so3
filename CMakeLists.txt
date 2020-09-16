@@ -5,7 +5,7 @@ option(conan_deps "Download ssht using conan" ON)
 
 project(
   so3
-  VERSION "1.2.0"
+  VERSION "1.2.1"
   DESCRIPTION "Fast and exact Wigner transforms"
   HOMEPAGE_URL "http://astro-informatics.github.io/so3/"
   LANGUAGES C)
