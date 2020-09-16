@@ -28,6 +28,7 @@ jobs:
 
     - name: Create Build Environment
       run: |
+          pip install --upgrade pip wheel
           pip install conan
           conan profile new default --detect
           cmake -E make_directory ${{runner.workspace}}/build

@@ -12,7 +12,7 @@ class So3Conan(ConanFile):
     topics = ("Physics", "Astrophysics", "Radio Interferometry")
     options = {"fPIC": [True, False]}
     default_options = {"fPIC": True}
-    requires = "ssht/1.3.1@AstroFizz/stable"
+    requires = "ssht/1.3.2@AstroFizz/stable"
     generators = "cmake"
     exports_sources = [
         "src/c/*",

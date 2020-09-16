@@ -25,8 +25,8 @@ install(
 
 # building about and test executables
 add_executable(so3_about so3_about.c)
-target_compile_definitions(so3_about PRIVATE SO3_VERSION="${SO3_VERSION}"
-                                             SO3_BUILD="${SO3_BUILD}")
+target_compile_definitions(so3_about PRIVATE SO3_VERSION="${PROJECT_VERSION}"
+                                             SO3_BUILD="CMake")
 set_target_properties(so3_about PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                                            ${PROJECT_BINARY_DIR})
 if(tests)
