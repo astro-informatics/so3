@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 option(fPIC "Enable position independent code" ON)
 option(tests "Enable testing" ON)
 option(conan_deps "Download ssht using conan" ON)
