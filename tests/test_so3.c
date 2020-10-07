@@ -23,6 +23,7 @@ typedef void (*forward_complex_t)(
 typedef struct {
   so3_parameters_t params;
   int seed;
+  double tolerance;
   inverse_real_t inverse_real;
   inverse_complex_t inverse_complex;
   forward_real_t forward_real;
@@ -33,12 +34,11 @@ void test_real_back_and_forth(void **_state) {
   SO3TestState const *state = *(const SO3TestState **)_state;
 
   so3_parameters_t const *parameters = &state->params;
-  int const seed = state->seed;
 
   complex double *flmn_orig = calloc(
       (2 * parameters->N - 1) * parameters->L * parameters->L, sizeof(complex double));
   SO3_ERROR_MEM_ALLOC_CHECK(flmn_orig);
-  gen_flmn_real(flmn_orig, parameters, seed);
+  gen_flmn_real(flmn_orig, parameters, state->seed);
 
   double *f_image = calloc(
       (2 * parameters->L) * (parameters->L + 1) * (2 * parameters->N - 1),
@@ -54,8 +54,8 @@ void test_real_back_and_forth(void **_state) {
   int const flmn_size = so3_sampling_flmn_size(parameters);
 
   for (int i = 0; i < flmn_size; i += 1) {
-    assert_float_equal(creal(flmn_orig[i]), creal(f_back[i]), 1e-12);
-    assert_float_equal(cimag(flmn_orig[i]), cimag(f_back[i]), 1e-12);
+    assert_float_equal(creal(flmn_orig[i]), creal(f_back[i]), state->tolerance);
+    assert_float_equal(cimag(flmn_orig[i]), cimag(f_back[i]), state->tolerance);
   }
 
   free(flmn_orig);
@@ -67,12 +67,11 @@ void test_real_direct_vs_ssht(void **_state) {
   SO3TestState const *state = *(const SO3TestState **)_state;
 
   so3_parameters_t const *parameters = &state->params;
-  int const seed = state->seed;
 
   complex double *flmn_orig = calloc(
       (2 * parameters->N - 1) * parameters->L * parameters->L, sizeof(complex double));
   SO3_ERROR_MEM_ALLOC_CHECK(flmn_orig);
-  gen_flmn_real(flmn_orig, parameters, seed);
+  gen_flmn_real(flmn_orig, parameters, state->seed);
 
   double *f_direct = calloc(
       (2 * parameters->L) * (parameters->L + 1) * (2 * parameters->N - 1),
@@ -89,7 +88,7 @@ void test_real_direct_vs_ssht(void **_state) {
   int const flmn_size = so3_sampling_flmn_size(parameters);
 
   for (int i = 0; i < flmn_size; i += 1)
-    assert_float_equal(f_direct[i], f_ssht[i], 1e-12);
+    assert_float_equal(f_direct[i], f_ssht[i], state->tolerance);
 
   free(flmn_orig);
   free(f_direct);
@@ -98,14 +97,17 @@ void test_real_direct_vs_ssht(void **_state) {
 
 void test_back_and_forth(void **_state) {
   SO3TestState const *state = *(const SO3TestState **)_state;
-
   so3_parameters_t const *parameters = &state->params;
-  int const seed = state->seed;
+  if (state->forward_complex == &so3_core_forward_via_ssht &&
+      parameters->steerable != 0 &&
+      (parameters->n_mode == SO3_N_MODE_ALL || parameters->n_mode == SO3_N_MODE_EVEN ||
+       parameters->n_mode == SO3_N_MODE_L))
+    skip();
 
   complex double *flmn_orig = calloc(
       (2 * parameters->N - 1) * parameters->L * parameters->L, sizeof(complex double));
   SO3_ERROR_MEM_ALLOC_CHECK(flmn_orig);
-  gen_flmn_complex(flmn_orig, parameters, seed);
+  gen_flmn_complex(flmn_orig, parameters, state->seed);
 
   complex double *f_image = calloc(
       (2 * parameters->L) * (parameters->L + 1) * (2 * parameters->N - 1),
@@ -121,8 +123,8 @@ void test_back_and_forth(void **_state) {
   int const flmn_size = so3_sampling_flmn_size(parameters);
 
   for (int i = 0; i < flmn_size; i += 1) {
-    assert_float_equal(creal(flmn_orig[i]), creal(f_back[i]), 1e-12);
-    assert_float_equal(cimag(flmn_orig[i]), cimag(f_back[i]), 1e-12);
+    assert_float_equal(creal(flmn_orig[i]), creal(f_back[i]), state->tolerance);
+    assert_float_equal(cimag(flmn_orig[i]), cimag(f_back[i]), state->tolerance);
   }
 
   free(flmn_orig);
@@ -132,14 +134,34 @@ void test_back_and_forth(void **_state) {
 
 void test_direct_vs_ssht(void **_state) {
   SO3TestState const *state = *(const SO3TestState **)_state;
-
   so3_parameters_t const *parameters = &state->params;
-  int const seed = state->seed;
+  if (parameters->n_mode == SO3_N_MODE_L)
+    skip();
+  else if (parameters->steerable != 0 && parameters->n_mode == SO3_N_MODE_ALL)
+    skip();
+  else if (
+      parameters->steerable != 0 && parameters->n_mode == SO3_N_MODE_EVEN &&
+      parameters->n_order == SO3_N_ORDER_ZERO_FIRST)
+    skip();
+  else if (
+      parameters->steerable != 0 && parameters->n_mode == SO3_N_MODE_ODD &&
+      parameters->n_order == SO3_N_ORDER_ZERO_FIRST)
+    skip();
+  else if (
+      parameters->steerable != 0 && parameters->n_mode == SO3_N_MODE_ODD &&
+      parameters->n_order == SO3_N_ORDER_NEGATIVE_FIRST &&
+      parameters->storage == SO3_STORAGE_COMPACT)
+    skip();
+  else if (
+      parameters->steerable != 0 && parameters->n_mode == SO3_N_MODE_EVEN &&
+      parameters->n_order == SO3_N_ORDER_NEGATIVE_FIRST &&
+      parameters->storage == SO3_STORAGE_COMPACT)
+    skip();
 
   complex double *flmn_orig = calloc(
       (2 * parameters->N - 1) * parameters->L * parameters->L, sizeof(complex double));
   SO3_ERROR_MEM_ALLOC_CHECK(flmn_orig);
-  gen_flmn_real(flmn_orig, parameters, seed);
+  gen_flmn_real(flmn_orig, parameters, state->seed);
 
   complex double *f_direct = calloc(
       (2 * parameters->L) * (parameters->L + 1) * (2 * parameters->N - 1),
@@ -156,8 +178,8 @@ void test_direct_vs_ssht(void **_state) {
   int const flmn_size = so3_sampling_flmn_size(parameters);
 
   for (int i = 0; i < flmn_size; i += 1) {
-    assert_float_equal(creal(f_direct[i]), creal(f_ssht[i]), 1e-12);
-    assert_float_equal(cimag(f_direct[i]), cimag(f_ssht[i]), 1e-12);
+    assert_float_equal(creal(f_direct[i]), creal(f_ssht[i]), state->tolerance);
+    assert_float_equal(cimag(f_direct[i]), cimag(f_ssht[i]), state->tolerance);
   }
 
   free(flmn_orig);
@@ -176,9 +198,10 @@ static SO3TestState *parametrization(
   SO3TestState *state = (SO3TestState *)calloc(1, sizeof(SO3TestState));
   SO3_ERROR_MEM_ALLOC_CHECK(state);
   state->seed = 10;
+  state->tolerance = 1e-8;
   state->params.L0 = 0;
-  state->params.L = 4;
-  state->params.N = 4;
+  state->params.L = 8;
+  state->params.N = 8;
   state->params.verbosity = 0;
   state->params.dl_method = SSHT_DL_TRAPANI;
   state->params.sampling_scheme = sampling;
@@ -230,13 +253,13 @@ char const *name_of_test(
 }
 
 int main(void) {
-  struct CMUnitTest tests[72];
+  struct CMUnitTest tests[272];
   memset(tests, 0, sizeof(tests));
 
   int i = 0;
   const so3_sampling_t sampling = SO3_SAMPLING_MW;
   const so3_n_order_t order = SO3_N_ORDER_NEGATIVE_FIRST;
-  for (so3_n_mode_t mode = 0; mode < 2; mode += 1)
+  for (so3_n_mode_t mode = 0; mode < SO3_N_MODE_SIZE; mode += 1)
     for (so3_storage_t storage = 0; storage < SO3_STORAGE_SIZE; storage += 1)
       for (int steerable = 0; steerable < 2; steerable += 1, i += 1) {
         assert(i + 2 < sizeof(tests) / sizeof(tests[0]));
@@ -247,7 +270,7 @@ int main(void) {
         tests[i].test_func = &test_real_back_and_forth;
       }
 
-  for (so3_n_mode_t mode = 0; mode < 2; mode += 1)
+  for (so3_n_mode_t mode = 0; mode < SO3_N_MODE_SIZE; mode += 1)
     for (so3_storage_t storage = 0; storage < SO3_STORAGE_SIZE; storage += 1)
       for (int steerable = 0; steerable < 2; steerable += 1, i += 1) {
         tests[i].name = name_of_test(
@@ -257,7 +280,7 @@ int main(void) {
         tests[i].test_func = &test_real_back_and_forth;
       }
 
-  for (so3_n_mode_t mode = 0; mode < 2; mode += 1)
+  for (so3_n_mode_t mode = 0; mode < SO3_N_MODE_SIZE; mode += 1)
     for (so3_storage_t storage = 0; storage < SO3_STORAGE_SIZE; storage += 1)
       for (int steerable = 0; steerable < 2; steerable += 1, i += 1) {
         tests[i].name = name_of_test(
@@ -267,9 +290,9 @@ int main(void) {
         tests[i].test_func = &test_real_direct_vs_ssht;
       }
 
-  for (so3_n_mode_t mode = 0; mode < 2; mode += 1)
+  for (so3_n_mode_t mode = 0; mode < SO3_N_MODE_SIZE; mode += 1)
     for (so3_storage_t storage = 0; storage < SO3_STORAGE_SIZE; storage += 1)
-      for (so3_n_order_t order = 0; order < 2; order += 1)
+      for (so3_n_order_t order = 0; order < SO3_N_ORDER_SIZE; order += 1)
         for (int steerable = 0; steerable < 2; steerable += 1, i += 1) {
           assert(i + 2 < sizeof(tests) / sizeof(tests[0]));
           tests[i].name = name_of_test(
@@ -279,9 +302,9 @@ int main(void) {
           tests[i].test_func = &test_back_and_forth;
         }
 
-  for (so3_n_mode_t mode = 0; mode < 2; mode += 1)
+  for (so3_n_mode_t mode = 0; mode < SO3_N_MODE_SIZE; mode += 1)
     for (so3_storage_t storage = 0; storage < SO3_STORAGE_SIZE; storage += 1)
-      for (so3_n_order_t order = 0; order < 2; order += 1)
+      for (so3_n_order_t order = 0; order < SO3_N_ORDER_SIZE; order += 1)
         for (int steerable = 0; steerable < 2; steerable += 1, i += 1) {
           tests[i].name = name_of_test(
               "back_and_forth: direct", sampling, order, mode, storage, steerable, 0);
@@ -290,9 +313,9 @@ int main(void) {
           tests[i].test_func = &test_back_and_forth;
         }
 
-  for (so3_n_mode_t mode = 0; mode < 2; mode += 1)
+  for (so3_n_mode_t mode = 0; mode < SO3_N_MODE_SIZE; mode += 1)
     for (so3_storage_t storage = 0; storage < SO3_STORAGE_SIZE; storage += 1)
-      for (so3_n_order_t order = 0; order < 2; order += 1)
+      for (so3_n_order_t order = 0; order < SO3_N_ORDER_SIZE; order += 1)
         for (int steerable = 0; steerable < 2; steerable += 1, i += 1) {
           tests[i].name = name_of_test(
               "direct vs ssht", sampling, order, mode, storage, steerable, 0);
