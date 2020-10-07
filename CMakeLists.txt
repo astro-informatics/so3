@@ -17,9 +17,6 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-set(CMAKE_C_STANDARD 99)
-set(SO3_BUILD "CMake")
-
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 if(conan_deps)
   include("conan_dependencies")
@@ -30,6 +27,10 @@ else()
 endif()
 
 add_subdirectory(src/c)
+if(tests)
+  include("fetch_cmocka")
+  add_subdirectory(tests)
+endif()
 
 include("exporting")
 

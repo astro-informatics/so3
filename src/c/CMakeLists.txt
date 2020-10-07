@@ -3,6 +3,7 @@ target_link_libraries(so3 PUBLIC ${SSHT_TARGET})
 target_include_directories(
   so3 PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
              $<INSTALL_INTERFACE:include>)
+set_target_properties(so3 PROPERTIES C_STANDARD 99)
 
 if(fPIC)
   set_target_properties(so3 PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
