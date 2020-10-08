@@ -33,7 +33,7 @@ jobs:
           conan remote add astro-informatics \
             https://api.bintray.com/conan/astro-informatics/astro-informatics
 
-      - name: create stable package
+      - name: create stable or testing package
         shell: bash
         run: |
           if [ "${{ github.ref }}" = "refs/tags/v1.2.1" ]; then
