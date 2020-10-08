@@ -1,9 +1,9 @@
-from conans import ConanFile, CMake
+from conans import CMake, ConanFile
 
 
 class So3Conan(ConanFile):
     name = "so3"
-    version = "1.2.0"
+    version = "1.2.1"
     license = "GPL-3"
     url = "https://github.com/astro-informatics/so3"
     homepage = "https://github.com/astro-informatics/so3"
@@ -12,31 +12,46 @@ class So3Conan(ConanFile):
     topics = ("Physics", "Astrophysics", "Radio Interferometry")
     options = {"fPIC": [True, False]}
     default_options = {"fPIC": True}
-    requires = "ssht/1.3.1@AstroFizz/stable"
+    requires = "ssht/1.3.2@astro-informatics/stable"
     generators = "cmake"
     exports_sources = [
         "src/c/*",
         "include/*",
         "CMakeLists.txt",
         "cmake/*.cmake",
+        "tests/*.c",
+        "tests/*.h",
+        "tests/CMakeLists.txt",
     ]
 
-    def configured_cmake(self):
-        cmake = CMake(self)
-        cmake.definitions["tests"] = True
-        cmake.definitions["conan_deps"] = True
-        cmake.definitions["fPIC"] = self.options.fPIC
-        cmake.configure(source_folder=".")
-        return cmake
+    def configure(self):
+        if self.settings.compiler == "Visual Studio":
+            del self.options.fPIC
+        self.options["ssht"].fPIC = self.options.fPIC
+        del self.settings.compiler.libcxx
+
+    @property
+    def cmake(self):
+        if not hasattr(self, "_cmake"):
+            self._cmake = CMake(self)
+            self._cmake.definitions["tests"] = True
+            self._cmake.definitions["conan_deps"] = True
+            self._cmake.definitions["fPIC"] = self.options.fPIC
+            self._cmake.configure(build_folder="build")
+        return self._cmake
 
     def build(self):
-        cmake = self.configured_cmake()
-        cmake.build()
-        cmake.test()
+        from pathlib import Path
+
+        path = Path(self.source_folder)
+        build = Path(self.source_folder) / "build"
+        build.mkdir(exist_ok=True)
+        (path / "conanbuildinfo.cmake").rename(path / "build" / "conanbuildinfo.cmake")
+        self.cmake.build()
+        self.cmake.test()
 
     def package(self):
-        cmake = self.configured_cmake()
-        cmake.install()
+        self.cmake.install()
 
     def package_info(self):
         self.cpp_info.libs = ["so3"]

@@ -14,9 +14,15 @@
  */
 
 #include <stdio.h>
+#ifdef BUILT_WITH_CMAKE
+#include "so3_version.h"
+#endif
 
 int main(int argc, char *argv[]) {
 
+#ifdef BUILT_WITH_CMAKE
+  printf("%s", so3_info());
+#else
   printf("%s\n", "===================================================================");
   printf("%s\n", "SO3 package to perform Wigner transform on the rotation group SO(3)");
   printf("%s\n", "By Martin Büttner and Jason McEwen");
@@ -27,8 +33,7 @@ int main(int argc, char *argv[]) {
   printf("%s%s\n", "Version: ", SO3_VERSION);
   printf("%s%s\n", "Build: ", SO3_BUILD);
   printf("%s\n", "===================================================================");
+#endif
 
   return 0;
-
 }
-

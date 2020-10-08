@@ -15,15 +15,16 @@ elseif(NOT CONAN_OPTIONS)
   list(APPEND CONAN_OPTIONS "ssht:fPIC=False")
 endif()
 if(NOT CONAN_DEPS)
-  set(CONAN_DEPS "ssht/1.3.1@AstroFizz/stable")
+  set(CONAN_DEPS "ssht/1.3.3@astro-informatics/stable")
 endif()
 if(NOT CONAN_BUILD)
   set(CONAN_BUILD "missing")
 endif()
 
 conan_check(REQUIRED)
-conan_add_remote(NAME AstroFizz URL
-                 https://api.bintray.com/conan/mdavezac/AstroFizz)
+conan_add_remote(
+  NAME astro-informatics URL
+  https://api.bintray.com/conan/astro-informatics/astro-informatics)
 conan_cmake_run(
   REQUIRES
   ${CONAN_DEPS}

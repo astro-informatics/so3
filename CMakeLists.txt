@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 option(fPIC "Enable position independent code" ON)
 option(tests "Enable testing" ON)
 option(conan_deps "Download ssht using conan" ON)
 
 project(
   so3
-  VERSION "1.2.0"
+  VERSION "1.2.1"
   DESCRIPTION "Fast and exact Wigner transforms"
   HOMEPAGE_URL "http://astro-informatics.github.io/so3/"
   LANGUAGES C)
@@ -17,9 +17,6 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-set(CMAKE_C_STANDARD 99)
-set(SO3_BUILD "CMake")
-
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 if(conan_deps)
   include("conan_dependencies")
@@ -30,6 +27,10 @@ else()
 endif()
 
 add_subdirectory(src/c)
+if(tests)
+  include("fetch_cmocka")
+  add_subdirectory(tests)
+endif()
 
 include("exporting")
 

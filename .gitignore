@@ -11,3 +11,5 @@ timing_test_*_*.txt
 build/
 bin/
 !bin/c/
+.clangd/
+compile_commands.json
