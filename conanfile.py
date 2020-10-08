@@ -1,4 +1,4 @@
-from conans import ConanFile, CMake
+from conans import CMake, ConanFile
 
 
 class So3Conan(ConanFile):
@@ -12,13 +12,16 @@ class So3Conan(ConanFile):
     topics = ("Physics", "Astrophysics", "Radio Interferometry")
     options = {"fPIC": [True, False]}
     default_options = {"fPIC": True}
-    requires = "ssht/1.3.2@AstroFizz/stable"
+    requires = "ssht/1.3.2@astro-informatics/stable"
     generators = "cmake"
     exports_sources = [
         "src/c/*",
         "include/*",
         "CMakeLists.txt",
         "cmake/*.cmake",
+        "tests/*.c",
+        "tests/*.h",
+        "tests/CMakeLists.txt",
     ]
 
     def configure(self):
@@ -34,10 +37,16 @@ class So3Conan(ConanFile):
             self._cmake.definitions["tests"] = True
             self._cmake.definitions["conan_deps"] = True
             self._cmake.definitions["fPIC"] = self.options.fPIC
-            self._cmake.configure(source_folder=".")
+            self._cmake.configure(build_folder="build")
         return self._cmake
 
     def build(self):
+        from pathlib import Path
+
+        path = Path(self.source_folder)
+        build = Path(self.source_folder) / "build"
+        build.mkdir(exist_ok=True)
+        (path / "conanbuildinfo.cmake").rename(path / "build" / "conanbuildinfo.cmake")
         self.cmake.build()
         self.cmake.test()
 

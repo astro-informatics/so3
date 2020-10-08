@@ -1,20 +1,21 @@
 # SO3: Fast Wigner transforms
 [docs-img]: https://img.shields.io/badge/docs-stable-blue.svg
 [docs-url]: http://astro-informatics.github.io/so3/
-[bintray-img]: https://img.shields.io/bintray/v/mdavezac/AstroFizz/so3:AstroFizz?label=C%20package
-[bintray-url]: https://bintray.com/mdavezac/AstroFizz/so3:AstroFizz/1.2.1:stable/link
+[bintray-img]: https://img.shields.io/bintray/v/astro-informatics/astro-informatics/so3:astro-informatics?label=C%20package
+[bintray-url]: https://bintray.com/astro-informatics/astro-informatics/so3:astro-informatics/1.2.1:stable/link
+[codefactor-img]: https://www.codefactor.io/repository/github/astro-informatics/so3/badge/main
+[codefactor-url]: https://www.codefactor.io/repository/github/astro-informatics/so3/overview/main
 
 [![][docs-img]][docs-url]
 [![][bintray-img]][bintray-url]
+[![][codefactor-img]][codefactor-url]
+![CMake Build](https://github.com/astro-informatics/so3/workflows/CMake%20Build/badge.svg)
 
 ## DESCRIPTION
 
 The SO4 code provides functionality to perform fast and exact Wigner transforms
 using the spherical harmonic transforms from
 [SSHT](https://www.github.com/astro-informatics/ssht).
-
-## VERSION
-Release 1.2.1, Sept 20
 
 ## REFERENCES
 
@@ -32,7 +33,7 @@ Both can be installed using pip:
 pip install conan cmake
 ```
 
-Then ssht can be compiled with:
+Then so3 can be compiled with:
 
 ```bash
 git clone http://astro-informatics.github.io/so3/ -b main

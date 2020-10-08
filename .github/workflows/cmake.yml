@@ -1,4 +1,4 @@
-name: CMake
+name: CMake Build
 
 on: 
   push:
@@ -30,12 +30,11 @@ jobs:
       run: |
           pip install --upgrade pip wheel
           pip install conan
-          conan profile new default --detect
           cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -Dpython=False -Dconan_deps=True
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -Dconan_deps=True
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
