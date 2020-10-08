@@ -28,24 +28,3 @@ install(
         ${PROJECT_SOURCE_DIR}/include/so3_types.h
         ${PROJECT_BINARY_DIR}/include/so3_version.h
   DESTINATION include/so3)
-
-# building about and test executables
-add_executable(so3_about so3_about.c)
-target_compile_definitions(so3_about PRIVATE SO3_VERSION="${PROJECT_VERSION}"
-                                             SO3_BUILD="CMake" BUILT_WITH_CMAKE)
-target_include_directories(so3_about PRIVATE ${PROJECT_BINARY_DIR}/include/)
-set_target_properties(so3_about PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                                           ${PROJECT_BINARY_DIR})
-if(tests)
-  add_executable(so3_test so3_test.c)
-  target_link_libraries(so3_test so3)
-  set_target_properties(so3_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                                            ${PROJECT_BINARY_DIR})
-  add_test(NAME so3_test COMMAND so3_test)
-
-  add_executable(so3_unittest unittest/so3_unittest.c)
-  target_link_libraries(so3_unittest so3)
-  set_target_properties(so3_unittest PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                                                ${PROJECT_BINARY_DIR})
-  add_test(NAME so3_unittest COMMAND so3_unittest)
-endif()
