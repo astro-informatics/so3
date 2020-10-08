@@ -1,9 +1,13 @@
 add_library(so3 STATIC so3_core.c so3_sampling.c so3_adjoint.c)
 target_link_libraries(so3 PUBLIC ${SSHT_TARGET})
 target_include_directories(
-  so3 PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-             $<INSTALL_INTERFACE:include>)
+  so3
+  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
+         $<INSTALL_INTERFACE:include>)
 set_target_properties(so3 PROPERTIES C_STANDARD 99)
+configure_file(${PROJECT_SOURCE_DIR}/include/so3_version.in.h
+               ${PROJECT_BINARY_DIR}/include/so3_version.h)
 
 if(fPIC)
   set_target_properties(so3 PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
@@ -22,12 +26,14 @@ install(
         ${PROJECT_SOURCE_DIR}/include/so3_error.h
         ${PROJECT_SOURCE_DIR}/include/so3_sampling.h
         ${PROJECT_SOURCE_DIR}/include/so3_types.h
+        ${PROJECT_BINARY_DIR}/include/so3_version.h
   DESTINATION include/so3)
 
 # building about and test executables
 add_executable(so3_about so3_about.c)
 target_compile_definitions(so3_about PRIVATE SO3_VERSION="${PROJECT_VERSION}"
-                                             SO3_BUILD="CMake")
+                                             SO3_BUILD="CMake" BUILT_WITH_CMAKE)
+target_include_directories(so3_about PRIVATE ${PROJECT_BINARY_DIR}/include/)
 set_target_properties(so3_about PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                                            ${PROJECT_BINARY_DIR})
 if(tests)
