@@ -253,7 +253,7 @@ char const *name_of_test(
 }
 
 int main(void) {
-  struct CMUnitTest tests[272];
+  struct CMUnitTest tests[180];
   memset(tests, 0, sizeof(tests));
 
   int i = 0;
