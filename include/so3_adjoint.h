@@ -6,7 +6,7 @@
 #define SO3_ADJOINT
 
 #include "so3_types.h"
-#include "ssht/ssht.h"
+#include <ssht/ssht.h>
 #include <complex.h>
 
 // void so3_adjoint_inverse_via_ssht(

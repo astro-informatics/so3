@@ -1,0 +1,25 @@
+project(external C)
+cmake_minimum_required(VERSION 3.10)
+include("ExternalProject")
+
+if(NOT GIT_REPOSITORY AND NOT DEFINED ENV{SSHT_GIT_REPOSITORY})
+    set(GIT_REPOSITORY https://gitlab.com/kagenova/kagelearn/development/ssht)
+elseif(DEFINED ENV{SSHT_GIT_REPOSITORY} AND NOT GIT_REPOSITORY)
+    set(GIT_REPOSITORY $ENV{SSHT_GIT_REPOSITORY})
+endif()
+ExternalProject_Add(
+    Ssht
+    PREFIX "${CMAKE_CURRENT_BINARY_DIR}/external"
+    GIT_REPOSITORY ${GIT_REPOSITORY}
+    GIT_SHALLOW TRUE
+    CMAKE_ARGS
+        -DFFTW3_LIBRARIES=${FFTW3_LIBRARIES}
+        -DFFTW3_INCLUDE_DIR=${FFTW3_INCLUDE_DIR}
+        -DFFTW3_INCLUDE_DIRS=${FFTW3_INCLUDE_DIR}
+        -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+        -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY=ON
+        -Dconan_fftw=OFF
+        -Dopenmp=OFF
+        -Dtests=OFF
+)

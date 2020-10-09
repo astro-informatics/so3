@@ -17,7 +17,7 @@
 #include <complex.h>  // Must be before fftw3.h
 #include <fftw3.h>
 
-#include "ssht/ssht.h"
+#include <ssht/ssht.h>
 
 #include "so3_types.h"
 #include "so3_error.h"

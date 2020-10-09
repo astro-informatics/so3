@@ -26,7 +26,7 @@
 #ifndef SO3_TYPES
 #define SO3_TYPES
 
-#include "ssht/ssht.h"
+#include <ssht/ssht.h>
 #ifdef __cplusplus
 #include <complex>
 #define SO3_COMPLEX(TYPE) std::complex<TYPE>
