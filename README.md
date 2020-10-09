@@ -13,7 +13,7 @@
 
 ## DESCRIPTION
 
-The SO4 code provides functionality to perform fast and exact Wigner transforms
+The SO3 code provides functionality to perform fast and exact Wigner transforms
 using the spherical harmonic transforms from
 [SSHT](https://www.github.com/astro-informatics/ssht).
 

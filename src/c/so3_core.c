@@ -18,9 +18,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "so3_error.h"
-#include "so3_sampling.h"
-#include "so3_types.h"
+#include "so3/so3_error.h"
+#include "so3/so3_sampling.h"
+#include "so3/so3_types.h"
 
 #define MIN(a, b) ((a < b) ? (a) : (b))
 #define MAX(a, b) ((a > b) ? (a) : (b))

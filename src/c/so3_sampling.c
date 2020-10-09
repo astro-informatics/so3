@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h> 
-#include "so3_error.h"
-#include "so3_types.h"
+#include "so3/so3_error.h"
+#include "so3/so3_types.h"
 
 int so3_sampling_nalpha(const so3_parameters_t *);
 int so3_sampling_nbeta(const so3_parameters_t *);

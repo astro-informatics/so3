@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "so3.h"
+#include "so3/so3_error.h"
 #include "utilities.h"
 
 int max(int a, int b) {

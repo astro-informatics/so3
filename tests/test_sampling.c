@@ -2,8 +2,8 @@
 #include <stdarg.h>
 #include <stddef.h>
 
-#include "so3_sampling.h"
-#include "so3_types.h"
+#include "so3/so3_sampling.h"
+#include "so3/so3_types.h"
 
 #include <cmocka.h>
 
