@@ -30,11 +30,11 @@ jobs:
           python -m pip install --upgrade pip wheel
           python -m pip install scikit-build
 
-      - name: Install pyso3
+      - name: Install python so3
         run: pip install -e .[dev]
 
       - name: run pytest
-        run: pytest tests/test_pyso3.py
+        run: pytest tests/
 
   from-sdist:
     name: python source distribution
@@ -54,11 +54,11 @@ jobs:
       - name: Create sdist
         run: python setup.py sdist
 
-      - name: Install pyso3
-        run: "pip install dist/pyso3-*.tar.gz"
+      - name: Install python so3
+        run: "pip install dist/so3-*.tar.gz"
 
       - name: run pytest
-        run: pytest tests/test_pyso3.py
+        run: pytest tests/
 
       - uses: actions/upload-artifact@v2
         if: ${{ startsWith(github.ref, 'refs/tags') }}

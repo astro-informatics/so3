@@ -1,7 +1,7 @@
 import numpy as np
 from pytest import approx
 
-import pyso3 as so3
+import so3
 
 
 def test_pyso3():

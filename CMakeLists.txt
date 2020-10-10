@@ -42,7 +42,7 @@ else()
   find_package(PythonExtensions REQUIRED)
   find_package(Cython REQUIRED)
   find_package(NumPy REQUIRED)
-  add_subdirectory(src/pyso3)
+  add_subdirectory(src/so3)
 endif()
 
 find_package(Doxygen)

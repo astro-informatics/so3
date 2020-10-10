@@ -6,7 +6,7 @@ cmake_args = [
 ]
 
 setup(
-    name="pyso3",
+    name="so3",
     version="1.3.0",
     author="Jason McEwen",
     install_requires=["numpy", "cython", "scipy"],
@@ -25,9 +25,9 @@ setup(
     },
     description="Fast spin spherical transforms",
     url="http://astro-informatics.github.io/ssht/",
-    package_dir={"pyso3": "src/pyso3"},
+    package_dir={"so3": "src/so3"},
     cmake_args=cmake_args,
     cmake_languages=("C",),
     license="GPL-3",
-    packages=["pyso3"],
+    packages=["so3"],
 )
