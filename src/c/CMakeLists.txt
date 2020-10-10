@@ -23,6 +23,7 @@ install(
   FILES ${PROJECT_SOURCE_DIR}/include/so3/so3.h
         ${PROJECT_SOURCE_DIR}/include/so3/so3_adjoint.h
         ${PROJECT_SOURCE_DIR}/include/so3/so3_core.h
+        ${PROJECT_SOURCE_DIR}/include/so3/so3_conv.h
         ${PROJECT_SOURCE_DIR}/include/so3/so3_error.h
         ${PROJECT_SOURCE_DIR}/include/so3/so3_sampling.h
         ${PROJECT_SOURCE_DIR}/include/so3/so3_types.h
