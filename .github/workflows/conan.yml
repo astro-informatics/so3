@@ -36,7 +36,7 @@ jobs:
       - name: create stable or testing package
         shell: bash
         run: |
-          if [ "${{ github.ref }}" = "refs/tags/v1.2.1" ]; then
+          if [ "${{ github.ref }}" = "refs/tags/v1.3.0" ]; then
             channel="stable"
           else
             channel="testing"
@@ -53,4 +53,4 @@ jobs:
           CONAN_PASSWORD: ${{secrets.BINTRAY_TOKEN}}
           CONAN_LOGIN_USERNAME: astroinformaticsci
           CONAN_REMOTE_URL: https://api.bintray.com/conan/astro-informatics/astro-informatics
-        run: conan upload so3/1.2.1 -c --all -r=astro-informatics
+        run: conan upload so3/1.3.0 -c --all -r=astro-informatics

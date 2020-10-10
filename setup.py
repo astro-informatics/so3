@@ -7,7 +7,7 @@ cmake_args = [
 
 setup(
     name="pyso3",
-    version="1.2.1",
+    version="1.3.0",
     author="Jason McEwen",
     install_requires=["numpy", "cython", "scipy"],
     extras_require={

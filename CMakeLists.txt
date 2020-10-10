@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(
   so3
-  VERSION "1.2.1"
+  VERSION "1.3.0"
   DESCRIPTION "Fast and exact Wigner transforms"
   HOMEPAGE_URL "http://astro-informatics.github.io/so3/"
   LANGUAGES C)
