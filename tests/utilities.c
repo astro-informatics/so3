@@ -4,6 +4,7 @@
 #include <time.h>
 
 #include "so3/so3_error.h"
+#include "so3/so3_sampling.h"
 #include "utilities.h"
 
 int max(int a, int b) {
