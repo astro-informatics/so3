@@ -18,3 +18,5 @@ compile_commands.json
 pip-wheel-metadata
 .venv/
 _skbuild/
+dist/
+MANIFEST

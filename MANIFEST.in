@@ -1,0 +1,7 @@
+include CMakeLists.txt
+include setup.py setup.cfg pyproject.toml
+include COPYRIGHT.txt LICENSE.md README.md
+include cmake/*.cmake
+include include/so3/*.h
+recursive-include src/c *.c *.h CMakeLists.txt
+recursive-include src/so3 .py *.pyx *.md CMakeLists.txt
