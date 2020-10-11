@@ -3,13 +3,17 @@
 [docs-url]: http://astro-informatics.github.io/so3/
 [bintray-img]: https://img.shields.io/bintray/v/astro-informatics/astro-informatics/so3:astro-informatics?label=C%20package
 [bintray-url]: https://bintray.com/astro-informatics/astro-informatics/so3:astro-informatics/1.3.0:stable/link
+[pypi-img]: https://badge.fury.io/py/so3.svg
+[pypi-url]: https://badge.fury.io/py/so3
 [codefactor-img]: https://www.codefactor.io/repository/github/astro-informatics/so3/badge/main
 [codefactor-url]: https://www.codefactor.io/repository/github/astro-informatics/so3/overview/main
 
 [![][docs-img]][docs-url]
 [![][bintray-img]][bintray-url]
+[![][pypi-img]][pypi-url]
 [![][codefactor-img]][codefactor-url]
 ![CMake Build](https://github.com/astro-informatics/so3/workflows/CMake%20Build/badge.svg)
+![Python Build](https://github.com/astro-informatics/so3/workflows/Python%20Build/badge.svg)
 
 ## DESCRIPTION
 
