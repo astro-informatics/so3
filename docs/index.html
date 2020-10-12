@@ -17,11 +17,9 @@
 <div id="header">
 
   <p id="toplinks">
-  <a href="#introduction">Introduction</a> |
+  <a href="#description">Description</a> |
   <a href="#installation">Installation</a> |
-  <a href="#documentation">Source</a> |
-  <a href="#matlab">Matlab</a> |
-  <a href="#download">Download</a> |
+  <a href="#documentation">Source docs</a> |
   <a href="#referencing">Referencing</a> |
   <a href="#license">License</a> |
   <a href="#authors">Authors</a>
@@ -30,7 +28,7 @@
   <table border="0" cellspacing="0">
     <tr>
       <td width=200 height=142 align="right" valign="top">
-	<img src="images/logo.jpg" width="140" height="140" border=0>
+	<img src="images/logo.png" width="140" height="140" border=0>
       </td>
       <td width=500 align="left" valign="center">
 	<h1 class="title">so3</h1>
@@ -48,6 +46,8 @@
 <h2>News</h2>
 
 <ul>
+<li><strong>October 2020</strong><br />
+Release of SO3 v1.3.0
 <li><strong>September 2020</strong><br />
 Release of SO3 v1.2.0
 <li><strong>November 2016</strong><br />
@@ -64,232 +64,137 @@ Public release of SO3 v1.0b1
 <!--------------------------- CONTENT --------------------------->
 <div id="content">
 
-<!--------------------------------------------------------------->
-<a name="introduction"><h2>Introduction</h2></a>
 
   <p>
-  The <strong>SO3</strong> code provides functionality to perform fast and exact Wigner transforms based on the sampling theorem on the rotation group derived in <a href="http://arxiv.org/abs/1508.03101">McEwen et al (2015)</a>.
+
+    <a href="https://github.com/astro-informatics/so3">
+    <img src="https://img.shields.io/badge/GitHub-so3-blue.svg?style=flat">
+    </a>
+    
+    <a href="https://astro-informatics.github.io/so3/">
+    <img src="https://img.shields.io/badge/docs-stable-blue.svg">
+    </a>
+    
+    <a href="https://bintray.com/astro-informatics/astro-informatics/so3:astro-informatics/">
+    <img src="https://img.shields.io/bintray/v/astro-informatics/astro-informatics/so3:astro-informatics?label=C%20package">
+    </a>
+    
+    <a href="https://badge.fury.io/py/so3">
+    <img src="https://badge.fury.io/py/so3.svg">
+    </a>
+    
+    <a href="https://www.codefactor.io/repository/github/astro-informatics/so3/overview/main">
+    <img src="https://www.codefactor.io/repository/github/astro-informatics/so3/badge/main">
+    </a>
+    
+    <a href="https://github.com/astro-informatics/so3/actions?query=workflow%3A%22CMake+Build%22">
+    <img src="https://github.com/astro-informatics/so3/workflows/CMake%20Build/badge.svg">
+    </a>
+    
+    <a href="https://github.com/astro-informatics/so3/actions?query=workflow%3A%22Python+Build%22">
+    <img src="https://github.com/astro-informatics/so3/workflows/Python%20Build/badge.svg">
+    </a>
+    </p>
+    
+
+<!--------------------------------------------------------------->
+<a name="description"><h2>Description</h2></a>
+
+  <p>
+  The <strong>SO3</strong> code provides functionality to perform fast and exact Wigner transforms based on the sampling theorem on the rotation group derived in <a href="http://www.jasonmcewen.org/publication/mcewen-so-3/">McEwen et al. (2015)</a>.
   </p>
   <p>
-  This documentation outlines the various harmonic transforms
-  supported in SO3, before describing installation details and
-  documenting the C, and Matlab source code.  Reference,
-  version, and license information then follows.
+  This documentation describes installation details and
+  documents the source code. Reference, author and license information is also given.  The code itself is <a href="https://github.com/astro-informatics/so3">hosted on GitHub</a>.</p>
   </p>
 
 <!--------------------------------------------------------------->
 <a name="installation"><h2>Installation</h2></a>
 
   <p>
-  The <strong>SO3</strong> package contains a C implementations and a Matlab interface to the C implementation.
+  The <strong>SO3</strong> package in based on a core C implementation.  <strong>Python</strong> and <strong>Matlab</strong> interfaces to the C implementation are provided.
   </p>
 
   <h4>Dependencies</h4>
 
   <p>
-  <strong>SO3</strong> requires the <a href="http://www.fftw.org/">FFTW</a> and the <a href="http://www.spinsht.org">SSHT</a> package. Obviously suitable C compilers will be required to build the  implementation. Both C and Matlab mex compilers will be required to build the Matlab interface to the C implementation.
+  <strong>SO3</strong> requires the <a href="http://www.fftw.org/">FFTW</a> and the <a href="http://www.spinsht.org">SSHT</a> package. Obviously suitable C compilers will be required to build the  implementation. Both C and Matlab mex compilers will be required to build the Matlab interface to the C implementation.   The python interface requires <a href="http://www.numpy.org/">numpy</a> and, in addition, the demos require <a href="http://matplotlib.org/">matplotlib</a>.
+
   </p>
 
-  <h4>Compiling</h4>
+
+  <h4>Python installation</h4>
 
   <p>
-  A makefile is provided to build the code. Before compiling you will need to edit the makefile to specify your compiler and to link with the appropriate libraries.
-  </p>
+  The python package, <strong>so3</strong>, is available on <a href="https://pypi.org/project/so3/">pypi</a> and can be installed with:
+   
+  <pre>pip install so3</pre>
+   
+  <p> The python package is backed by
+    <a href="https://scikit-build.readthedocs.io/en/latest/">scikit-build</a> and
+    <a href="https://cmake.org">CMake</a>. It will install a local version of
+    <a href="http://www.fftw.org/">FFTW</a> and will compile its own version of the C package. </p>
+  
+  <h4>C installation</h4>
 
   <p>
-  Once you have set the makefile up for your system, <strong>SO3</strong> may be compiled by running:
+    The C package can be installed with <a href="https://cmake.org">CMake</a> and
+    <a href="https://docs.conan.io/en/latest/howtos/other_languages_package_manager/python.html">conan</a>.
+    
+    <p>
+    Both can be installed using pip:
+    
+    <pre>pip install conan cmake</pre>
+    
+    <p>
+    Then <strong>SO3</strong> can be compiled with:
+    
+    <pre>
+  git clone https://github.com/astro-informatics/so3.git
+  mkdir ssht/build && cd ssht/build
+  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -Dconan_deps=True ..
+  make
+  make install</pre>
+    
+    <p>
+    The above will also download <a href="http://www.fftw.org/">FFTW</a> and <a href="http://www.spinsht.org">SSHT</a>, if necessary.</p>
+    
+
+  <h4>Matlab installation</h4>
+
+  <p>The Matlab interface requires the C version to be installed.  
+  
+    <p>It can be built using make by configuring appropriate compilers and dependencies, and then running:
+  
+    <pre>make matlab</pre>
   </p>
-  <pre> >> make all</pre>
-  <p>
-  This will build the library, unit tests, test program and Matlab interface. If your system is configured to build all of these components then you are done. If you prefer to build only a subset of these components then read on.
-  </p>
-
-  <p>
-  You may alternatively build the individual components of <strong>SO3</strong>. To build the library only run:
-  </p>
-  <pre> >> make lib</pre>
-  <p> To build the unit tests run: </p>
-  <pre> >> make unittest</pre>
-  <p> To build the test program run: </p>
-  <pre> >> make test</pre>
-  <p> To build the Matlab interface run (which will also build the
-  library if it has not already been built): </p>
-  <pre> >> make matlab</pre>
-
-
-  <h4>Testing</h4>
-
-  <p> Run the test program to verify your installation. A default test may be performed by running: </p>
-  <pre> >> make runtest</pre>
-  <p>
-  If <strong>SO3</strong> is installed correctly the test program should run and print test results to the terminal. The test program performs an inverse Wigner transform of a random signal, followed by a forward transform. The error between the original and recovered Wigner coefficients is computed and displayed. All errors should be of the order of numerical
-  precision.
-  </p>
-
-  <p>Alternatively, you may run the test program directly by running:</p>
-  <pre> >> ./bin/c/so3_test &lt;L&gt; &lt;N&gt; &lt;L0&gt;</pre>
-  <p>where <code>&lt;L&gt;</code> and <code>&lt;N&gt;</code> are the harmonic and orientational band-limit, respectively, and <code>&lt;L0&gt;</code> is the lower harmonic band-limit of your test.
-
-  <p>To check the version and build numbers of your version run:</p>
-  <pre> >> ./bin/c/so3_about </pre>
-
-  <h4>Documentation</h4>
-
-  <p>
-  The <strong>SO3</strong> code is self documenting. Although the package ships with <a href="#documentation">source documentation</a>, you may generate html source documentation by running:
-  </p>
-  <pre> >> make doc</pre>
-
-  <p>
-  Documentation is generated using <a href="http://www.doxygen.org">doxygen</a>, thus you must have doxygen installed on your system to generate the source documentation.
-  </p>
-
-  <h4>Cleaning up</h4>
-
-  <p> To clean up your version of the <strong>SO3</strong> code and
-  remove all builds run:
-  <pre> >> make clean</pre>
-
-  <p> To remove all source documentation run:
-  <pre> >> make cleandoc</pre>
-<br>
 
 <!--------------------------------------------------------------->
 <a name="documentation"><h2>Source code documentation</h2></a>
 
-  <p>
-  <strong>SO3</strong> ships with source documentation that is generated by <a href="http://www.doxygen.org">doxygen</a>. Documentation is available here for the <a href="c/html/index.html">C</a> implementation. The Matlab routines that interface with the C implementation are self documenting (documentation can be access through the help command in  Matlab), as discussed below.
-  </p>
 
-<!--------------------------------------------------------------->
-<a name="matlab"><h2>Matlab interface</h2></a>
+<p>
+  <strong>SO3</strong> code is self documented.  Source code documentation for each language is available here:
 
-  <p>
-  Once the Matlab interface is built, you must have <code>so3/src/matlab</code> in your path in order to run the Matlab functions. A number of Matlab functions and demos illustrating their use are provided.
-  </p>
-
-  <h4>Functions</h4>
-
-  <p>
-  Usage of the <strong>SO3</strong> Matlab interface will most frequently require only the functions to perform forward and inverse Wigner transforms (<code>so3_forward</code> and <code>so3_inverse</code> respectively). However, a number of additional functions are also provided.  A full list of Matlab functions, with brief descriptions are given here:
-
-  <pre>
-
-  <a href="../src/matlab/so3_elmn2ind.m">so3_elmn2ind</a>
-  Convert harmonic indices to vector index
-
-  <a href="../src/matlab/so3_forward.m">so3_forward</a>
-  Compute forward Wigner transform
-
-  <a href="../src/matlab/so3_forward_direct.m">so3_forward_direct</a>
-  Compute forward Wigner transform using direct method
-
-  <a href="../src/matlab/so3_ind2elmn.m">so3_ind2elmn</a>
-  Convert vector index to harmonic indices
-
-  <a href="../src/matlab/so3_inverse.m">so3_inverse</a>
-  Compute inverse Wigner transform
-
-  <a href="../src/matlab/so3_inverse_direct.m">so3_inverse_direct</a>
-  Compute inverse Wigner transform using direct method
-
-  <a href="../src/matlab/so3_sampling.m">so3_sampling</a>
-  Compute sample positions
-  </pre>
-
-  <p>
-  To access the documentation for each function in Matlab, simply run:
-  </p>
-  <pre> >> help &lt;function&gt;</pre>
-  <p> where <code>&lt;function&gt;</code> is the function name. </p>
-
-
-  <h4>Demos</h4>
-
-  <p>
-  A number of demos are provided to illustrate the use of the Matlab interface:
-  </p>
-  <pre>
-  <a href="../src/matlab/so3_demo_error_timing.m">so3_demo_error_timing</a>
-  Create timing and error plots of round-trip transform.
-
-  <a href="../src/matlab/so3_demo_plot_wigner.m">so3_demo_plot_wigner</a>
-  Use SO3 to plot Wigner functions on SO(3).
-
-  <a href="../src/matlab/so3_demo_basic.m">so3_demo_basic</a>
-  Simple demo to compute inverse and forward transform of complex
-  scalar function, using simplest interface with default options.
-
-  <a href="../src/matlab/so3_demo_basic_direct.m">so3_demo_basic_direct</a>
-  Simple demo to compute inverse and forward transform of complex
-  scalar function, using direct method with simplest interface
-  with default options.
-
-  <a href="../src/matlab/so3_demo_real_signal.m">so3_demo_real_signal</a>
-  Simple demo to compute inverse and forward transform of real
-  scalar function, using simplest interface with default options.
-
-  <a href="../src/matlab/so3_demo_real_signal_direct.m">so3_demo_real_signal_direct</a>
-  Simple demo to compute inverse and forward transform of real
-  scalar function, using direct method with simplest interface 
-  with default options.
-
-  <a href="../src/matlab/so3_demo_compact_storage.m">so3_demo_compact_storage</a>
-  Demo to compute inverse and forward transform of complex
-  scalar function, using compact storage.
-
-  <a href="../src/matlab/so3_demo_storage_order.m">so3_demo_storage_order</a>
-  Demo to compute inverse and forward transform of complex
-  function, storing the flmn for n = -N+1 first.
-
-  <a href="../src/matlab/so3_demo_lower_band_limit.m">so3_demo_lower_band_limit</a>
-  Demo to compute inverse and forward transform of complex
-  function, using a non-zero lower harmonic band-limit - i.e. only
-  harmonic coefficients with L greater than or equal to some L0
-  are non-zero.
-
-  <a href="../src/matlab/so3_demo_even_n.m">so3_demo_even_n</a>
-  Demo to compute inverse and forward transform of complex
-  function, using only harmonic coefficients with even n.
-
-  <a href="../src/matlab/so3_demo_symmetric_sampling.m">so3_demo_symmetric_sampling</a>
-  Demo to compute inverse and forward transform of complex
-  function, using a symmetrically sampled signal.
-
-  <a href="../src/matlab/so3_demo_covariance.m">so3_demo_covariance</a>
-  This demo runs a series of forward transforms from random coefficients
-  and compares the transformed signal's covariance with the theoretical
-  prediction.
-  </pre>
-
-  <p>
-  To access the documentation for each demo in Matlab, simply run:
-  </p>
-  <pre> >> help &lt;demo&gt;</pre>
-  <p> where <code>&lt;demo&gt;</code> is the demo name. </p>
-
-<!--------------------------------------------------------------->
-<a name="download"><h2>Download</h2></a>
-
-  <p>
-  We make the source code of the <strong>SO3</strong> package available under the license described <a href="#license">below</a>. It can be downloaded from the following site:
-
-
-  <p align=center>
-  <a href="https://github.com/astro-informatics/so3"> <img src="images/download_icon.gif"> </a>
-  </p>
-
+  <ul>
+    <li><a href="https://pypi.org/project/so3/">Python source documentation</a> (usage for the python package is given in the package docstring)</li>
+    <li><a href="c/html/index.html">C source documentation</a></li>
+    <li><a href="matlab/html/index.html">Matlab source documentation</a> (usage for the matlab package is available through matlab help documentation)</li>    
+  </ul>
+</p>
 
 <!--------------------------------------------------------------->
 <a name="referencing"><h2>Referencing</h2></a>
 
-  <p>
-  If you use <strong>SO3</strong> for work that results in publication, please reference this site (<a href="http://www.jasonmcewen.org/">http://www.jasonmcewen.org/</a>) and our related academic paper:
+  <p> If you use <strong>SO3</strong> for work that results in
+  publication, please reference <a
+   href="http://github.com/astro-informatics/so3">https://github.com/astro-informatics/so3/</a>
+  and cite our related academic paper:
+
+  <blockquote> J. D. McEwen, M. B&uuml;ttner, B. Leistedt, H. V. Peiris, Y. Wiaux, <a href="http://www.jasonmcewen.org/publication/mcewen-so-3/">A
+  novel sampling theorem on the rotation group</a>, IEEE Sig. Proc. Let., 22(12):2425-2429, 2015 (<a href="https://arxiv.org/abs/1508.03101">ArXiv</a>
+  | <a href="https://doi.org/10.1109/LSP.2015.2490676">DOI</a>)</blockquote>
   </p>
-
-  <blockquote> <a href="http://arxiv.org/abs/1508.03101">A novel sampling theorem on the rotation group</a>.
-J. D. McEwen, M. B&uuml;ttner, B. Leistedt, H. V. Peiris, Y. Wiaux </blockquote>
-
 
 <!--------------------------------------------------------------->
 <a name="license"><h2>License</h2></a>
@@ -297,7 +202,7 @@ J. D. McEwen, M. B&uuml;ttner, B. Leistedt, H. V. Peiris, Y. Wiaux </blockquote>
 <blockquote>
 <p>
 SO3 package to perform Wigner transforms<br>
-Copyright (C) 2014-2015 Martin B&uuml;ttner, Jason McEwen, and Boris Leistedt
+Copyright (C) 2014- Martin B&uuml;ttner, Jason McEwen, Boris Leistedt and contributors
 </p>
 
 <p>
@@ -305,7 +210,7 @@ This program is free software; you can redistribute it and/or modify it under th
 </p>
 
 <p>
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details (<a href="../LICENSE.txt">LICENSE.txt</a>).
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details (<a href="https://github.com/astro-informatics/so3/blob/main/LICENSE.md">LICENSE.md</a>).
 </p>
 
 <p>
@@ -317,10 +222,11 @@ along with this program.  If not, see <a href="https://www.gnu.org/licenses/">ht
 <!--------------------------------------------------------------->
 <a name="authors"><h2>About the authors</h2></a>
 
-  <p> <strong>SO3</strong> was developed by Martin B&uuml;ttner, Jason McEwen, and Boris Leistedt at University College London (<a href="http://www.ucl.ac.uk" target="_top">UCL</a>).</p>
+  <p> <strong>SO3</strong> was initially developed by Martin B&uuml;ttner, <a href="http://www.jasonmcewen.org/">Jason McEwen</a>, and Boris Leistedt but significant contributors have since been made by a number of <a href="https://github.com/astro-informatics/so3/graphs/contributors">others</a>.
+  </p>
+
 </div>
 
-<div style="clear:both"><br></div>
 
 <!--------------------------- FOOTER --------------------------->
 <div id="footer">

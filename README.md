@@ -17,17 +17,16 @@
 
 ## DESCRIPTION
 
-The SO3 code provides functionality to perform fast and exact Wigner transforms
-using the spherical harmonic transforms from
-[SSHT](https://www.github.com/astro-informatics/ssht).
-
-## REFERENCES
-
- - J. D. McEwen, M. Büttner, B. Leistedt, H. V. Peiris, Y. Wiaux
-    [A novel sampling theorem on the rotation group](https://doi.org/10.1109/LSP.2015.2490676)
-    IEEE Signal Processing Letters. Vol. 22, No. 12, 2015, pp 2425-2429
+The <strong>SO3</strong> code provides functionality to perform fast and exact Wigner transforms based on the sampling theorem on the rotation group derived in [McEwen et al. (2015)](http://www.jasonmcewen.org/publication/mcewen-so-3/).
 
 ## INSTALLATION
+
+ The python package, <strong>so3</strong> (pyso3 was taken)), is available on <a href="https://pypi.org/project/so3/">pypi</a> and can be installed with: 
+ 
+ ```bash
+ pip install so3
+ ```
+
 The C package can be installed with [CMake](https://cmake.org) and
 [conan](https://docs.conan.io/en/latest/howtos/other_languages_package_manager/python.html):
 
@@ -51,4 +50,30 @@ The above will also download [FFTW](https://www.fftw.org) and
 [SSHT](https://www.github.com/astro-informatics/ssht) and compile them, if
 necessary.
 
-Instructions for installing the fortran package can be found in docs/index.html.
+
+## DOCUMENTATION
+
+Further documentation is available [here](https://astro-informatics.github.io/so3/).
+
+Usage for the python package is also given in the package docstring.
+
+
+## REFERENCING
+
+If you use **SO3** for work that results in publication, please reference <a
+href="http://github.com/astro-informatics/so3">https://github.com/astro-informatics/so3/</a>
+and cite our related academic paper:
+
+- J. D. McEwen, M. B&uuml;ttner, B. Leistedt, H. V. Peiris, Y. Wiaux, [A novel sampling theorem on the rotation group](http://www.jasonmcewen.org/publication/mcewen-so-3/), IEEE Sig. Proc. Let., 22(12):2425-2429, 2015 [(ArXiv)[https://arxiv.org/abs/1508.03101">]
+
+
+
+## LICENSE
+
+SO3 is released under the GPL-3 license.  For further details see 
+[LICENSE.md](https://github.com/astro-informatics/so3/blob/main/LICENSE.md).
+
+## AUTHORS
+
+**SO3** was initially developed by Martin B&uuml;ttner, <a href="http://www.jasonmcewen.org/">Jason McEwen</a>, and Boris Leistedt but significant contributors have since been made by a number of [others](https://github.com/astro-informatics/so3/graphs/contributors).
+  </p>
