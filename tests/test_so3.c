@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "so3.h"
+#include "so3/so3.h"
 #include "utilities.h"
 
 #include <cmocka.h>

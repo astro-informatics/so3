@@ -13,3 +13,10 @@ bin/
 !bin/c/
 .clangd/
 compile_commands.json
+*.so
+*.egg-info/
+pip-wheel-metadata
+.venv/
+_skbuild/
+dist/
+MANIFEST

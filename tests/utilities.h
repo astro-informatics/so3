@@ -2,7 +2,7 @@
 #define SSHT_TEST_UTILITIES
 #include <complex.h>
 
-#include "so3.h"
+#include "so3/so3_types.h"
 
 double ran2_dp(int idum);
 int max(int a, int b);
