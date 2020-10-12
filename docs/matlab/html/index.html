@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="charset=utf-8" />
+  <meta name="description" content="so3: Wigner transforms" />
+  <meta name="keywords" content="so3, SO3, rotation group, transforms, fourier, fast, algorithms, mcewen, wiaux" />
+  <meta name="author" content="Jason McEwen / Design by Andreas Viklund - http://andreasviklund.com/" />
+  <link rel="stylesheet" type="text/css" href="../../style.css" title="1024px style" media="screen,projection" />
+  <title>so3</title>
+</head>
+
+<body>
+<div id="wrap">
+
+
+<!--------------------------- HEADER --------------------------->
+<div id="header">
+
+  <p id="toplinks">
+  
+  </p>
+
+  <table border="0" cellspacing="0">
+    <tr>
+      <td width=200 height=142 align="right" valign="top">
+	<img src="../../images/logo.png" width="140" height="140" border=0>
+      </td>
+      <td width=500 align="left" valign="center">
+	<h1 class="title">so3</h1>
+	<p id="slogantitle">Wigner transforms</p>
+      </td>
+    </tr>
+  </table>
+
+</div>
+
+
+
+
+
+<!--------------------------- CONTENT --------------------------->
+<div id="content">
+
+<!--------------------------------------------------------------->
+<a name="matlab"><h2>Matlab interface</h2></a>
+
+  <p>
+  Once the Matlab interface is built, you must have <code>so3/src/matlab</code> in your path in order to run the Matlab functions. A number of Matlab functions and demos illustrating their use are provided.
+  </p>
+
+  <h4>Functions</h4>
+
+  <p>
+  Usage of the <strong>SO3</strong> Matlab interface will most frequently require only the functions to perform forward and inverse Wigner transforms (<code>so3_forward</code> and <code>so3_inverse</code> respectively). However, a number of additional functions are also provided.  A full list of Matlab functions, with brief descriptions are given here:
+
+  <pre>
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_elmn2ind.m">so3_elmn2ind</a>
+  Convert harmonic indices to vector index
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_forward.m">so3_forward</a>
+  Compute forward Wigner transform
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_forward_direct.m">so3_forward_direct</a>
+  Compute forward Wigner transform using direct method
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_ind2elmn.m">so3_ind2elmn</a>
+  Convert vector index to harmonic indices
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_inverse.m">so3_inverse</a>
+  Compute inverse Wigner transform
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_inverse_direct.m">so3_inverse_direct</a>
+  Compute inverse Wigner transform using direct method
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_sampling.m">so3_sampling</a>
+  Compute sample positions
+  </pre>
+
+  <p>
+  To access the documentation for each function in Matlab, simply run:
+  </p>
+  <pre> help &lt;function&gt;</pre>
+  <p> where <code>&lt;function&gt;</code> is the function name. </p>
+
+
+  <h4>Demos</h4>
+
+  <p>
+  A number of demos are provided to illustrate the use of the Matlab interface:
+  </p>
+  <pre>
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_error_timing.m">so3_demo_error_timing</a>
+  Create timing and error plots of round-trip transform.
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_plot_wigner.m">so3_demo_plot_wigner</a>
+  Use SO3 to plot Wigner functions on SO(3).
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_basic.m">so3_demo_basic</a>
+  Simple demo to compute inverse and forward transform of complex
+  scalar function, using simplest interface with default options.
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_basic_direct.m">so3_demo_basic_direct</a>
+  Simple demo to compute inverse and forward transform of complex
+  scalar function, using direct method with simplest interface
+  with default options.
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_real_signal.m">so3_demo_real_signal</a>
+  Simple demo to compute inverse and forward transform of real
+  scalar function, using simplest interface with default options.
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_real_signal_direct.m">so3_demo_real_signal_direct</a>
+  Simple demo to compute inverse and forward transform of real
+  scalar function, using direct method with simplest interface 
+  with default options.
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_compact_storage.m">so3_demo_compact_storage</a>
+  Demo to compute inverse and forward transform of complex
+  scalar function, using compact storage.
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_storage_order.m">so3_demo_storage_order</a>
+  Demo to compute inverse and forward transform of complex
+  function, storing the flmn for n = -N+1 first.
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_lower_band_limit.m">so3_demo_lower_band_limit</a>
+  Demo to compute inverse and forward transform of complex
+  function, using a non-zero lower harmonic band-limit - i.e. only
+  harmonic coefficients with L greater than or equal to some L0
+  are non-zero.
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_even_n.m">so3_demo_even_n</a>
+  Demo to compute inverse and forward transform of complex
+  function, using only harmonic coefficients with even n.
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_symmetric_sampling.m">so3_demo_symmetric_sampling</a>
+  Demo to compute inverse and forward transform of complex
+  function, using a symmetrically sampled signal.
+
+  <a href="https://github.com/astro-informatics/so3/tree/main/src/matlab/so3_demo_covariance.m">so3_demo_covariance</a>
+  This demo runs a series of forward transforms from random coefficients
+  and compares the transformed signal's covariance with the theoretical
+  prediction.
+  </pre>
+
+  <p>
+  To access the documentation for each demo in Matlab, simply run:
+  </p>
+  <pre> help &lt;demo&gt;</pre>
+  <p> where <code>&lt;demo&gt;</code> is the demo name. </p>
