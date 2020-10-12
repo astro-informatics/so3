@@ -21,7 +21,7 @@ The <strong>SO3</strong> code provides functionality to perform fast and exact W
 
 ## INSTALLATION
 
- The python package, <strong>so3</strong> (pyso3 was taken)), is available on <a href="https://pypi.org/project/so3/">pypi</a> and can be installed with: 
+ The python package, <strong>SO3</strong> (pyso3 was taken), is available on <a href="https://pypi.org/project/so3/">pypi</a> and can be installed with: 
  
  ```bash
  pip install so3
@@ -64,7 +64,7 @@ If you use **SO3** for work that results in publication, please reference <a
 href="http://github.com/astro-informatics/so3">https://github.com/astro-informatics/so3/</a>
 and cite our related academic paper:
 
-- J. D. McEwen, M. B&uuml;ttner, B. Leistedt, H. V. Peiris, Y. Wiaux, [A novel sampling theorem on the rotation group](http://www.jasonmcewen.org/publication/mcewen-so-3/), IEEE Sig. Proc. Let., 22(12):2425-2429, 2015 [(ArXiv)[https://arxiv.org/abs/1508.03101">]
+- J. D. McEwen, M. B&uuml;ttner, B. Leistedt, H. V. Peiris, Y. Wiaux, [A novel sampling theorem on the rotation group](http://www.jasonmcewen.org/publication/mcewen-so-3/), IEEE Sig. Proc. Let., 22(12):2425-2429, 2015 [(arXiv:1508.03101)](https://arxiv.org/abs/1508.03101")
 
 
 
