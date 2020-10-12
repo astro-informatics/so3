@@ -21,7 +21,7 @@ The <strong>SO3</strong> code provides functionality to perform fast and exact W
 
 ## INSTALLATION
 
- The python package, <strong>so3</strong> (pyso3 was taken)), is available on <a href="https://pypi.org/project/so3/">pypi</a> and can be installed with: 
+ The python package, <strong>SO3</strong> (pyso3 was taken), is available on <a href="https://pypi.org/project/so3/">pypi</a> and can be installed with: 
  
  ```bash
  pip install so3
