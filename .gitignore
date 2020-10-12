@@ -1,7 +1,6 @@
 *.csv
 *.pl
 *.sh
-*.png
 *.pdf
 *~
 SO3.sublime-workspace
