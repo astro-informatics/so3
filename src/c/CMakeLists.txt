@@ -5,7 +5,8 @@ target_include_directories(
   PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
          $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
          $<INSTALL_INTERFACE:include>)
-set_target_properties(so3 PROPERTIES C_STANDARD 99)
+set_target_properties(so3 PROPERTIES C_STANDARD 99 ARCHIVE_OUTPUT_DIRECTORY
+                                                   ${PROJECT_BINARY_DIR}/lib)
 configure_file(${PROJECT_SOURCE_DIR}/include/so3/so3_version.in.h
                ${PROJECT_BINARY_DIR}/include/so3/so3_version.h)
 
@@ -13,19 +14,21 @@ if(fPIC)
   set_target_properties(so3 PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
-install(
-  TARGETS so3
-  EXPORT So3Targets
-  ARCHIVE DESTINATION lib
-  PUBLIC_HEADER)
+if(NOT python)
+  install(
+    TARGETS so3
+    EXPORT So3Targets
+    ARCHIVE DESTINATION lib
+    PUBLIC_HEADER)
 
-install(
-  FILES ${PROJECT_SOURCE_DIR}/include/so3/so3.h
-        ${PROJECT_SOURCE_DIR}/include/so3/so3_adjoint.h
-        ${PROJECT_SOURCE_DIR}/include/so3/so3_core.h
-        ${PROJECT_SOURCE_DIR}/include/so3/so3_conv.h
-        ${PROJECT_SOURCE_DIR}/include/so3/so3_error.h
-        ${PROJECT_SOURCE_DIR}/include/so3/so3_sampling.h
-        ${PROJECT_SOURCE_DIR}/include/so3/so3_types.h
-        ${PROJECT_BINARY_DIR}/include/so3/so3_version.h
-  DESTINATION include/so3)
+  install(
+    FILES ${PROJECT_SOURCE_DIR}/include/so3/so3.h
+          ${PROJECT_SOURCE_DIR}/include/so3/so3_adjoint.h
+          ${PROJECT_SOURCE_DIR}/include/so3/so3_core.h
+          ${PROJECT_SOURCE_DIR}/include/so3/so3_conv.h
+          ${PROJECT_SOURCE_DIR}/include/so3/so3_error.h
+          ${PROJECT_SOURCE_DIR}/include/so3/so3_sampling.h
+          ${PROJECT_SOURCE_DIR}/include/so3/so3_types.h
+          ${PROJECT_BINARY_DIR}/include/so3/so3_version.h
+    DESTINATION include/so3)
+endif()
