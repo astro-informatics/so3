@@ -1,0 +1,13 @@
+<map id="include/so3/so3.h" name="include/so3/so3.h">
+<area shape="rect" id="node1" title=" " alt="" coords="231,5,355,32"/>
+<area shape="rect" id="node2" href="$so3__types_8h.html" title=" " alt="" coords="231,155,325,181"/>
+<area shape="rect" id="node4" href="$so3__error_8h.html" title=" " alt="" coords="539,80,625,107"/>
+<area shape="rect" id="node6" href="$so3__sampling_8h.html" title=" " alt="" coords="401,80,515,107"/>
+<area shape="rect" id="node8" href="$so3__core_8h.html" title=" " alt="" coords="5,80,92,107"/>
+<area shape="rect" id="node10" href="$so3__adjoint_8h.html" title=" " alt="" coords="117,80,215,107"/>
+<area shape="rect" id="node11" href="$so3__conv_8h.html" title=" " alt="" coords="291,80,377,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="139,229,225,256"/>
+<area shape="rect" id="node5" title=" " alt="" coords="551,155,613,181"/>
+<area shape="rect" id="node7" title=" " alt="" coords="421,155,495,181"/>
+<area shape="rect" id="node9" title=" " alt="" coords="125,155,207,181"/>
+</map>

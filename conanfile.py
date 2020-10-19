@@ -12,17 +12,20 @@ class So3Conan(ConanFile):
     topics = ("Physics", "Astrophysics", "Radio Interferometry")
     options = {"fPIC": [True, False]}
     default_options = {"fPIC": True}
-    requires = "ssht/1.3.2@astro-informatics/stable"
     generators = "cmake"
     exports_sources = [
         "src/c/*",
-        "include/*",
+        "include/so3/*",
         "CMakeLists.txt",
         "cmake/*.cmake",
         "tests/*.c",
         "tests/*.h",
         "tests/CMakeLists.txt",
     ]
+
+    def requirements(self):
+        location = "astro-informatics/stable" if self.in_local_cache else "user/testing"
+        self.requires(f"ssht/1.3.3@{location}")
 
     def configure(self):
         if self.settings.compiler == "Visual Studio":
