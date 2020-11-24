@@ -1,13 +1,10 @@
 from skbuild import setup
 
-cmake_args = [
-    "-Dpython:BOOL=ON",
-    "-Dtests:BOOL=OFF",
-]
+cmake_args = ["-Dtests:BOOL=OFF"]
 
 setup(
     name="so3",
-    version="1.3.0",
+    version="1.3.1",
     author="Jason McEwen",
     install_requires=["numpy", "cython", "scipy"],
     extras_require={

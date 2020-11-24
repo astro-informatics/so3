@@ -3,7 +3,7 @@ from conans import CMake, ConanFile
 
 class So3Conan(ConanFile):
     name = "so3"
-    version = "1.3.0"
+    version = "1.3.1"
     license = "GPL-3"
     url = "https://github.com/astro-informatics/so3"
     homepage = "https://github.com/astro-informatics/so3"
@@ -25,7 +25,7 @@ class So3Conan(ConanFile):
 
     def requirements(self):
         location = "astro-informatics/stable" if self.in_local_cache else "user/testing"
-        self.requires(f"ssht/1.3.3@{location}")
+        self.requires(f"ssht/1.3.4@{location}")
 
     def configure(self):
         if self.settings.compiler == "Visual Studio":

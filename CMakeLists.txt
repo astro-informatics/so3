@@ -1,13 +1,12 @@
 cmake_minimum_required(VERSION 3.12)
 project(
   so3
-  VERSION "1.3.0"
+  VERSION "1.3.1"
   DESCRIPTION "Fast and exact Wigner transforms"
   HOMEPAGE_URL "http://astro-informatics.github.io/so3/"
   LANGUAGES C)
 
 option(tests "Enable testing" ON)
-option(python "Creates python package only" OFF)
 option(conan_deps "Download ssht using conan" ON)
 if(NOT WIN32)
   option(fPIC "Enable position independent code" ON)
@@ -33,12 +32,9 @@ if(tests)
   add_subdirectory(tests)
 endif()
 
-if(NOT python)
+if(NOT SKBUILD)
   include("exporting")
 else()
-  include("python-setup")
-  find_python()
-  setup_skbuild()
   find_package(PythonExtensions REQUIRED)
   find_package(Cython REQUIRED)
   find_package(NumPy REQUIRED)
