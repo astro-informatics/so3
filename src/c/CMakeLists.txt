@@ -14,7 +14,7 @@ if(fPIC)
   set_target_properties(so3 PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
-if(NOT python)
+if(NOT SKBUILD)
   install(
     TARGETS so3
     EXPORT So3Targets

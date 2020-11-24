@@ -1,9 +1,6 @@
 from skbuild import setup
 
-cmake_args = [
-    "-Dpython:BOOL=ON",
-    "-Dtests:BOOL=OFF",
-]
+cmake_args = ["-Dtests:BOOL=OFF"]
 
 setup(
     name="so3",
