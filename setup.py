@@ -4,7 +4,7 @@ cmake_args = ["-Dtests:BOOL=OFF"]
 
 setup(
     name="so3",
-    version="1.3.1",
+    version="1.3.2",
     author="Jason McEwen",
     install_requires=["numpy", "cython", "scipy"],
     extras_require={
