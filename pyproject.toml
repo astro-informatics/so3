@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools", "wheel", "scikit-build", "cmake", "ninja", "cython",
-    "numpy", "conan"
+    "oldest-supported-numpy", "conan"
 ]
 
 [tool.isort]
