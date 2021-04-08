@@ -3,7 +3,7 @@ from conans import CMake, ConanFile
 
 class So3Conan(ConanFile):
     name = "so3"
-    version = "1.3.2"
+    version = "1.3.3"
     license = "GPL-3"
     url = "https://github.com/astro-informatics/so3"
     homepage = "https://github.com/astro-informatics/so3"

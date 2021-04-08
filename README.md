@@ -2,7 +2,7 @@
 [docs-img]: https://img.shields.io/badge/docs-stable-blue.svg
 [docs-url]: http://astro-informatics.github.io/so3/
 [bintray-img]: https://img.shields.io/bintray/v/astro-informatics/astro-informatics/so3:astro-informatics?label=C%20package
-[bintray-url]: https://bintray.com/astro-informatics/astro-informatics/so3:astro-informatics/1.3.2:stable/link
+[bintray-url]: https://bintray.com/astro-informatics/astro-informatics/so3:astro-informatics/1.3.3:stable/link
 [pypi-img]: https://badge.fury.io/py/so3.svg
 [pypi-url]: https://badge.fury.io/py/so3
 [codefactor-img]: https://www.codefactor.io/repository/github/astro-informatics/so3/badge/main
