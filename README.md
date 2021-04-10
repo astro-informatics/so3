@@ -1,15 +1,15 @@
 # SO3: Fast Wigner transforms
 [docs-img]: https://img.shields.io/badge/docs-stable-blue.svg
 [docs-url]: http://astro-informatics.github.io/so3/
-[bintray-img]: https://img.shields.io/bintray/v/astro-informatics/astro-informatics/so3:astro-informatics?label=C%20package
-[bintray-url]: https://bintray.com/astro-informatics/astro-informatics/so3:astro-informatics/1.3.3:stable/link
+[conan-img]: https://img.shields.io/badge/ConanCenter-C%20Package-red.svg
+[conan-url]: https://conan.io/center/so3
 [pypi-img]: https://badge.fury.io/py/so3.svg
 [pypi-url]: https://badge.fury.io/py/so3
 [codefactor-img]: https://www.codefactor.io/repository/github/astro-informatics/so3/badge/main
 [codefactor-url]: https://www.codefactor.io/repository/github/astro-informatics/so3/overview/main
 
 [![][docs-img]][docs-url]
-[![][bintray-img]][bintray-url]
+[![][conan-img]][conan-url]
 [![][pypi-img]][pypi-url]
 [![][codefactor-img]][codefactor-url]
 ![CMake Build](https://github.com/astro-informatics/so3/workflows/CMake%20Build/badge.svg)
@@ -71,7 +71,7 @@ and cite our related academic paper:
 ## LICENSE
 
 SO3 is released under the GPL-3 license.  For further details see 
-[LICENSE.md](https://github.com/astro-informatics/so3/blob/main/LICENSE.md).
+[LICENSE](https://github.com/astro-informatics/so3/blob/main/LICENSE).
 
 ## AUTHORS
 
