@@ -11,10 +11,6 @@ target_compile_features(so3 PUBLIC c_std_99)
 configure_file(${PROJECT_SOURCE_DIR}/include/so3/so3_version.in.h
                ${PROJECT_BINARY_DIR}/include/so3/so3_version.h)
 
-if(fPIC)
-  set_target_properties(so3 PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-endif()
-
 if(NOT SKBUILD)
   install(
     TARGETS so3
