@@ -6,11 +6,7 @@ project(
   HOMEPAGE_URL "http://astro-informatics.github.io/so3/"
   LANGUAGES C)
 
-option(tests "Enable testing" ON)
 option(conan_deps "Download ssht using conan" ON)
-if(NOT WIN32)
-  option(fPIC "Enable position independent code" ON)
-endif()
 if(conan_deps AND download_ssht)
   message(
     FATAL_ERROR "conan_deps and download_ssht options are mutually exclusive.")
@@ -20,9 +16,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-if(tests)
-  enable_testing()
-endif()
+include(CTest)
 if(conan_deps OR CONAN_EDITABLE_MODE)
   include("${PROJECT_SOURCE_DIR}/cmake/conan_dependencies.cmake")
 endif()
@@ -41,7 +35,7 @@ find_package(FFTW3 REQUIRED)
 find_library(MATH_LIBRARY m)
 
 add_subdirectory(src/c)
-if(tests)
+if(BUILD_TESTING)
   include("${PROJECT_SOURCE_DIR}/cmake/fetch_cmocka.cmake")
   add_subdirectory(tests)
 endif()

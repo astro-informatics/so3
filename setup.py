@@ -1,6 +1,10 @@
 from skbuild import setup
 
-cmake_args = ["-Dtests:BOOL=OFF", "-Dconan_deps=ON", "-DfPIC=ON"]
+cmake_args = [
+    "-DBUILD_TESTING:BOOL=OFF",
+    "-Dconan_deps=ON",
+    "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
+]
 
 setup(
     name="so3",
