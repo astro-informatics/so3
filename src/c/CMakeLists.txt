@@ -1,5 +1,5 @@
 add_library(so3 STATIC so3_core.c so3_sampling.c so3_adjoint.c so3_conv.c)
-target_link_libraries(so3 PUBLIC ${SSHT_TARGET})
+target_link_libraries(so3 PUBLIC ssht::ssht FFTW3::FFTW3 ${MATH_LIBRARY})
 target_include_directories(
   so3
   PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -7,6 +7,7 @@ target_include_directories(
          $<INSTALL_INTERFACE:include>)
 set_target_properties(so3 PROPERTIES C_STANDARD 99 ARCHIVE_OUTPUT_DIRECTORY
                                                    ${PROJECT_BINARY_DIR}/lib)
+target_compile_features(so3 PUBLIC c_std_99)
 configure_file(${PROJECT_SOURCE_DIR}/include/so3/so3_version.in.h
                ${PROJECT_BINARY_DIR}/include/so3/so3_version.h)
 
@@ -17,7 +18,7 @@ endif()
 if(NOT SKBUILD)
   install(
     TARGETS so3
-    EXPORT So3Targets
+    EXPORT so3Targets
     ARCHIVE DESTINATION lib
     PUBLIC_HEADER)
 

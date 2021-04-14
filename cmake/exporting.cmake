@@ -1,36 +1,32 @@
 # Exports so3 so other packages can access it
-export(TARGETS so3 FILE "${PROJECT_BINARY_DIR}/So3Targets.cmake")
+export(
+  TARGETS so3
+  FILE "${PROJECT_BINARY_DIR}/So3Targets.cmake"
+  NAMESPACE so3)
 
 # Avoids creating an entry in the cmake registry.
 if(NOT NOEXPORT)
   export(PACKAGE so3)
 endif()
 
-# First in binary dir
-set(ALL_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}")
-configure_File(cmake/So3Config.in.cmake
-  "${PROJECT_BINARY_DIR}/So3Config.cmake" @ONLY
-)
-configure_File(cmake/So3ConfigVersion.in.cmake
-  "${PROJECT_BINARY_DIR}/So3ConfigVersion.cmake" @ONLY
-)
+set(INCLUDE_INSTALL_DIR include/)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  cmake/so3Config.in.cmake "${PROJECT_BINARY_DIR}/so3Config.cmake"
+  INSTALL_DESTINATION lib/cmake/so3
+  PATH_VARS INCLUDE_INSTALL_DIR)
+write_basic_package_version_file(
+  so3ConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion)
 
-# Then for installation tree
-file(RELATIVE_PATH REL_INCLUDE_DIR
-    "${CMAKE_INSTALL_PREFIX}/share/cmake/so3"
-    "${CMAKE_INSTALL_PREFIX}/include/so3"
-)
-set(ALL_INCLUDE_DIRS "\${So3_CMAKE_DIR}/${REL_INCLUDE_DIR}")
-configure_file(cmake/So3Config.in.cmake
-  "${PROJECT_BINARY_DIR}/CMakeFiles/So3Config.cmake" @ONLY
-)
+if(NOT CONAN_EXPORTED)
+  install(FILES "${PROJECT_BINARY_DIR}/so3Config.cmake"
+                "${PROJECT_BINARY_DIR}/so3ConfigVersion.cmake"
+          DESTINATION lib/cmake/so3)
+endif()
 
-# Finally install all files
-install(FILES
-  "${PROJECT_BINARY_DIR}/CMakeFiles/So3Config.cmake"
-  "${PROJECT_BINARY_DIR}/So3ConfigVersion.cmake"
-    DESTINATION share/cmake/so3
-    COMPONENT dev
-)
-
-install(EXPORT So3Targets DESTINATION share/cmake/so3 COMPONENT dev)
+install(
+  EXPORT so3Targets
+  DESTINATION lib/cmake/so3
+  NAMESPACE so3)

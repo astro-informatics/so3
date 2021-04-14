@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta content="charset=utf-8" />
   <meta name="description" content="so3: Wigner transforms" />
@@ -10,235 +11,274 @@
 </head>
 
 <body>
-<div id="wrap">
+  <div id="wrap">
 
 
-<!--------------------------- HEADER --------------------------->
-<div id="header">
+    <!--------------------------- HEADER --------------------------->
+    <div id="header">
 
-  <p id="toplinks">
-  <a href="#description">Description</a> |
-  <a href="#installation">Installation</a> |
-  <a href="#documentation">Source docs</a> |
-  <a href="#referencing">Referencing</a> |
-  <a href="#license">License</a> |
-  <a href="#authors">Authors</a>
-  </p>
+      <p id="toplinks">
+        <a href="#description">Description</a> |
+        <a href="#installation">Installation</a> |
+        <a href="#documentation">Source docs</a> |
+        <a href="#referencing">Referencing</a> |
+        <a href="#license">License</a> |
+        <a href="#authors">Authors</a>
+      </p>
 
-  <table border="0" cellspacing="0">
-    <tr>
-      <td width=200 height=142 align="right" valign="top">
-	<img src="images/logo.png" width="140" height="140" border=0>
-      </td>
-      <td width=500 align="left" valign="center">
-	<h1 class="title">so3</h1>
-	<p id="slogantitle">Wigner transforms</p>
-      </td>
-    </tr>
-  </table>
+      <table border="0" cellspacing="0">
+        <tr>
+          <td width=200 height=142 align="right" valign="top">
+            <img src="images/logo.png" width="140" height="140" border=0>
+          </td>
+          <td width=500 align="left" valign="center">
+            <h1 class="title">so3</h1>
+            <p id="slogantitle">Wigner transforms</p>
+          </td>
+        </tr>
+      </table>
 
-</div>
-
-
-<!--------------------------- SIDEBAR --------------------------->
-<div id="sidebar">
-
-<h2>News</h2>
-
-<ul>
-<li><strong>October 2020</strong><br />
-Release of SO3 v1.3.0
-<li><strong>September 2020</strong><br />
-Release of SO3 v1.2.0
-<li><strong>November 2016</strong><br />
-Release of SO3 v1.1b1
-</li>
-<li><strong>September 2015</strong><br />
-Public release of SO3 v1.0b1
-</li>
-</ul>
-
-</div>
+    </div>
 
 
-<!--------------------------- CONTENT --------------------------->
-<div id="content">
+    <!--------------------------- SIDEBAR --------------------------->
+    <div id="sidebar">
+
+      <h2>News</h2>
+
+      <ul>
+        <li><strong>April 2021</strong><br />
+          Release of SO3 v1.3.3 (<a href="https://conan.io/center/so3">conan-center</a>release)
+        <li><strong>October 2020</strong><br />
+          Release of SO3 v1.3.0
+        <li><strong>September 2020</strong><br />
+          Release of SO3 v1.2.0
+        <li><strong>November 2016</strong><br />
+          Release of SO3 v1.1b1
+        </li>
+        <li><strong>September 2015</strong><br />
+          Public release of SO3 v1.0b1
+        </li>
+      </ul>
+
+    </div>
 
 
-  <p>
-
-    <a href="https://github.com/astro-informatics/so3">
-    <img src="https://img.shields.io/badge/GitHub-so3-blue.svg?style=flat">
-    </a>
-    
-    <a href="https://astro-informatics.github.io/so3/">
-    <img src="https://img.shields.io/badge/docs-stable-blue.svg">
-    </a>
-    
-    <a href="https://bintray.com/astro-informatics/astro-informatics/so3:astro-informatics/">
-    <img src="https://img.shields.io/bintray/v/astro-informatics/astro-informatics/so3:astro-informatics?label=C%20package">
-    </a>
-    
-    <a href="https://badge.fury.io/py/so3">
-    <img src="https://badge.fury.io/py/so3.svg">
-    </a>
-    
-    <a href="https://www.codefactor.io/repository/github/astro-informatics/so3/overview/main">
-    <img src="https://www.codefactor.io/repository/github/astro-informatics/so3/badge/main">
-    </a>
-    
-    <a href="https://github.com/astro-informatics/so3/actions?query=workflow%3A%22CMake+Build%22">
-    <img src="https://github.com/astro-informatics/so3/workflows/CMake%20Build/badge.svg">
-    </a>
-    
-    <a href="https://github.com/astro-informatics/so3/actions?query=workflow%3A%22Python+Build%22">
-    <img src="https://github.com/astro-informatics/so3/workflows/Python%20Build/badge.svg">
-    </a>
-    </p>
-    
-
-<!--------------------------------------------------------------->
-<a name="description"><h2>Description</h2></a>
-
-  <p>
-  The <strong>SO3</strong> code provides functionality to perform fast and exact Wigner transforms based on the sampling theorem on the rotation group derived in <a href="http://www.jasonmcewen.org/publication/mcewen-so-3/">McEwen et al. (2015)</a>.
-  </p>
-  <p>
-  This documentation describes installation details and
-  documents the source code. Reference, author and license information is also given.  The code itself is <a href="https://github.com/astro-informatics/so3">hosted on GitHub</a>.</p>
-  </p>
-
-<!--------------------------------------------------------------->
-<a name="installation"><h2>Installation</h2></a>
-
-  <p>
-  The <strong>SO3</strong> package in based on a core C implementation.  Python and Matlab interfaces to the C implementation are provided.
-  </p>
-
-  <h4>Dependencies</h4>
-
-  <p>
-  <strong>SO3</strong> requires the <a href="http://www.fftw.org/">FFTW</a> and the <a href="http://www.spinsht.org">SSHT</a> package. Obviously suitable C compilers will be required to build the  implementation. Both C and Matlab mex compilers will be required to build the Matlab interface to the C implementation.   The python interface requires <a href="http://www.numpy.org/">numpy</a> and, in addition, the demos require <a href="http://matplotlib.org/">matplotlib</a>.
-
-  </p>
+    <!--------------------------- CONTENT --------------------------->
+    <div id="content">
 
 
-  <h4>Python installation</h4>
+      <p>
 
-  <p>
-  The python package, <strong>so3</strong>, is available on <a href="https://pypi.org/project/so3/">pypi</a> and can be installed with:
-   
-  <pre>pip install so3</pre>
-   
-  <p> The python package is backed by
-    <a href="https://scikit-build.readthedocs.io/en/latest/">scikit-build</a> and
-    <a href="https://cmake.org">CMake</a>. It will install a local version of
-    <a href="http://www.fftw.org/">FFTW</a> and will compile its own version of the C package. </p>
-  
-  <h4>C installation</h4>
+        <a href="https://github.com/astro-informatics/so3">
+          <img src="https://img.shields.io/badge/GitHub-so3-blue.svg?style=flat">
+        </a>
 
-  <p>
-    The C package can be installed with <a href="https://cmake.org">CMake</a> and
-    <a href="https://docs.conan.io/en/latest/howtos/other_languages_package_manager/python.html">conan</a>.
-    
-    <p>
-    Both can be installed using pip:
-    
-    <pre>pip install conan cmake</pre>
-    
-    <p>
-    Then <strong>SO3</strong> can be compiled with:
-    
-    <pre>
+        <a href="https://astro-informatics.github.io/so3/">
+          <img src="https://img.shields.io/badge/docs-stable-blue.svg">
+        </a>
+
+        <a href="https://conan.io/center/so3">
+          <img src="https://img.shields.io/badge/ConanCenter-C%20Package-red.svg">
+        </a>
+
+        <a href="https://badge.fury.io/py/so3">
+          <img src="https://badge.fury.io/py/so3.svg">
+        </a>
+
+        <a href="https://www.codefactor.io/repository/github/astro-informatics/so3/overview/main">
+          <img src="https://www.codefactor.io/repository/github/astro-informatics/so3/badge/main">
+        </a>
+
+        <a href="https://github.com/astro-informatics/so3/actions?query=workflow%3A%22CMake+Build%22">
+          <img src="https://github.com/astro-informatics/so3/workflows/CMake%20Build/badge.svg">
+        </a>
+
+        <a href="https://github.com/astro-informatics/so3/actions?query=workflow%3A%22Python+Build%22">
+          <img src="https://github.com/astro-informatics/so3/workflows/Python%20Build/badge.svg">
+        </a>
+      </p>
+
+
+      <!--------------------------------------------------------------->
+      <a name="description">
+        <h2>Description</h2>
+      </a>
+
+      <p>
+        The <strong>SO3</strong> code provides functionality to perform fast and exact Wigner transforms based on the
+        sampling theorem on the rotation group derived in <a
+          href="http://www.jasonmcewen.org/publication/mcewen-so-3/">McEwen et al. (2015)</a>.
+      </p>
+      <p>
+        This documentation describes installation details and
+        documents the source code. Reference, author and license information is also given. The code itself is <a
+          href="https://github.com/astro-informatics/so3">hosted on GitHub</a>.</p>
+      </p>
+
+      <!--------------------------------------------------------------->
+      <a name="installation">
+        <h2>Installation</h2>
+      </a>
+
+      <p>
+        The <strong>SO3</strong> package in based on a core C implementation. Python and Matlab interfaces to the C
+        implementation are provided.
+      </p>
+
+      <h4>Dependencies</h4>
+
+      <p>
+        <strong>SO3</strong> requires the <a href="http://www.fftw.org/">FFTW</a> and the <a
+          href="http://www.spinsht.org">SSHT</a> package. Obviously suitable C compilers will be required to build the
+        implementation. Both C and Matlab mex compilers will be required to build the Matlab interface to the C
+        implementation. The python interface requires <a href="http://www.numpy.org/">numpy</a> and, in addition, the
+        demos require <a href="http://matplotlib.org/">matplotlib</a>.
+
+      </p>
+
+
+      <h4>Python installation</h4>
+
+      <p>
+        The python package, <strong>so3</strong>, is available on <a href="https://pypi.org/project/so3/">pypi</a> and
+        can be installed with:
+
+      <pre>pip install so3</pre>
+
+      <p> The python package is backed by
+        <a href="https://scikit-build.readthedocs.io/en/latest/">scikit-build</a> and
+        <a href="https://cmake.org">CMake</a>. It will install a local version of
+        <a href="http://www.fftw.org/">FFTW</a> and will compile its own version of the C package.
+      </p>
+
+      <h4>C installation</h4>
+
+      <p>
+        The C package can be installed with <a href="https://cmake.org">CMake</a> and
+        <a href="https://docs.conan.io/en/latest/howtos/other_languages_package_manager/python.html">conan</a>.
+
+      <p>
+        Both can be installed using pip:
+
+      <pre>pip install conan cmake</pre>
+
+      <p>
+        Then <strong>SO3</strong> can be compiled with:
+
+      <pre>
   git clone https://github.com/astro-informatics/so3.git
   mkdir so3/build && cd so3/build
   cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -Dconan_deps=True ..
   make
   make install</pre>
-    
-    <p>
-    The above will also download <a href="http://www.fftw.org/">FFTW</a> and <a href="http://www.spinsht.org">SSHT</a>, if necessary.</p>
-    
 
-  <h4>Matlab installation</h4>
-
-  <p>The Matlab interface requires the C version to be installed.  
-  
-    <p>It can be built using make by configuring appropriate compilers and dependencies, and then running:
-  
-    <pre>make matlab</pre>
-  </p>
-
-<!--------------------------------------------------------------->
-<a name="documentation"><h2>Source code documentation</h2></a>
+      <p>
+        The above will also download <a href="http://www.fftw.org/">FFTW</a> and <a
+          href="http://www.spinsht.org">SSHT</a>, if necessary.</p>
 
 
-<p>
-  <strong>SO3</strong> code is self documented.  Source code documentation for each language is available here:
+      <h4>Matlab installation</h4>
 
-  <ul>
-    <li><a href="https://pypi.org/project/so3/">Python source documentation</a> (usage for the python package is given in the package docstring)</li>
-    <li><a href="c/index.html">C source documentation</a></li>
-    <li><a href="matlab/html/index.html">Matlab source documentation</a> (usage for the matlab package is available through matlab help documentation)</li>    
-  </ul>
-</p>
+      <p>The Matlab interface requires the C version to be installed.
 
-<!--------------------------------------------------------------->
-<a name="referencing"><h2>Referencing</h2></a>
+      <p>It can be built using make by configuring appropriate compilers and dependencies, and then running:
 
-  <p> If you use <strong>SO3</strong> for work that results in
-  publication, please reference <a
-   href="http://github.com/astro-informatics/so3">https://github.com/astro-informatics/so3/</a>
-  and cite our related academic paper:
+      <pre>make matlab</pre>
+      </p>
 
-  <blockquote> J. D. McEwen, M. B&uuml;ttner, B. Leistedt, H. V. Peiris, Y. Wiaux, <a href="http://www.jasonmcewen.org/publication/mcewen-so-3/">A
-  novel sampling theorem on the rotation group</a>, IEEE Sig. Proc. Let., 22(12):2425-2429, 2015 (<a href="https://arxiv.org/abs/1508.03101">ArXiv</a>
-  | <a href="https://doi.org/10.1109/LSP.2015.2490676">DOI</a>)</blockquote>
-  </p>
-
-<!--------------------------------------------------------------->
-<a name="license"><h2>License</h2></a>
-
-<blockquote>
-<p>
-SO3 package to perform Wigner transforms<br>
-Copyright (C) 2014- Martin B&uuml;ttner, Jason McEwen, Boris Leistedt and contributors
-</p>
-
-<p>
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
-</p>
-
-<p>
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details (<a href="https://github.com/astro-informatics/so3/blob/main/LICENSE.md">LICENSE.md</a>).
-</p>
-
-<p>
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <a href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>.
-</p>
-</blockquote>
-
-<!--------------------------------------------------------------->
-<a name="authors"><h2>Authors</h2></a>
-
-  <p> <strong>SO3</strong> was initially developed by Martin B&uuml;ttner, <a href="http://www.jasonmcewen.org/">Jason McEwen</a>, and Boris Leistedt but significant contributors have since been made by a number of <a href="https://github.com/astro-informatics/so3/graphs/contributors">others</a>.
-  </p>
-
-</div>
+      <!--------------------------------------------------------------->
+      <a name="documentation">
+        <h2>Source code documentation</h2>
+      </a>
 
 
-<!--------------------------- FOOTER --------------------------->
-<div id="footer">
+      <p>
+        <strong>SO3</strong> code is self documented. Source code documentation for each language is available here:
 
-  <p>
-  <a href="#header">Back to top</a><br >
+      <ul>
+        <li><a href="https://pypi.org/project/so3/">Python source documentation</a> (usage for the python package is
+          given in the package docstring)</li>
+        <li><a href="c/index.html">C source documentation</a></li>
+        <li><a href="matlab/html/index.html">Matlab source documentation</a> (usage for the matlab package is available
+          through matlab help documentation)</li>
+      </ul>
+      </p>
 
-  <p>&copy; 2013 <a href="http://www.jasonmcewen.org">Jason McEwen</a> | Design by
-  <a href="http://andreasviklund.com/">Andreas Viklund</a> </p>
+      <!--------------------------------------------------------------->
+      <a name="referencing">
+        <h2>Referencing</h2>
+      </a>
+
+      <p> If you use <strong>SO3</strong> for work that results in
+        publication, please reference <a
+          href="http://github.com/astro-informatics/so3">https://github.com/astro-informatics/so3/</a>
+        and cite our related academic paper:
+
+      <blockquote> J. D. McEwen, M. B&uuml;ttner, B. Leistedt, H. V. Peiris, Y. Wiaux, <a
+          href="http://www.jasonmcewen.org/publication/mcewen-so-3/">A
+          novel sampling theorem on the rotation group</a>, IEEE Sig. Proc. Let., 22(12):2425-2429, 2015 (<a
+          href="https://arxiv.org/abs/1508.03101">ArXiv</a>
+        | <a href="https://doi.org/10.1109/LSP.2015.2490676">DOI</a>)</blockquote>
+      </p>
+
+      <!--------------------------------------------------------------->
+      <a name="license">
+        <h2>License</h2>
+      </a>
+
+      <blockquote>
+        <p>
+          SO3 package to perform Wigner transforms<br>
+          Copyright (C) 2014- Martin B&uuml;ttner, Jason McEwen, Boris Leistedt and contributors
+        </p>
+
+        <p>
+          This program is free software; you can redistribute it and/or modify it under the terms of the GNU General
+          Public License as published by the Free Software Foundation; either version 3 of the License, or (at your
+          option) any later version.
+        </p>
+
+        <p>
+          This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+          implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+          for more details (<a href="https://github.com/astro-informatics/so3/blob/main/LICENSE.md">LICENSE.md</a>).
+        </p>
+
+        <p>
+          You should have received a copy of the GNU General Public License
+          along with this program. If not, see <a
+            href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>.
+        </p>
+      </blockquote>
+
+      <!--------------------------------------------------------------->
+      <a name="authors">
+        <h2>Authors</h2>
+      </a>
+
+      <p> <strong>SO3</strong> was initially developed by Martin B&uuml;ttner, <a
+          href="http://www.jasonmcewen.org/">Jason McEwen</a>, and Boris Leistedt but significant contributors have
+        since been made by a number of <a
+          href="https://github.com/astro-informatics/so3/graphs/contributors">others</a>.
+      </p>
+
+    </div>
+
+
+    <!--------------------------- FOOTER --------------------------->
+    <div id="footer">
+
+      <p>
+        <a href="#header">Back to top</a><br>
+
+      <p>&copy; 2013 <a href="http://www.jasonmcewen.org">Jason McEwen</a> | Design by
+        <a href="http://andreasviklund.com/">Andreas Viklund</a>
+      </p>
 
 
 
-</div>
+    </div>
 </body>
+
 </html>
