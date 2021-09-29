@@ -7,10 +7,6 @@ project(
   LANGUAGES C)
 
 option(conan_deps "Download ssht using conan" ON)
-if(conan_deps AND download_ssht)
-  message(
-    FATAL_ERROR "conan_deps and download_ssht options are mutually exclusive.")
-endif()
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
@@ -40,13 +36,13 @@ if(BUILD_TESTING)
   add_subdirectory(tests)
 endif()
 
-if(NOT SKBUILD AND NOT CONAN_EXPORTED)
-  include("${PROJECT_SOURCE_DIR}/cmake/exporting.cmake")
-elseif(NOT CONAN_EXPORTED)
+if(SKBUILD)
   find_package(PythonExtensions REQUIRED)
   find_package(Cython REQUIRED)
   find_package(NumPy REQUIRED)
   add_subdirectory(src/so3)
+elseif(NOT CONAN_EXPORTED)
+  include("${PROJECT_SOURCE_DIR}/cmake/exporting.cmake")
 endif()
 
 # only run documentation if this is not a sub-project
