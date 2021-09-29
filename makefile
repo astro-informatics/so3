@@ -4,7 +4,7 @@
 CC	= gcc
 
 #OPT	= -Wall -O3 -fopenmp -DSO3_VERSION=\"0.1\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
-OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"1.3.4\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
+OPT	= -Wall -g -fopenmp -DSO3_VERSION=\"1.3.5\" -DSO3_BUILD=\"`git rev-parse HEAD`\"
 
 
 # ======== LINKS ========
