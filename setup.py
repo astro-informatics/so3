@@ -8,7 +8,7 @@ cmake_args = [
 
 setup(
     name="so3",
-    version="1.3.4",
+    version="1.3.5",
     author="Jason McEwen",
     install_requires=["numpy", "scipy"],
     extras_require={
