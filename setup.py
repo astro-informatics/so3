@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from skbuild import setup
 
 cmake_args = [
@@ -31,4 +33,6 @@ setup(
     cmake_languages=("C",),
     license="GPL-3",
     packages=["so3"],
+    long_description=Path(__file__).with_name("README.md").read_text(),
+    long_description_content_type="text/markdown",
 )

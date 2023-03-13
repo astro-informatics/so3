@@ -17,11 +17,14 @@
 
 ## DESCRIPTION
 
-The <strong>SO3</strong> code provides functionality to perform fast and exact Wigner transforms based on the sampling theorem on the rotation group derived in [McEwen et al. (2015)](http://www.jasonmcewen.org/publication/mcewen-so-3/).
+The **SO3** code provides functionality to perform fast and exact Wigner transforms
+based on the sampling theorem on the rotation group derived in [McEwen et al.
+(2015)](http://www.jasonmcewen.org/publication/mcewen-so-3/).
 
 ## INSTALLATION
 
- The python package, <strong>so3</strong> (pyso3 was taken), is available on <a href="https://pypi.org/project/so3/">pypi</a> and can be installed with: 
+ The python package, **so3** (pyso3 was taken), is available on
+ [so3](https://pypi.org/project/so3/") and can be installed with: 
  
  ```bash
  pip install so3
@@ -60,8 +63,8 @@ Usage for the python package is also given in the package docstring.
 
 ## REFERENCING
 
-If you use **SO3** for work that results in publication, please reference <a
-href="http://github.com/astro-informatics/so3">https://github.com/astro-informatics/so3/</a>
+If you use **SO3** for work that results in publication, please reference [the **SO3**
+url](http://github.com/astro-informatics/so3)
 and cite our related academic paper:
 
 - J. D. McEwen, M. B&uuml;ttner, B. Leistedt, H. V. Peiris, Y. Wiaux, [A novel sampling theorem on the rotation group](http://www.jasonmcewen.org/publication/mcewen-so-3/), IEEE Sig. Proc. Let., 22(12):2425-2429, 2015 [(arXiv:1508.03101)](https://arxiv.org/abs/1508.03101")
@@ -75,5 +78,7 @@ SO3 is released under the GPL-3 license.  For further details see
 
 ## AUTHORS
 
-**SO3** was initially developed by Martin B&uuml;ttner, <a href="http://www.jasonmcewen.org/">Jason McEwen</a>, and Boris Leistedt but significant contributors have since been made by a number of [others](https://github.com/astro-informatics/so3/graphs/contributors).
-  </p>
+**SO3** was initially developed by Martin Büttner, [Jason
+McEwen](http://www.jasonmcewen.org/), and Boris Leistedt but significant contributors
+have since been made by a number of
+[others](https://github.com/astro-informatics/so3/graphs/contributors).
