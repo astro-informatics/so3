@@ -22,6 +22,18 @@ def test_pyso3():
     assert f_before == approx(f)
 
 
+def test_pyso3_reality():
+
+    f_p = so3.create_parameter_dict(16, 8, reality=1)
+    f_length = so3.f_size(f_p)
+    rng = np.random.default_rng()
+    f = rng.normal(size=f_length)
+    flmn = so3.forward(f, f_p)
+    f_recov = so3.inverse(flmn, f_p)
+
+    assert np.allclose(f, f_recov)
+
+
 def test_convolve_smoke_test():
     rng = np.random.default_rng()
     g_p = so3.create_parameter_dict(16, 8)
