@@ -1,11 +1,6 @@
 # cython: language_level=3
 
-# import both numpy and the Cython declarations for numpy
 import numpy as np
-cimport numpy as np
-
-# if you want to use the Numpy-C-API from Cython
-np.import_array()
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -317,7 +312,7 @@ def is_elmn_non_zero(int el, int m, int n, so3_parameters):
 
 
 # forward and inverse for MW and MWSS for complex functions
-def inverse(np.ndarray[ double complex, ndim=1, mode="c"] flmn not None, so3_parameters not None):
+def inverse(double complex[::1] flm not None, so3_parameters not None):
     cdef so3_parameters_t parameters=create_parameter_struct(so3_parameters)
 
     if so3_parameters.reality:
@@ -331,7 +326,7 @@ def inverse(np.ndarray[ double complex, ndim=1, mode="c"] flmn not None, so3_par
 
     return f
 
-def forward(np.ndarray[ double complex, ndim=1, mode="c"] f not None, so3_parameters not None):
+def forward(double complex[::1] f not None, so3_parameters not None):
     cdef so3_parameters_t parameters=create_parameter_struct(so3_parameters)
 
     if so3_parameters.reality:
@@ -368,9 +363,9 @@ def get_convolved_parameters(f_so3_parameters, g_so3_parameters):
     return SO3Parameters().from_dict(h_parameters)
 
 def convolve(
-    np.ndarray[ double complex, ndim=1, mode="c"] f not None, 
+    double complex[::1] f not None,
     f_parameters,
-    np.ndarray[ double complex, ndim=1, mode="c"] g not None, 
+    double complex[::1] g not None,
     g_parameters
     ):
 
@@ -394,9 +389,9 @@ def convolve(
     return h, h_parameters
 
 def convolve_harmonic(    
-    np.ndarray[ double complex, ndim=1, mode="c"] flmn not None, 
+    double complex[::1] flmn not None,
     f_parameters,
-    np.ndarray[ double complex, ndim=1, mode="c"] glmn not None, 
+    double complex[::1] glmn not None,
     g_parameters
     ):
 
@@ -422,8 +417,8 @@ def convolve_harmonic(
 
 def s2toso3_harmonic_convolution(
     h_so3_parameters,
-    np.ndarray[ double complex, ndim=1, mode="c"] flm not None,
-    np.ndarray[ double complex, ndim=1, mode="c"] glm not None):
+    double complex[::1] flm not None,
+    double complex[::1] glm not None):
 
     cdef so3_parameters_t h_parameters=create_parameter_struct(h_so3_parameters)
 
