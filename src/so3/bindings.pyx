@@ -312,32 +312,48 @@ def is_elmn_non_zero(int el, int m, int n, so3_parameters):
 
 
 # forward and inverse for MW and MWSS for complex functions
-def inverse(double complex[::1] flm not None, so3_parameters not None):
-    cdef so3_parameters_t parameters=create_parameter_struct(so3_parameters)
-
+def inverse(double complex[::1] flmn not None, so3_parameters not None):
+    cdef so3_parameters_t parameters = create_parameter_struct(so3_parameters)
     if so3_parameters.reality:
-        f_length = f_size(so3_parameters)
-        f = np.zeros([f_length,], dtype=float)
-        so3_core_inverse_via_ssht_real(<double *> np.PyArray_DATA(f), <const double complex*> np.PyArray_DATA(flmn), &parameters)
+        return np.array(_inverse_real(flmn, parameters))
     else:
-        f_length = f_size(so3_parameters)
-        f = np.zeros([f_length,], dtype=complex)
-        so3_core_inverse_via_ssht(<double complex*> np.PyArray_DATA(f), <const double complex*> np.PyArray_DATA(flmn), &parameters)
+        return np.array(_inverse_complex(flmn, parameters))
 
+cdef double[::1] _inverse_real(double complex[::1] flmn, so3_parameters_t parameters):
+    cdef int f_length = so3_sampling_f_size(&parameters)
+    cdef double[::1] f = np.zeros([f_length,], dtype=float)
+    so3_core_inverse_via_ssht_real(&f[0], &flmn[0], &parameters)
     return f
 
-def forward(double complex[::1] f not None, so3_parameters not None):
-    cdef so3_parameters_t parameters=create_parameter_struct(so3_parameters)
+cdef double complex[::1] _inverse_complex(double complex[::1] flmn, so3_parameters_t parameters):
+    cdef int f_length = so3_sampling_f_size(&parameters)
+    cdef double complex[::1] f = np.zeros([f_length,], dtype=complex)
+    so3_core_inverse_via_ssht(&f[0], &flmn[0], &parameters)
+    return f
 
-    if so3_parameters.reality:
-        flmn_length = flmn_size(so3_parameters)
-        flmn = np.zeros([flmn_length,], dtype=float)
-        so3_core_forward_via_ssht_real(<double complex*> np.PyArray_DATA(flmn), <const double *> np.PyArray_DATA(f), &parameters)
+ctypedef fused real_or_complex:
+    double
+    double complex
+
+def forward(real_or_complex[::1] f not None, so3_parameters not None):
+    cdef so3_parameters_t parameters = create_parameter_struct(so3_parameters)
+    if real_or_complex is double:
+        if not so3_parameters.reality:
+            raise ValueError("f has a real data type but reality flag not set")
+        return np.array(_forward_real(f, parameters))
     else:
-        flmn_length = flmn_size(so3_parameters)
-        flmn = np.zeros([flmn_length,], dtype=complex)
-        so3_core_forward_via_ssht(<double complex*> np.PyArray_DATA(flmn), <const double complex*> np.PyArray_DATA(f), &parameters)
+        return np.array(_forward_complex(f, parameters))
+    
+cdef double complex[::1] _forward_real(double[::1] f, so3_parameters_t parameters):
+    cdef int flmn_length = so3_sampling_flmn_size(&parameters)
+    cdef double complex[::1] flmn = np.zeros([flmn_length,], dtype=complex)
+    so3_core_forward_via_ssht_real(&flmn[0], &f[0], &parameters)
+    return flmn
 
+cdef double complex[::1] _forward_complex(double complex[::1] f, so3_parameters_t parameters):
+    cdef int flmn_length = so3_sampling_flmn_size(&parameters)
+    cdef double complex[::1] flmn = np.zeros([flmn_length,], dtype=complex)
+    so3_core_forward_via_ssht(&flmn[0], &f[0], &parameters)
     return flmn
 
 # convolution both in real and harmonic space and helper params function
@@ -376,14 +392,14 @@ def convolve(
     cdef so3_parameters_t h_parameters_struct=create_parameter_struct(h_parameters)
 
     h_length = f_size(h_parameters)
-    h = np.zeros([h_length,], dtype=complex)
+    cdef double complex[::1] h = np.zeros([h_length,], dtype=complex)
 
     so3_conv_convolution(
-        <double complex *> np.PyArray_DATA(h),
+        &h[0],
         &h_parameters_struct,
-        <const double complex *> np.PyArray_DATA(f),
+        &f[0],
         &f_parameters_struct,
-        <const double complex *> np.PyArray_DATA(g),
+        &g[0],
         &g_parameters_struct
     )
     return h, h_parameters
@@ -403,14 +419,14 @@ def convolve_harmonic(
     cdef so3_parameters_t h_parameters_struct=create_parameter_struct(h_parameters)
 
     hlmn_length = flmn_size(h_parameters)
-    hlmn = np.zeros([hlmn_length,], dtype=complex)
+    cdef double complex[::1] hlmn = np.zeros([hlmn_length,], dtype=complex)
 
     so3_conv_convolution(
-        <double complex *> np.PyArray_DATA(hlmn),
+        &hlmn[0],
         &h_parameters_struct,
-        <const double complex *> np.PyArray_DATA(flmn),
+        &flmn[0],
         &f_parameters_struct,
-        <const double complex *> np.PyArray_DATA(glmn),
+        &glmn[0],
         &g_parameters_struct
     )
     return hlmn, h_parameters
@@ -423,14 +439,9 @@ def s2toso3_harmonic_convolution(
     cdef so3_parameters_t h_parameters=create_parameter_struct(h_so3_parameters)
 
     hlmn_length = flmn_size(h_so3_parameters)
-    hlmn = np.zeros([hlmn_length,], dtype=complex)
+    cdef double complex[::1] hlmn = np.zeros([hlmn_length,], dtype=complex)
 
-    so3_conv_s2toso3_harmonic_convolution(
-    <double complex *> np.PyArray_DATA(hlmn), 
-    &h_parameters,
-    <const double complex *> np.PyArray_DATA(flm),
-    <const double complex *> np.PyArray_DATA(glm)
-    )
+    so3_conv_s2toso3_harmonic_convolution(&hlmn[0], &h_parameters, &flm[0], &glm[0])
     return hlmn
 
 def test_func():
