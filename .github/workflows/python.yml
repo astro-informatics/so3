@@ -1,5 +1,10 @@
 name: Python Build
 
+env:
+  # Set to avoid errors when building FFTW with CMake v4+
+  # https://github.com/FFTW/fftw3/issues/381
+  CMAKE_POLICY_VERSION_MINIMUM: 3.5
+
 "on":
   push:
     branches: ["main"]
