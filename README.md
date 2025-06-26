@@ -1,8 +1,8 @@
 # SO3: Fast Wigner transforms
 [docs-img]: https://img.shields.io/badge/docs-stable-blue.svg
 [docs-url]: http://astro-informatics.github.io/so3/
-[conan-img]: https://img.shields.io/badge/ConanCenter-C%20Package-red.svg
-[conan-url]: https://conan.io/center/astro-informatics-so3
+[conan-img]: https://img.shields.io/conan/v/astro-informatics-so3
+[conan-url]: https://conan.io/center/recipes/astro-informatics-so3
 [pypi-img]: https://badge.fury.io/py/so3.svg
 [pypi-url]: https://badge.fury.io/py/so3
 [codefactor-img]: https://www.codefactor.io/repository/github/astro-informatics/so3/badge/main
