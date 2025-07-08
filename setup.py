@@ -10,7 +10,7 @@ cmake_args = [
 
 setup(
     name="so3",
-    version="1.3.6",
+    version="1.3.7",
     author="Jason McEwen",
     install_requires=["numpy", "scipy"],
     extras_require={
@@ -35,4 +35,5 @@ setup(
     packages=["so3"],
     long_description=Path(__file__).with_name("README.md").read_text(),
     long_description_content_type="text/markdown",
+    python_requires=">=3.8"
 )
