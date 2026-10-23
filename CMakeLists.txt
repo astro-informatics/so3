@@ -1,4 +1,10 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.24)
+
+option(conan_deps "Resolve FFTW and SSHT dependencies using Conan" ON)
+if(conan_deps OR CONAN_EDITABLE_MODE)
+  include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan_dependencies.cmake")
+endif()
+
 project(
   so3
   VERSION "1.3.7"
@@ -6,21 +12,12 @@ project(
   HOMEPAGE_URL "http://astro-informatics.github.io/so3/"
   LANGUAGES C)
 
-option(conan_deps "Download ssht using conan" ON)
-
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
 include(CTest)
-if(conan_deps OR CONAN_EDITABLE_MODE)
-  include("${PROJECT_SOURCE_DIR}/cmake/conan_dependencies.cmake")
-endif()
-if(EXISTS "${PROJECT_BINARY_DIR}/conan_paths.cmake")
-  include("${PROJECT_BINARY_DIR}/conan_paths.cmake")
-elseif(EXISTS "${PROJECT_BINARY_DIR}/FindFFTW3.cmake")
-  list(APPEND CMAKE_MODULE_PATH "${PROJECT_BINARY_DIR}")
-else()
+if(NOT conan_deps AND NOT CONAN_EDITABLE_MODE)
   list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 endif()
 find_package(ssht REQUIRED)
@@ -28,6 +25,9 @@ if(ssht_FOUND AND NOT TARGET ssht::ssht)
   message(FATAL_ERROR "NOT FOUND ${SSHT_LIBRARIES}")
 endif()
 find_package(FFTW3 REQUIRED)
+if(TARGET FFTW3::fftw3 AND NOT TARGET FFTW3::FFTW3)
+  add_library(FFTW3::FFTW3 ALIAS FFTW3::fftw3)
+endif()
 find_library(MATH_LIBRARY m)
 
 add_subdirectory(src/c)

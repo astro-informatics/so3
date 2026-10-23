@@ -2,7 +2,10 @@
 fftw/[>=3.3]
 ssht/[>=1.3.7]
 [generators]
-cmake
+CMakeDeps
 [options]
-fftw:shared=False
-fftw:precision=double
+fftw/*:shared=False
+fftw/*:precision_single=False
+fftw/*:precision_double=True
+fftw/*:precision_longdouble=False
+fftw/*:precision_quad=False

@@ -36,7 +36,7 @@ The C package can be installed with [CMake](https://cmake.org) and
 Both can be installed using pip:
 
 ```bash
-pip install conan cmake
+pip install "conan>=2.0.5,<3" "cmake>=3.24"
 ```
 
 Then **SO3** can be compiled with:

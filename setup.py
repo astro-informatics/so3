@@ -18,10 +18,10 @@ setup(
             "setuptools",
             "wheel",
             "scikit-build",
-            "cmake",
+            "cmake>=3.24",
             "ninja",
             "cython",
-            "conan",
+            "conan>=2.0.5,<3",
             "black",
             "pytest",
         ]
